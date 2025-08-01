@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 
 import HomeScreen from '../../screens/HomeScreen';
+import WordScreen from '../../screens/WordScreen';
 import LoginRegisterScreen from '../../screens/LoginRegisterScreen';
 import ProfileScreen from '../../screens/ProfileScreen';
 
@@ -15,10 +16,7 @@ const Tab = createBottomTabNavigator();
 
 export default function TabNavigator() {
 
-
     const { is_auth } = useSelector((state) => state.authSlice);
-
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // mock state
 
     return (
         <Tab.Navigator
@@ -26,6 +24,7 @@ export default function TabNavigator() {
                 tabBarIcon: ({ color, size }) => {
                     let iconName;
                     if (route.name === 'Home') iconName = 'home';
+                    else if (route.name === 'Word') iconName = 'book';
                     else if (route.name === 'Login/Register') iconName = 'log-in';
                     else if (route.name === 'Profile') iconName = 'person';
                     return <Ionicons name={iconName} size={size} color={color} />;
@@ -34,6 +33,7 @@ export default function TabNavigator() {
             })}
         >
             <Tab.Screen name="Home" component={HomeScreen} />
+            <Tab.Screen name="Word" component={WordScreen} />
             {!is_auth ? (
                 <Tab.Screen name="Login/Register">
                     {() => <LoginRegisterScreen onLogin={() => {

@@ -1,30 +1,33 @@
 
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
+
+import { useFonts } from 'expo-font';
 
 import { Provider } from 'react-redux';
 import store from './src/store';
 
-import HomeScreen from './src/screens/HomeScreen';
-import LoginRegisterScreen from './src/screens/LoginRegisterScreen';
-import ProfileScreen from './src/screens/ProfileScreen';
-import TabNavigator from './src/components/layouts/TabNavigator';
 
-const Tab = createBottomTabNavigator();
+import TabNavigator from './src/components/layouts/TabNavigator';
+import MainStack from './src/components/layouts/MainStack';
+
 
 export default function App() {
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // mock state
-
+  const [fontsLoaded] = useFonts({
+    'Poppins-Regular': require('./assets/fonts/Poppins/Poppins-Regular.ttf'),
+    'Poppins-Bold': require('./assets/fonts/Poppins/Poppins-Bold.ttf'),
+    'Poppins-SemiBold': require('./assets/fonts/Poppins/Poppins-SemiBold.ttf'),
+    'OpenSans-Regular': require('./assets/fonts/Open_Sans/static/OpenSans-Regular.ttf'),
+    'OpenSans-Bold': require('./assets/fonts/Open_Sans/static/OpenSans-Bold.ttf'),
+    // Add more as needed
+  });
 
   return (
     <Provider store={store}>
-      <NavigationContainer>
-        <TabNavigator />
-      </NavigationContainer>
-    </Provider>
+        <NavigationContainer>
+          <MainStack />
+        </NavigationContainer>
+      </Provider>
   );
 }
