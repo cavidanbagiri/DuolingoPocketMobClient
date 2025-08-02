@@ -104,11 +104,12 @@ export const authSlice = createSlice({
 
         // Userservice logout
         builder.addCase(AuthService.userLogout.fulfilled, (state, action) => {
-            console.log('action.payload', action.payload);
+            
             state.is_auth = false;
             state.user = null;
             state.is_login_error = false,
-            state.login_success = false,
+            state.login_success = false, 
+
             clearStorage()
         });
 
