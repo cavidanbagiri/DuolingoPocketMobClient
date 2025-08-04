@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 
 import AuthService from '../../services/AuthService';
@@ -10,36 +11,87 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
 
   const dispatch = useDispatch();
 
+  const { user } = useSelector((state) => state.authSlice);
+
+  // const languages = [
+  //   { name: 'Turkish', image: require('../../../assets/flags/turkish.png') },
+  //   { name: 'Russian', image: require('../../../assets/flags/russian.png') },
+  //   { name: 'English', image: require('../../../assets/flags/england.png') },
+  // ];
+
+
   const languages = [
-    { name: 'Turkish', image: require('../../../assets/flags/turkish.png') },
-    { name: 'Russian', image: require('../../../assets/flags/russian.png') },
-    { name: 'English', image: require('../../../assets/flags/england.png') },
+    { name: 'Turkish', image: require('../../../assets/flags/turkish.png'), code: 'tr' },
+    { name: 'Russian', image: require('../../../assets/flags/russian.png'), code: 'ru' },
+    { name: 'English', image: require('../../../assets/flags/england.png'), code: 'en' },
   ];
+
+  // Get selected target languages from user (from backend)
+  const selectedLangCodes = user?.target_langs || [];
+
+  // Filter out already selected languages
+  const filteredLanguages = languages.filter(
+    (lang) => !selectedLangCodes.includes(lang.code)
+  );
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Choose language for learning</Text>
 
       <View style={styles.flagsRow}>
-        {languages.map((lang) => (
-          <TouchableOpacity
-            key={lang.name}
-            onPress={() => {
-              setSelectedLanguage(lang.name);
-              dispatch(AuthService.setTargetLanguage({ target_language_code: lang.name }));
-            }}
-            style={[
-              styles.flagWrapper,
-              selectedLanguage === lang.name && styles.selectedFlag,
-            ]}
-          >
-            <Image source={lang.image} style={styles.flagImage} />
-            <Text style={styles.flagLabel}>{lang.name}</Text>
-          </TouchableOpacity>
-        ))}
+        {filteredLanguages.length === 0 ? (
+          <Text style={{ marginTop: 20, fontSize: 16 }}>You've already chosen all available languages 🎉</Text>
+        ) : (
+          filteredLanguages.map((lang) => (
+            <TouchableOpacity
+              key={lang.code}
+              onPress={() => {
+                setSelectedLanguage(lang.name);
+                dispatch(
+                  AuthService.setTargetLanguage({
+                    target_language_code: lang.code, // now sending 'tr', 'ru', 'en'
+                  })
+                );
+              }}
+              style={[
+                styles.flagWrapper,
+                selectedLanguage === lang.name && styles.selectedFlag,
+              ]}
+            >
+              <Image source={lang.image} style={styles.flagImage} />
+              <Text style={styles.flagLabel}>{lang.name}</Text>
+            </TouchableOpacity>
+          ))
+        )}
       </View>
     </View>
   );
+
+  // return (
+  //   <View style={styles.container}>
+  //     <Text style={styles.title}>Choose language for learning</Text>
+
+  //     <View style={styles.flagsRow}>
+  //       {languages.map((lang) => (
+
+  //         <TouchableOpacity
+  //           key={lang.name}
+  //           onPress={() => {
+  //             setSelectedLanguage(lang.name);
+  //             dispatch(AuthService.setTargetLanguage({ target_language_code: lang.name }));
+  //           }}
+  //           style={[
+  //             styles.flagWrapper,
+  //             selectedLanguage === lang.name && styles.selectedFlag,
+  //           ]}
+  //         >
+  //           <Image source={lang.image} style={styles.flagImage} />
+  //           <Text style={styles.flagLabel}>{lang.name}</Text>
+  //         </TouchableOpacity>
+  //       ))}
+  //     </View>
+  //   </View>
+  // );
 }
 
 const styles = StyleSheet.create({

@@ -6,10 +6,16 @@ import { ScrollView, StyleSheet, Text, View, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getFromStorage } from '../utils/storage';
 
+import MsgBox from '../components/layouts/MsgBox';
 import DropdownNativeLangComponent from '../components/home/DropdownNativeLangComponent';
 import ChooseLangComponent from '../components/home/ChooseLangComponent';
 
+import { setNewTargetLanguageCondFalse } from '../store/auth_store';
+
 export default function HomeScreen() {
+
+  const dispatch = useDispatch();
+
   const [username, setUsername] = useState('');
   const [native, setNative] = useState('');
   const [nativeLanguage, setNativeLanguage] = useState('');
@@ -17,6 +23,13 @@ export default function HomeScreen() {
 
   const is_auth = useSelector((state) => state.authSlice.is_auth);
   const native_lang = useSelector((state) => state.authSlice.native_lang);
+  const new_target_lang_cond = useSelector((state) => state.authSlice.new_target_lang_cond);
+
+  useEffect(() => {
+    setTimeout(() => {
+      dispatch(setNewTargetLanguageCondFalse());
+    }, 1000);
+  }, [new_target_lang_cond]);
 
 
   useEffect(() => {
@@ -49,19 +62,19 @@ export default function HomeScreen() {
     loadNativeLanguage();
   }, [native_lang]);
 
-  useEffect(() => {
-    const test = async () => {
-      console.log('..........................................................');
-      const storedNativeLanguage = await getFromStorage('native');
-      const storedUsername = await getFromStorage('username');
-      const storedTargetLang = await getFromStorage('target');
-      console.log('lang is {}', storedNativeLanguage);
-      console.log('user is {}', storedUsername);
-      console.log('target is {}', storedTargetLang);
-      console.log('..........................................................');
-    }
-    test();
-  }, );
+  // useEffect(() => {
+  //   const test = async () => {
+  //     console.log('..........................................................');
+  //     const storedNativeLanguage = await getFromStorage('native');
+  //     const storedUsername = await getFromStorage('username');
+  //     const storedTargetLang = await getFromStorage('target');
+  //     console.log('lang is {}', storedNativeLanguage);
+  //     console.log('user is {}', storedUsername);
+  //     console.log('target is {}', storedTargetLang);
+  //     console.log('..........................................................');
+  //   }
+  //   test();
+  // }, );
   
 
 
@@ -71,6 +84,15 @@ export default function HomeScreen() {
         <Text style={styles.title_text}>
           {username ? `Hi, ${username}!` : 'Hi, There!'}
         </Text>
+
+        {
+          new_target_lang_cond.is_cond &&
+          <MsgBox
+            message={new_target_lang_cond.msg}
+            visible={new_target_lang_cond.is_cond}
+            type="error"
+          />
+        }
 
         <Image
           source={require('../../assets/HomeImage.png')}

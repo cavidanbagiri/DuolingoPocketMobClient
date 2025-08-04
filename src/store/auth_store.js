@@ -11,6 +11,7 @@ const initialState = {
     user: {
         email: 'unknown',
         username: '',
+        target_langs: [],
     },
     login_message: '',
     login_pending: false,
@@ -19,6 +20,10 @@ const initialState = {
     choosen_lang: '', // New Added
     is_login_error: false,
     login_success: false,
+    new_target_lang_cond:{
+        is_cond: false,
+        msg: '',
+    },
 }
 
 export const authSlice = createSlice({
@@ -42,6 +47,10 @@ export const authSlice = createSlice({
         },
         setIsLoginSuccessFalse: (state) => {
             state.login_success = false;
+        },
+        setNewTargetLanguageCondFalse: (state, action) => { 
+            state.new_target_lang_cond.is_cond = false;
+            state.new_target_lang_cond.msg = '';
         },
     },
     extraReducers: (builder) => {
@@ -75,6 +84,7 @@ export const authSlice = createSlice({
             state.user = action.payload;
             state.login_success = true;
             state.login_message = 'Successfully logged in';
+            state.user.target_langs = action.payload?.payload?.user?.learning_targets;
             saveToStorage('token', action.payload?.payload?.access_token);
             saveToStorage('sub', action.payload?.payload?.user?.sub);  
             saveToStorage('username', action.payload?.payload?.user?.username); 
@@ -127,7 +137,6 @@ export const authSlice = createSlice({
 
         // UserService setNativeLanguage
         builder.addCase(AuthService.setNativeLanguage.fulfilled, (state, action) => {
-            console.log('action is ', action.payload);
             state.native_lang = action.payload?.payload?.native
             saveToStorage('native', action.payload?.payload?.native); 
 
@@ -140,6 +149,8 @@ export const authSlice = createSlice({
         builder.addCase(AuthService.setTargetLanguage.fulfilled, (state, action) => {
             state.choosen_lang = action.payload?.payload?.target_language_code
             saveToStorage('target', action.payload?.payload?.target_language_code); 
+            state.new_target_lang_cond.is_cond = true;
+            state.new_target_lang_cond.msg = action.payload?.payload?.msg;
 
         });
         builder.addCase(AuthService.setTargetLanguage.rejected, (state, action) => {
@@ -149,6 +160,6 @@ export const authSlice = createSlice({
     },
 });
 
-export const { setUser, setLoginPending, setIsAuth, setIsLoginErrorTrue, setIsLoginErrorFalse, setIsLoginSuccessFalse } = authSlice.actions;
+export const { setUser, setLoginPending, setIsAuth, setIsLoginErrorTrue, setIsLoginErrorFalse, setIsLoginSuccessFalse, setNewTargetLanguageCondFalse } = authSlice.actions;
 
 export default authSlice.reducer;
