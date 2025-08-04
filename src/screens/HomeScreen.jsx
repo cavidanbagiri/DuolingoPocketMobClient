@@ -6,10 +6,18 @@ import { ScrollView, StyleSheet, Text, View, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getFromStorage } from '../utils/storage';
 
+import DropdownNativeLangComponent from '../components/home/DropdownNativeLangComponent';
+import ChooseLangComponent from '../components/home/ChooseLangComponent';
+
 export default function HomeScreen() {
   const [username, setUsername] = useState('');
+  const [native, setNative] = useState('');
+  const [nativeLanguage, setNativeLanguage] = useState('');
+  const [choosenLanguage, setChoosenLanguage] = useState('');
 
   const is_auth = useSelector((state) => state.authSlice.is_auth);
+  const native_lang = useSelector((state) => state.authSlice.native_lang);
+
 
   useEffect(() => {
     const loadUsername = async () => {
@@ -23,6 +31,40 @@ export default function HomeScreen() {
     loadUsername();
   }, [is_auth]);
 
+
+  useEffect(() => {
+    const loadNativeLanguage = async () => {
+      const storedNativeLanguage = await getFromStorage('native');
+      const storedUsername = await getFromStorage('username');
+      const storedTargetLang = await getFromStorage('target');
+      if (is_auth === false) {
+        setNativeLanguage('');
+        storedNativeLanguage = '';
+      }
+      setNative(storedNativeLanguage);
+      console.log('lang is {}', storedNativeLanguage);
+      console.log('user is {}', storedUsername);
+      console.log('target is {}', storedTargetLang);
+    };
+    loadNativeLanguage();
+  }, [native_lang]);
+
+  useEffect(() => {
+    const test = async () => {
+      console.log('..........................................................');
+      const storedNativeLanguage = await getFromStorage('native');
+      const storedUsername = await getFromStorage('username');
+      const storedTargetLang = await getFromStorage('target');
+      console.log('lang is {}', storedNativeLanguage);
+      console.log('user is {}', storedUsername);
+      console.log('target is {}', storedTargetLang);
+      console.log('..........................................................');
+    }
+    test();
+  }, );
+  
+
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.scroll}>
@@ -35,6 +77,33 @@ export default function HomeScreen() {
           style={styles.image}
           resizeMode="contain"
         />
+
+        {/* Wrapper View with proper width */}
+        <View style={styles.dropdownMainWrapper}>
+
+          {
+            native === '' && is_auth === true &&
+            <View style={styles.dropdownWrapper}>
+              <DropdownNativeLangComponent
+                selectedLanguage={nativeLanguage}
+                setSelectedLanguage={setNativeLanguage}
+              />
+            </View>
+          }
+
+          {
+           is_auth === true &&
+            <View>
+              <ChooseLangComponent
+                selectedLanguage={choosenLanguage}
+                setSelectedLanguage={setChoosenLanguage}
+              />
+            </View>
+          }
+
+        </View>
+
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -59,69 +128,15 @@ const styles = StyleSheet.create({
     height: 250,
     borderRadius: 12,
   },
+  dropdownMainWrapper: {
+    width: '100%',
+    // flexDirection: 'row',
+    // justifyContent: 'space-between',
+    // gap: 10, // optional (if React Native version supports it)
+    marginBottom: 20,
+  },
+  dropdownWrapper: {
+  flex: 1, // each takes half width
+},
 });
 
-
-
-// import React, { use } from 'react';
-
-// import { useState, useEffect } from 'react';
-
-// import { ScrollView, StyleSheet, Text, View, Image } from 'react-native';
-
-// import { SafeAreaView } from 'react-native-safe-area-context';
-// import { getFromStorage } from '../utils/storage';
-
-// export default function HomeScreen() {
-
-//   const [username, setUsername] = useState('');
-
-//   useEffect(() => {
-//     const username = getFromStorage('username');
-//     setUsername(username);
-//   }, []);
-
-//   return (
-//     <SafeAreaView style={styles.container}>
-
-//       {/* Title and Username Section */}
-//       <View style={styles.container}>
-//         {
-//           username === '' ?
-//             <Text style={styles.title_text}>Hi, There!</Text>
-//             :
-//             <Text style={styles.title_text}>Hi, {username}!</Text>
-//         }
-//       </View>
-
-//       {/* Image Section */}
-//       <Image
-//           source={require('../../assets/HomeImage.png')}
-//           style={styles.image}
-//           resizeMode="contain"
-//         />
-
-//     </SafeAreaView>
-
-//   );
-// }
-
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     alignItems: 'flex-start',
-//     // backgroundColor: '#FFFFFF',
-//     backgroundColor: '#FF4F2F',
-//     padding: 10,
-//   },
-//   title_text: {
-//     fontSize: 32,
-//     fontFamily: 'Poppins-Bold',
-//   },
-//   image: {
-//     width: '100%',
-//     height: 250,
-//   },
-
-// });

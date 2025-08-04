@@ -17,8 +17,7 @@ class AuthService {
             try {
                 // const response = await $api.post('/auth/register', credentials);
                 const response = await axios.post('http://10.0.2.2:8000/api/auth/register', credentials);
-                console.log('response is {}', response);
-                
+
                 return {
                     payload: response.data,
                     status: response.status,
@@ -63,7 +62,7 @@ class AuthService {
     static refresh = createAsyncThunk(
         '/auth/refresh',
         async () => {
-            try{
+            try {
                 const response = await $api.post('/auth/refresh');
                 return {
                     payload: response.data,
@@ -84,31 +83,76 @@ class AuthService {
     )
 
     static userLogout = createAsyncThunk(
-       'http://10.0.2.2:8000/api/auth/logout',
-       async ()=>{
-        try{
-            console.log('here work')
-            const response = await $api.post('http://10.0.2.2:8000/api/auth/logout');
-            console.log('0-000000000000000000000000000')
-            console.log('response is {}', response.data);
-            console.log('0-000000000000000000000000000')
-            return {
-                payload: response.data,
-                status: response.status,
-            };
+        'http://10.0.2.2:8000/api/auth/logout',
+        async () => {
+            try {
+                const response = await $api.post('http://10.0.2.2:8000/api/auth/logout');
+                return {
+                    payload: response.data,
+                    status: response.status,
+                };
+            }
+            catch (error) {
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
+                // Pass custom error payload
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
+
         }
-        catch (error) {
-            const errorData = error.response?.data || { message: error.message };
-            const statusCode = error.response?.status || 500;
-            // Pass custom error payload
-            return thunkAPI.rejectWithValue({
-                payload: errorData,
-                status: statusCode,
-            });
-        }
-        
-       }
-   )
+    )
+
+    // Set Native Language
+    static setNativeLanguage = createAsyncThunk(
+        '/auth/setnative',
+        async (credentials, thunkAPI) => {
+            try {
+                const response = await $api.post('/auth/setnative', credentials);
+                return {
+                    payload: response.data,
+                    status: response.status,
+                };
+            } catch (error) {
+                // Extract error details
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
+
+                // Pass custom error payload
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
+        });
+
+    // Set Native Language
+    static setTargetLanguage = createAsyncThunk(
+        '/auth/choose_lang',
+        async (credentials, thunkAPI) => {
+            try {
+                const response = await $api.post('/auth/choose_lang', credentials);
+                console.log('coming response is {}1', response);
+                console.log('coming response is {}2', response.data);
+                return {
+                    payload: response.data,
+                    status: response.status,
+                };
+            } catch (error) {
+                // Extract error details
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
+
+                // Pass custom error payload
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
+        });
+
 
 }
 

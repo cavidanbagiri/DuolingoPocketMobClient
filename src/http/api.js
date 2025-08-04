@@ -3,7 +3,7 @@
 import axios from 'axios';
 import { getFromStorage } from '../utils/storage';
 
-export const API_URL = 'http://localhost:8000/api';
+export const API_URL = 'http://10.0.2.2:8000/api';
 
 const $api = axios.create({
   baseURL: API_URL,

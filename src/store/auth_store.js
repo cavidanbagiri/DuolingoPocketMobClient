@@ -15,6 +15,8 @@ const initialState = {
     login_message: '',
     login_pending: false,
     is_auth: false,
+    native_lang: '', // New Added
+    choosen_lang: '', // New Added
     is_login_error: false,
     login_success: false,
 }
@@ -54,9 +56,6 @@ export const authSlice = createSlice({
             state.user = action.payload;
             state.login_success = true;
             state.login_message = 'Successfully registered';
-            // saveToStorage('token', action.payload?.payload?.access_token);
-            // saveToStorage('sub', action.payload?.payload?.user?.sub);  
-            // saveToStorage('username', action.payload?.payload?.user?.username); 
         });
         builder.addCase(AuthService.register.rejected, (state, action) => {
             state.login_pending = false;
@@ -79,6 +78,13 @@ export const authSlice = createSlice({
             saveToStorage('token', action.payload?.payload?.access_token);
             saveToStorage('sub', action.payload?.payload?.user?.sub);  
             saveToStorage('username', action.payload?.payload?.user?.username); 
+            if (action.payload.payload.user.native === null) {
+                saveToStorage('native', '');
+            }
+            else {
+                saveToStorage('native', action.payload.payload.user.native);
+                state.native_lang = action.payload.payload.user.native
+            }
         });
         builder.addCase(AuthService.login.rejected, (state, action) => {
             state.login_pending = false;
@@ -96,6 +102,12 @@ export const authSlice = createSlice({
             saveToStorage('token', action.payload.payload.access_token);
             saveToStorage('sub', action.payload.payload.user.sub);
             saveToStorage('username', action.payload.payload.user.username);
+            if (action.payload.payload.user.native === null) {
+                saveToStorage('native', '');
+            }
+            else {
+                saveToStorage('native', action.payload.payload.user.native);
+            }
         });
         builder.addCase(AuthService.refresh.rejected, (state, action) => {
             console.log('refresh second', action.payload);
@@ -111,6 +123,27 @@ export const authSlice = createSlice({
             state.login_success = false, 
 
             clearStorage()
+        });
+
+        // UserService setNativeLanguage
+        builder.addCase(AuthService.setNativeLanguage.fulfilled, (state, action) => {
+            console.log('action is ', action.payload);
+            state.native_lang = action.payload?.payload?.native
+            saveToStorage('native', action.payload?.payload?.native); 
+
+        });
+        builder.addCase(AuthService.setNativeLanguage.rejected, (state, action) => {
+            console.log('refresh second', action.payload);
+        });
+
+        // UserService setChoosenLanguage
+        builder.addCase(AuthService.setTargetLanguage.fulfilled, (state, action) => {
+            state.choosen_lang = action.payload?.payload?.target_language_code
+            saveToStorage('target', action.payload?.payload?.target_language_code); 
+
+        });
+        builder.addCase(AuthService.setTargetLanguage.rejected, (state, action) => {
+            console.log('target rejected', action.payload);
         });
 
     },
