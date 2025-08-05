@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import HomeScreen from '../../screens/HomeScreen';
 import WordScreen from '../../screens/WordScreen';
+import LearnedScreen from '../../screens/LearnedScreen';
 import LoginRegisterScreen from '../../screens/LoginRegisterScreen';
 import ProfileScreen from '../../screens/ProfileScreen';
 
@@ -25,6 +26,7 @@ export default function TabNavigator() {
                     let iconName;
                     if (route.name === 'Home') iconName = 'home';
                     else if (route.name === 'Word') iconName = 'book';
+                    else if (route.name === 'Learned') iconName = 'book-open';
                     else if (route.name === 'Login/Register') iconName = 'log-in';
                     else if (route.name === 'Profile') iconName = 'person';
                     return <Ionicons name={iconName} size={size} color={color} />;
@@ -34,6 +36,7 @@ export default function TabNavigator() {
         >
             <Tab.Screen name="Home" component={HomeScreen} />
             <Tab.Screen name="Word" component={WordScreen} />
+            <Tab.Screen name="Learned" component={LearnedScreen} />
             {!is_auth ? (
                 <Tab.Screen name="Login/Register">
                     {() => <LoginRegisterScreen onLogin={() => {

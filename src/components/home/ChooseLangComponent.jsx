@@ -1,18 +1,26 @@
 
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 
-import AuthService from '../../services/AuthService';
-import { useDispatch } from 'react-redux';
+import { useEffect, useState } from 'react';
+import * as SecureStore from 'expo-secure-store';
+import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import AuthService from '../../services/AuthService'; // adjust if needed
+// import styles from './ChooseLangStyles'; // or wherever your styles are
 
 export default function ChooseLangComponent({ selectedLanguage, setSelectedLanguage }) {
-
-
   const dispatch = useDispatch();
-
   const { user, new_target_lang_cond } = useSelector((state) => state.authSlice);
 
+  const [nativeLangCode, setNativeLangCode] = useState(null);
+
+  // Step 1: Read native lang code from SecureStore
+  useEffect(() => {
+    const getNativeLang = async () => {
+      const native = await SecureStore.getItemAsync('native');
+      setNativeLangCode(native); // should be like 'en', 'tr', 'ru'
+    };
+    getNativeLang();
+  }, []);
 
   const languages = [
     { name: 'Turkish', image: require('../../../assets/flags/turkish.png'), code: 'tr' },
@@ -20,20 +28,13 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
     { name: 'English', image: require('../../../assets/flags/england.png'), code: 'en' },
   ];
 
-  // Get selected target languages from user (from backend)
   const selectedLangCodes = user?.target_langs || [];
 
-
-  // const selectedLangCodes = [
-  //   ...(user?.target_langs || []),
-  //   new_target_lang_cond?.res,
-  // ].filter(Boolean); // remove null/undefined
-
-
-
-  // Filter out already selected languages
+  // ✅ Filter out already selected languages and native language
   const filteredLanguages = languages.filter(
-    (lang) => !selectedLangCodes.includes(lang.code)
+    (lang) =>
+      !selectedLangCodes.includes(lang.code) &&
+      lang.code !== nativeLangCode
   );
 
   return (
@@ -42,9 +43,10 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
 
       <View style={styles.flagsRow}>
         {filteredLanguages.length === 0 ? (
-          <Text style={{ marginTop: 20, fontSize: 16 }}>You've already chosen all available languages 🎉</Text>
-        ) 
-        : (
+          <Text style={{ marginTop: 20, fontSize: 16 }}>
+            You've already chosen all available languages 🎉
+          </Text>
+        ) : (
           filteredLanguages.map((lang) => (
             <TouchableOpacity
               key={lang.code}
@@ -52,7 +54,7 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
                 setSelectedLanguage(lang.name);
                 dispatch(
                   AuthService.setTargetLanguage({
-                    target_language_code: lang.code, // now sending 'tr', 'ru', 'en'
+                    target_language_code: lang.code,
                   })
                 );
               }}
@@ -69,8 +71,76 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
       </View>
     </View>
   );
-
 }
+
+
+
+
+// import React from 'react';
+// import { useSelector } from 'react-redux';
+// import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+
+// import AuthService from '../../services/AuthService';
+// import { useDispatch } from 'react-redux';
+
+// export default function ChooseLangComponent({ selectedLanguage, setSelectedLanguage }) {
+
+
+//   const dispatch = useDispatch();
+
+//   const { user, new_target_lang_cond } = useSelector((state) => state.authSlice);
+
+
+//   const languages = [
+//     { name: 'Turkish', image: require('../../../assets/flags/turkish.png'), code: 'tr' },
+//     { name: 'Russian', image: require('../../../assets/flags/russian.png'), code: 'ru' },
+//     { name: 'English', image: require('../../../assets/flags/england.png'), code: 'en' },
+//   ];
+
+//   // Get selected target languages from user (from backend)
+//   const selectedLangCodes = user?.target_langs || [];
+
+
+//   // Filter out already selected languages
+//   const filteredLanguages = languages.filter(
+//     (lang) => !selectedLangCodes.includes(lang.code)
+//   );
+
+//   return (
+//     <View style={styles.container}>
+//       <Text style={styles.title}>Choose language for learning</Text>
+
+//       <View style={styles.flagsRow}>
+//         {filteredLanguages.length === 0 ? (
+//           <Text style={{ marginTop: 20, fontSize: 16 }}>You've already chosen all available languages 🎉</Text>
+//         ) 
+//         : (
+//           filteredLanguages.map((lang) => (
+//             <TouchableOpacity
+//               key={lang.code}
+//               onPress={() => {
+//                 setSelectedLanguage(lang.name);
+//                 dispatch(
+//                   AuthService.setTargetLanguage({
+//                     target_language_code: lang.code, // now sending 'tr', 'ru', 'en'
+//                   })
+//                 );
+//               }}
+//               style={[
+//                 styles.flagWrapper,
+//                 selectedLanguage === lang.name && styles.selectedFlag,
+//               ]}
+//             >
+//               <Image source={lang.image} style={styles.flagImage} />
+//               <Text style={styles.flagLabel}>{lang.name}</Text>
+//             </TouchableOpacity>
+//           ))
+//         )}
+//       </View>
+//     </View>
+//   );
+
+// }
 
 const styles = StyleSheet.create({
   container: {

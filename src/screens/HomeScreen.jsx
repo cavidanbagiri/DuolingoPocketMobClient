@@ -56,27 +56,9 @@ export default function HomeScreen() {
         storedNativeLanguage = '';
       }
       setNative(storedNativeLanguage);
-      console.log('lang is {}', storedNativeLanguage);
-      console.log('user is {}', storedUsername);
-      console.log('target is {}', storedTargetLang);
     };
     loadNativeLanguage();
   }, [native_lang]);
-
-  // useEffect(() => {
-  //   const test = async () => {
-  //     console.log('..........................................................');
-  //     const storedNativeLanguage = await getFromStorage('native');
-  //     const storedUsername = await getFromStorage('username');
-  //     const storedTargetLang = await getFromStorage('target');
-  //     console.log('lang is {}', storedNativeLanguage);
-  //     console.log('user is {}', storedUsername);
-  //     console.log('target is {}', storedTargetLang);
-  //     console.log('..........................................................');
-  //   }
-  //   test();
-  // }, );
-  
 
 
   return (
@@ -132,7 +114,6 @@ export default function HomeScreen() {
           }
 
         </View>
-
 
       </ScrollView>
     </SafeAreaView>
