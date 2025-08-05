@@ -11,13 +11,7 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
 
   const dispatch = useDispatch();
 
-  const { user } = useSelector((state) => state.authSlice);
-
-  // const languages = [
-  //   { name: 'Turkish', image: require('../../../assets/flags/turkish.png') },
-  //   { name: 'Russian', image: require('../../../assets/flags/russian.png') },
-  //   { name: 'English', image: require('../../../assets/flags/england.png') },
-  // ];
+  const { user, new_target_lang_cond } = useSelector((state) => state.authSlice);
 
 
   const languages = [
@@ -28,6 +22,14 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
 
   // Get selected target languages from user (from backend)
   const selectedLangCodes = user?.target_langs || [];
+
+
+  // const selectedLangCodes = [
+  //   ...(user?.target_langs || []),
+  //   new_target_lang_cond?.res,
+  // ].filter(Boolean); // remove null/undefined
+
+
 
   // Filter out already selected languages
   const filteredLanguages = languages.filter(
@@ -41,7 +43,8 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
       <View style={styles.flagsRow}>
         {filteredLanguages.length === 0 ? (
           <Text style={{ marginTop: 20, fontSize: 16 }}>You've already chosen all available languages 🎉</Text>
-        ) : (
+        ) 
+        : (
           filteredLanguages.map((lang) => (
             <TouchableOpacity
               key={lang.code}
@@ -67,31 +70,6 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
     </View>
   );
 
-  // return (
-  //   <View style={styles.container}>
-  //     <Text style={styles.title}>Choose language for learning</Text>
-
-  //     <View style={styles.flagsRow}>
-  //       {languages.map((lang) => (
-
-  //         <TouchableOpacity
-  //           key={lang.name}
-  //           onPress={() => {
-  //             setSelectedLanguage(lang.name);
-  //             dispatch(AuthService.setTargetLanguage({ target_language_code: lang.name }));
-  //           }}
-  //           style={[
-  //             styles.flagWrapper,
-  //             selectedLanguage === lang.name && styles.selectedFlag,
-  //           ]}
-  //         >
-  //           <Image source={lang.image} style={styles.flagImage} />
-  //           <Text style={styles.flagLabel}>{lang.name}</Text>
-  //         </TouchableOpacity>
-  //       ))}
-  //     </View>
-  //   </View>
-  // );
 }
 
 const styles = StyleSheet.create({

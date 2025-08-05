@@ -11,6 +11,7 @@ import DropdownNativeLangComponent from '../components/home/DropdownNativeLangCo
 import ChooseLangComponent from '../components/home/ChooseLangComponent';
 
 import { setNewTargetLanguageCondFalse } from '../store/auth_store';
+import SelectedLanguagesBox from '../components/home/SelectedLanguagesComponents';
 
 export default function HomeScreen() {
 
@@ -120,6 +121,13 @@ export default function HomeScreen() {
                 selectedLanguage={choosenLanguage}
                 setSelectedLanguage={setChoosenLanguage}
               />
+            </View>
+          }
+
+          {
+           is_auth === true &&
+            <View>
+              <SelectedLanguagesBox/>
             </View>
           }
 
