@@ -4,19 +4,24 @@ import { useEffect, useState } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import AuthService from '../../services/AuthService'; // adjust if needed
-// import styles from './ChooseLangStyles'; // or wherever your styles are
+import AuthService from '../../services/AuthService'; 
+
+
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 
 export default function ChooseLangComponent({ selectedLanguage, setSelectedLanguage }) {
+
   const dispatch = useDispatch();
+
   const { user, new_target_lang_cond } = useSelector((state) => state.authSlice);
 
   const [nativeLangCode, setNativeLangCode] = useState(null);
 
-  // Step 1: Read native lang code from SecureStore
   useEffect(() => {
     const getNativeLang = async () => {
       const native = await SecureStore.getItemAsync('native');
+      console.log('native is {}', native);
       setNativeLangCode(native); // should be like 'en', 'tr', 'ru'
     };
     getNativeLang();
@@ -34,19 +39,21 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
   const filteredLanguages = languages.filter(
     (lang) =>
       !selectedLangCodes.includes(lang.code) &&
-      lang.code !== nativeLangCode
+      lang.name !== nativeLangCode
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Choose language for learning</Text>
+
+      {
+        filteredLanguages.length !== 0 &&
+        <Text style={styles.title}>Choose language for learning</Text>
+      }
 
       <View style={styles.flagsRow}>
-        {filteredLanguages.length === 0 ? (
-          <Text style={{ marginTop: 20, fontSize: 16 }}>
-            You've already chosen all available languages 🎉
-          </Text>
-        ) : (
+        {filteredLanguages.length !== 0 &&
+        
+        (
           filteredLanguages.map((lang) => (
             <TouchableOpacity
               key={lang.code}

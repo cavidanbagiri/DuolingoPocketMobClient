@@ -41,7 +41,6 @@ class AuthService {
             try {
                 const response = await $api.post('http://10.0.2.2:8000/api/auth/login', credentials);
                 // Return data on success
-                console.log('response is {}', response.data);
                 return {
                     payload: response.data,
                     status: response.status,

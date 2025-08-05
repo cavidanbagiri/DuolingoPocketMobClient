@@ -148,11 +148,9 @@ export const authSlice = createSlice({
 
         // UserService setChoosenLanguage
         builder.addCase(AuthService.setTargetLanguage.fulfilled, (state, action) => {
-            // saveToStorage('target', action.payload?.payload?.target_language_code); 
             state.choosen_lang = action.payload?.payload?.target_language_code
             state.new_target_lang_cond.is_cond = true;
             state.new_target_lang_cond.msg = action.payload?.payload?.msg;
-            // state.user.target_langs.push(action.payload?.payload?.target_language_code);
             state.user.target_langs = [...state.user.target_langs, action.payload?.payload?.target_language_code];
             state.new_target_lang_cond.res = action.payload?.payload?.target_language_code;
 

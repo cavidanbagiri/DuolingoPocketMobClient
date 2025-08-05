@@ -48,7 +48,6 @@ export default function HomeScreen() {
 
   useEffect(() => {
     const loadNativeLanguage = async () => {
-      console.log('here work')
       const storedNativeLanguage = await getFromStorage('native');
       if (is_auth === false) {
         setNativeLanguage('');
@@ -82,9 +81,6 @@ export default function HomeScreen() {
           resizeMode="contain"
         />
 
-        <Text>
-          {native}
-        </Text>
 
         {/* Wrapper View with proper width */}
         <View style={styles.dropdownMainWrapper}>
