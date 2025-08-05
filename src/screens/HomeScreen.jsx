@@ -48,9 +48,8 @@ export default function HomeScreen() {
 
   useEffect(() => {
     const loadNativeLanguage = async () => {
+      console.log('here work')
       const storedNativeLanguage = await getFromStorage('native');
-      const storedUsername = await getFromStorage('username');
-      const storedTargetLang = await getFromStorage('target');
       if (is_auth === false) {
         setNativeLanguage('');
         storedNativeLanguage = '';
@@ -58,7 +57,7 @@ export default function HomeScreen() {
       setNative(storedNativeLanguage);
     };
     loadNativeLanguage();
-  }, [native_lang]);
+  }, [native_lang, is_auth]);
 
 
   return (
@@ -82,6 +81,10 @@ export default function HomeScreen() {
           style={styles.image}
           resizeMode="contain"
         />
+
+        <Text>
+          {native}
+        </Text>
 
         {/* Wrapper View with proper width */}
         <View style={styles.dropdownMainWrapper}>

@@ -24,7 +24,7 @@ export const clearStorage = async () => {
     await SecureStore.deleteItemAsync('sub');
     await SecureStore.deleteItemAsync('username');
     await SecureStore.deleteItemAsync('native');
-    await SecureStore.deleteItemAsync('target');
+    // await SecureStore.deleteItemAsync('target');
   } catch (err) {
     console.error('Failed to clear storage:', err);
   }
