@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; // Make sure this is installed
@@ -13,16 +13,14 @@ const FilterComponent = () => {
 
     const [filter, setFilter] = useState('all'); // 'all' or 'starred'
 
-    const handleFetch = () => {
-        dispatch(WordService.fetchWords({ filter }));
+    const toggleFilter = () => {
+        setFilter(prev => prev === 'all' ? 'starred' : 'all');
     };
 
-    const toggleFilter = () => {
-        const newFilter = filter === 'all' ? 'starred' : 'all';
-        setFilter(newFilter);
-        console.log('.............new filter is ', filter);
+    useEffect(() => {
         dispatch(WordService.fetchWords({ filter }));
-    };
+    }, [filter]);
+
 
     return (
         <View style={styles.container}>
