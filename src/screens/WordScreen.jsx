@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import WordService from '../services/WordService.js';
 
 import VocabCard from '../components/cards/VocabCard';
+import FilterComponent from '../components/wordscreen/FilterComponent.jsx';
 
 
 export default function WordScreen() {
@@ -17,7 +18,7 @@ export default function WordScreen() {
 
     const dispatch = useDispatch();
 
-    const {is_auth} = useSelector((state) => state.authSlice);
+    const { is_auth } = useSelector((state) => state.authSlice);
 
     const { words, words_pending, is_words_error, is_words_success } = useSelector((state) => state.wordSlice);
 
@@ -32,20 +33,17 @@ export default function WordScreen() {
 
         <SafeAreaView>
 
+            <FilterComponent />
 
             <ScrollView contentContainerStyle={styles.container}>
-
-                <TouchableOpacity onPress={() => dispatch(WordService.fetchWords())}>
-                    <Text>Fetch Words</Text>
-                </TouchableOpacity>
 
                 {
                     words_pending &&
                     <Text>Fetching Words</Text>
                 }
                 {
-                    words.map(( word, index) => (
-                        <VocabCard word={word}  key={index} />
+                    words.map((word, index) => (
+                        <VocabCard word={word} key={index} />
                     ))
                 }
 

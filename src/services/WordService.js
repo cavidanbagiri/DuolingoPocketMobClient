@@ -7,11 +7,24 @@ class WordService {
 
     static fetchWords = createAsyncThunk(
         '/words/fetch_words',
-        async (thunkAPI) => {
+        async ({ filter = 'all' } = {}, thunkAPI) => {
             try {
-                console.log('this function is working')
-                const response = await $api.get(`/words/fetch_words`);
-                console.log('coming data is {}', response.data);
+                let starred = false;
+
+                if (filter === 'starred') {
+                    starred = true;
+                }
+                console.log('////////////filter is ', filter);
+                console.log('////////////this function is working and ', starred )
+                const response = await $api.get(`/words/fetch_words`,
+                    { 
+                        params: 
+                        { 
+                            only_starred: starred
+                        } 
+                    }
+                );
+                // console.log('coming data is {}', response.data);
                 return {
                     payload: response.data,
                     status: response.status,

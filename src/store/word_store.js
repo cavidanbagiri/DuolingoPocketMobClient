@@ -29,7 +29,6 @@ export const wordSlice = createSlice({
         })
         builder.addCase(WordService.fetchWords.fulfilled, (state, action) => {
             state.words_pending = false;
-            console.log('coming words from action payload is {action.payload} ', action.payload);
             state.words = action.payload.payload.data[0]['en'];
             state.is_words_success = true;
         });
