@@ -1,6 +1,6 @@
 
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -25,7 +25,6 @@ export default function VocabCard({ word }) {
                 action: actionType,
             })).unwrap();
 
-            // Update local state from backend
             setIsStarred(res.is_starred);
             setIsLearned(res.is_learned);
 
@@ -33,6 +32,11 @@ export default function VocabCard({ word }) {
             console.error('Failed to update status:', error);
         }
     };
+
+    useEffect(() => {
+        setIsStarred(word.is_starred);
+        setIsLearned(word.is_learned);
+    }, [word.id, word.is_starred, word.is_learned]);
 
 
     return (
@@ -59,8 +63,6 @@ export default function VocabCard({ word }) {
                 <View style={styles.iconGroup}>
                     <TouchableOpacity onPress={() => {
                         handleToggle('star');
-                        // dispatch(WordService.setStatus({ word_id: word.id, 'action': 'star' }));
-                        // setIsStarred(!isStarred);
                     }}>
                         <Ionicons
                             name={isStarred ? 'star' : 'star-outline'}
@@ -71,8 +73,6 @@ export default function VocabCard({ word }) {
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => {
                         handleToggle('learned');
-                        // dispatch(WordService.setStatus({ word_id: word.id, 'action': 'learned' }));
-                        // setIsLearned(!isLearned);
                     }}>
                         <Ionicons
                             name={isLearned ? 'checkmark-circle' : 'checkmark-circle-outline'}

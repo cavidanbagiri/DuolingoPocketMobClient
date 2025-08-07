@@ -7,9 +7,11 @@ class WordService {
 
     static fetchWords = createAsyncThunk(
         '/words/fetch_words',
-        async (word, thunkAPI) => {
+        async (thunkAPI) => {
             try {
+                console.log('this function is working')
                 const response = await $api.get(`/words/fetch_words`);
+                console.log('coming data is {}', response.data);
                 return {
                     payload: response.data,
                     status: response.status,
@@ -33,10 +35,6 @@ class WordService {
         async (data, thunkAPI) => {
             try {
                 const response = await $api.post(`/words/setstatus`, data);
-                // return {
-                //     payload: response.data,
-                //     status: response.status,
-                // };
                 return response.data;
             } catch (error) {
                 // Extract error details

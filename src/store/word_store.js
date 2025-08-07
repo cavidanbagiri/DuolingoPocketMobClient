@@ -13,20 +13,13 @@ const initialState = {
     is_words_error: false,
     is_words_success: false,
 
-    // word_status:{
-    //     status: null,
-    //     word_id: null,
-    //     action: null,
-    //     is_learned: false,
-    //     is_starred: false,
-    // }
 }
 
 export const wordSlice = createSlice({
     name: 'words',
     initialState,
     reducers: {
-        
+
     },
     extraReducers: (builder) => {
 
@@ -36,6 +29,7 @@ export const wordSlice = createSlice({
         })
         builder.addCase(WordService.fetchWords.fulfilled, (state, action) => {
             state.words_pending = false;
+            console.log('coming words from action payload is {action.payload} ', action.payload);
             state.words = action.payload.payload.data[0]['en'];
             state.is_words_success = true;
         });
@@ -46,11 +40,26 @@ export const wordSlice = createSlice({
 
         // WordService setStatus
         builder.addCase(WordService.setStatus.fulfilled, (state, action) => {
-            // state.word_status.status = action.payload.status;
-            // state.word_status.word_id = action.payload.word_id;
-            // state.word_status.action = action.payload.action;
-            // state.word_status.is_learned = action.payload.is_learned;
-            // state.word_status.is_starred = action.payload.is_starred;
+            // console.log('action payload is {action.payload} ', action.payload);
+            // if (action.payload.action === 'learned') {
+            //     state.words.forEach((word, index) => {
+            //         if (word.id === action.payload.word_id) {
+            //             state.words[index].is_learned = action.payload.is_learned;
+            //         }
+            //     });
+            // }
+            // const { word_id, is_learned, action: actionType } = action.payload;
+
+            // if (actionType === 'learned') {
+            //     // If word is now learned, remove it from the list
+            //     if (is_learned) {
+            //         state.words = state.words.filter(word => word.id !== word_id);
+            //     } else {
+            //         // If un-learned (toggled back), update it in place
+            //         const word = state.words.find(word => word.id === word_id);
+            //         if (word) word.is_learned = false;
+            //     }
+            // }
         });
         builder.addCase(WordService.setStatus.rejected, (state, action) => {
             console.log('status apyload error is ', action.payload);
@@ -60,6 +69,6 @@ export const wordSlice = createSlice({
     },
 })
 
-export const {  } = wordSlice.actions;
+export const { } = wordSlice.actions;
 
 export default wordSlice.reducer;

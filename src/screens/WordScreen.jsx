@@ -46,7 +46,6 @@ export default function WordScreen() {
                 {
                     words.map(( word, index) => (
                         <VocabCard word={word}  key={index} />
-                        // <Text key={index}>{word.text}</Text>
                     ))
                 }
 

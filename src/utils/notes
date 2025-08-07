@@ -1,3 +1,4 @@
 1 - Need to add confirm password and add to register - Stopped
-6 - After registering error happen for logout. Need to fix - Stopped
-7 - Need to add change existing code, that, if one language selected, dont show that lang also dont show native lang. 
+2 - After registering error happen for logout. Need to fix - Stopped
+3 - After starred and learned word, maybe need to delete from user_words table - Stopped
+4 - Maybe dont need to hide the starred words, l am not sure - Stopped
