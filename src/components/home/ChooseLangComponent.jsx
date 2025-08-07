@@ -47,15 +47,16 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
 
       {
         filteredLanguages.length !== 0 &&
-        <Text style={styles.title}>Choose language for learning</Text>
+        <Text className='text-xl font-medium my-5 w-full'>Which language do you want to learn?</Text>
       }
 
-      <View style={styles.flagsRow}>
+      <View className='flex flex-row justify-around w-full'> 
         {filteredLanguages.length !== 0 &&
         
         (
           filteredLanguages.map((lang) => (
             <TouchableOpacity
+              className='flex flex-col items-center justify-center p-2 rounded-lg border border-gray-300'
               key={lang.code}
               onPress={() => {
                 setSelectedLanguage(lang.name);
@@ -66,7 +67,6 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
                 );
               }}
               style={[
-                styles.flagWrapper,
                 selectedLanguage === lang.name && styles.selectedFlag,
               ]}
             >

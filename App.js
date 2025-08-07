@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 
 import { useFonts } from 'expo-font';
@@ -7,8 +7,9 @@ import { useFonts } from 'expo-font';
 import { Provider } from 'react-redux';
 import store from './src/store';
 
+import "./global.css";
 
-import TabNavigator from './src/components/layouts/TabNavigator';
+
 import MainStack from './src/components/layouts/MainStack';
 
 
@@ -29,5 +30,6 @@ export default function App() {
           <MainStack />
         </NavigationContainer>
       </Provider>
+    
   );
 }

@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; // Make sure this is installed
+import Fontisto from '@expo/vector-icons/Fontisto';
+import Feather from '@expo/vector-icons/Feather';
+
 
 import WordService from '../../services/WordService';
 
@@ -21,29 +24,33 @@ const FilterComponent = () => {
         dispatch(WordService.fetchWords({ filter }));
     }, [filter]);
 
-
     return (
-        <View style={styles.container}>
+        <View className='flex flex-col px-10 py-5 '>
             
-            {/* For Fetch BTN */}
-            <View>
-                <TouchableOpacity style={styles.button} onPress={() => dispatch(WordService.fetchWords())}>
-                    <Ionicons name="refresh" size={20} color="#1f2937" style={styles.icon} />
+            <View className='flex flex-row justify-between'>
+                
+                {/* For starred words */}
+                <TouchableOpacity className='flex flex-row  justify-center items-center'
+                onPress={toggleFilter}>
+                    <Ionicons
+                        name={filter === 'starred' ? 'star' : 'star-outline'}
+                        size={20}
+                        color={filter === 'starred' ? '#facc15' : '#6b7280'}
+                        style={styles.icon}
+                    />
+                    <Text className='text-xl text-gray-800 font-medium'>
+                        {filter === 'starred' ? 'Starred' : 'All'}
+                    </Text>
                 </TouchableOpacity>
+
+                {/* For Fetch BTN */}
+                <TouchableOpacity className=' p-1'
+                 onPress={() => dispatch(WordService.fetchWords())}>
+                    <Feather name="refresh-ccw" size={24} color="black" />
+                </TouchableOpacity>
+
             </View>
 
-            {/* For starred words */}
-            <TouchableOpacity style={styles.toggleButton} onPress={toggleFilter}>
-                <Ionicons
-                    name={filter === 'starred' ? 'star' : 'star-outline'}
-                    size={18}
-                    color={filter === 'starred' ? '#facc15' : '#6b7280'}
-                    style={styles.icon}
-                />
-                <Text style={styles.text}>
-                    {filter === 'starred' ? 'Starred' : 'All'}
-                </Text>
-            </TouchableOpacity>
 
 
         </View>

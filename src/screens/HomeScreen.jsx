@@ -62,7 +62,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.scroll}>
-        <Text style={styles.title_text}>
+        <Text className='text-3xl font-bold text-center'>
           {username ? `Hi, ${username}!` : 'Hi, There!'}
         </Text>
 
@@ -75,11 +75,11 @@ export default function HomeScreen() {
           />
         }
 
-        <Image
+        {/* <Image
           source={require('../../assets/HomeImage.png')}
           style={styles.image}
           resizeMode="contain"
-        />
+        /> */}
 
 
         {/* Wrapper View with proper width */}

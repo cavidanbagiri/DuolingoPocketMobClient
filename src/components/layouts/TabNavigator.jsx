@@ -5,6 +5,11 @@ import { useSelector } from 'react-redux';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
+import AntDesign from '@expo/vector-icons/AntDesign';
+import Feather from '@expo/vector-icons/Feather';
+
+
+
 
 import HomeScreen from '../../screens/HomeScreen';
 import WordScreen from '../../screens/WordScreen';
@@ -24,11 +29,20 @@ export default function TabNavigator() {
             screenOptions={({ route }) => ({
                 tabBarIcon: ({ color, size }) => {
                     let iconName;
-                    if (route.name === 'Home') iconName = 'home';
-                    else if (route.name === 'Word') iconName = 'book';
-                    else if (route.name === 'Learned') iconName = 'book-open';
-                    else if (route.name === 'Login/Register') iconName = 'log-in';
-                    else if (route.name === 'Profile') iconName = 'person';
+                    if (route.name === 'Home'){
+                        return <AntDesign name="home" size={26} color="black" />
+                    }
+                    // else if (route.name === 'Word') iconName = 'book';
+                    else if (route.name === 'Word') {
+                        return <Ionicons name="book-outline" size={26} color="black" />
+                    }
+                    else if (route.name === 'Learned') {
+                       return <Ionicons name="checkmark-done-outline" size={26} color="black" />
+                    }
+                    else if (route.name === 'Login/Register') iconName = 'log-in'
+                    else if (route.name === 'Profile') {
+                        return <Feather name="user" size={26} color="black" />
+                    }
                     return <Ionicons name={iconName} size={size} color={color} />;
                 },
                 headerShown: false,
@@ -41,7 +55,6 @@ export default function TabNavigator() {
                 <Tab.Screen name="Login/Register">
                     {() => <LoginRegisterScreen onLogin={() => {
 
-                        // setIsLoggedIn(true);
                     }} />}
                 </Tab.Screen>
             ) : (
