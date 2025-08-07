@@ -8,6 +8,7 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -41,6 +42,32 @@ export default function CardDetailScreen({ route }) {
     // </View>
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scroll}>
+
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => dispatch(WordService.setStatus({
+              word_id: detail.id,
+              action: 'star',
+          }))}
+        >
+          <Text style={styles.buttonText}>
+            {detail.is_starred ? '★ Unstar' : '☆ Star'}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => dispatch(WordService.setStatus({
+            word_id: detail.id,
+            action: 'learned',
+          }))}
+        >
+          <Text style={styles.buttonText}>
+            {detail.is_learned ? '✅ Unlearn' : '✅ Mark as Learned'}
+          </Text>
+        </TouchableOpacity>
+
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.word}>{detail.text}</Text>
