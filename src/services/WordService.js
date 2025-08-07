@@ -62,6 +62,28 @@ class WordService {
         }
     )
 
+    static getDetailWord = createAsyncThunk(
+        '/words/get_detail_word',
+        async (word_id, thunkAPI) => {
+            try {
+                console.log('..............................................word id is ', word_id);
+                const response = await $api.get(`/words/get_detail_word/${word_id}`);
+                console.log('word detail is ', response.data);
+                return response.data;
+            } catch (error) {
+                // Extract error details
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
+                // Pass custom error payload
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
+        }
+    )
+
+
 }
 
 

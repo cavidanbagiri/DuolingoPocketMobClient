@@ -13,6 +13,9 @@ const initialState = {
     is_words_error: false,
     is_words_success: false,
 
+    detail: {},
+    loading: false,
+
 }
 
 export const wordSlice = createSlice({
@@ -39,29 +42,24 @@ export const wordSlice = createSlice({
 
         // WordService setStatus
         builder.addCase(WordService.setStatus.fulfilled, (state, action) => {
-            // console.log('action payload is {action.payload} ', action.payload);
-            // if (action.payload.action === 'learned') {
-            //     state.words.forEach((word, index) => {
-            //         if (word.id === action.payload.word_id) {
-            //             state.words[index].is_learned = action.payload.is_learned;
-            //         }
-            //     });
-            // }
-            // const { word_id, is_learned, action: actionType } = action.payload;
-
-            // if (actionType === 'learned') {
-            //     // If word is now learned, remove it from the list
-            //     if (is_learned) {
-            //         state.words = state.words.filter(word => word.id !== word_id);
-            //     } else {
-            //         // If un-learned (toggled back), update it in place
-            //         const word = state.words.find(word => word.id === word_id);
-            //         if (word) word.is_learned = false;
-            //     }
-            // }
         });
         builder.addCase(WordService.setStatus.rejected, (state, action) => {
             console.log('status apyload error is ', action.payload);
+        });
+
+
+        // WordService getDetailWord
+        builder.addCase(WordService.getDetailWord.pending, (state, action) => {
+            state.loading = true;
+        });
+        builder.addCase(WordService.getDetailWord.fulfilled, (state, action) => {
+            state.loading = false;
+            console.log('get detail word is ', action.payload);
+            state.detail = action.payload;
+        });
+        builder.addCase(WordService.getDetailWord.rejected, (state, action) => {
+            state.loading = false;
+            console.log('get detail word error is ', action.payload);
         });
 
 
