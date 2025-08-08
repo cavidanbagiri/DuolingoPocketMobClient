@@ -14,8 +14,6 @@ class WordService {
                 if (filter === 'starred') {
                     starred = true;
                 }
-                console.log('////////////filter is ', filter);
-                console.log('////////////this function is working and ', starred )
                 const response = await $api.get(`/words/fetch_words`,
                     { 
                         params: 
@@ -66,7 +64,6 @@ class WordService {
         '/words/get_detail_word',
         async (word_id, thunkAPI) => {
             try {
-                console.log('..............................................word id is ', word_id);
                 const response = await $api.get(`/words/get_detail_word/${word_id}`);
                 console.log('word detail is ', response.data);
                 return response.data;

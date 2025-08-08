@@ -1,6 +1,4 @@
 
-
-
 import React, { useEffect } from 'react';
 import {
   View,
@@ -10,8 +8,12 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
+
 import { useSelector, useDispatch } from 'react-redux';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { clearDetail } from '../store/word_store';
 
 import WordService from '../services/WordService';
 
@@ -24,11 +26,12 @@ export default function CardDetailScreen({ route }) {
 
   useEffect(() => {
     dispatch(WordService.getDetailWord(word.id));
+    return () => {
+      dispatch(clearDetail());
+    };
   }, [word]);
 
-  if (loading || !detail) {
-    console.log('loading is ', loading);
-    console.log('detail is ', detail);
+  if (loading || !detail || !Array.isArray(detail.meanings)) {
     return (
       <SafeAreaView style={styles.center}>
         <ActivityIndicator size="large" />
@@ -37,52 +40,60 @@ export default function CardDetailScreen({ route }) {
   }
 
   return (
-    // <View>
-    //   <Text>Detail screen</Text>
-    // </View>
+
+
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scroll}>
 
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => dispatch(WordService.setStatus({
-              word_id: detail.id,
+          onPress={() => {
+            dispatch(WordService.setStatus({
+              word_id: detail?.id,
               action: 'star',
-          }))}
+            }))
+            
+            dispatch(WordService.getDetailWord(detail.id));
+          }
+
+          }
         >
           <Text style={styles.buttonText}>
-            {detail.is_starred ? '★ Unstar' : '☆ Star'}
+            {detail?.is_starred ? '★ Unstar' : '☆ Star'}
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => dispatch(WordService.setStatus({
-            word_id: detail.id,
-            action: 'learned',
-          }))}
+          onPress={() => {
+            dispatch(WordService.setStatus({
+              word_id: detail?.id,
+              action: 'learned',
+            }))
+            dispatch(WordService.getDetailWord(detail.id));
+          }}
         >
           <Text style={styles.buttonText}>
-            {detail.is_learned ? '✅ Unlearn' : '✅ Mark as Learned'}
+            {detail?.is_learned ? '✅ Unlearn' : '✅ Mark as Learned'}
           </Text>
         </TouchableOpacity>
 
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.word}>{detail.text}</Text>
+          <Text style={styles.word}>{detail?.text}</Text>
           <Text style={styles.translation}>
-            {detail.translations[0]?.translated_text ?? 'No translation'}
+            {detail?.translations[0]?.translated_text ?? 'No translation'}
           </Text>
           <View style={styles.metaRow}>
-            <Text style={styles.metaBadge}>CEFR: {detail.level}</Text>
-            <Text style={styles.metaBadge}>Rank: {detail.frequency_rank}</Text>
+            <Text style={styles.metaBadge}>CEFR: {detail?.level}</Text>
+            <Text style={styles.metaBadge}>Rank: {detail?.frequency_rank}</Text>
           </View>
           <View style={styles.metaRow}>
-            {detail.is_starred && <Text style={styles.star}>⭐ Starred</Text>}
-            {detail.is_learned && <Text style={styles.learned}>✅ Learned</Text>}
-            {!detail.is_learned && (
-              <Text style={styles.strength}>💪 Strength: {detail.strength}/100</Text>
+            {detail?.is_starred && <Text style={styles.star}>⭐ Starred</Text>}
+            {detail?.is_learned && <Text style={styles.learned}>✅ Learned</Text>}
+            {!detail?.is_learned && (
+              <Text style={styles.strength}>💪 Strength: {detail?.strength}/100</Text>
             )}
           </View>
         </View>
@@ -90,7 +101,7 @@ export default function CardDetailScreen({ route }) {
         {/* Meanings */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Meanings</Text>
-          {detail.meanings.map((m) => (
+          {detail?.meanings?.map((m) => (
             <View key={m.id} style={styles.card}>
               <Text style={styles.pos}>{m.pos}</Text>
               <Text style={styles.example}>💬 {m.example}</Text>
@@ -116,7 +127,7 @@ export default function CardDetailScreen({ route }) {
         {/* Example Sentences */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Example Sentences</Text>
-          {detail.example_sentences.map((s) => (
+          {detail?.example_sentences?.map((s) => (
             <View key={s.id} style={styles.card}>
               <Text>{s.text}</Text>
               {s.translations.map((t, i) => (
@@ -227,51 +238,3 @@ const styles = StyleSheet.create({
 });
 
 
-
-
-
-
-
-
-// import React, { useEffect } from 'react';
-// import { View, Text, StyleSheet } from 'react-native';
-
-// import { useSelector, useDispatch } from 'react-redux';
-
-// import { SafeAreaView } from 'react-native-safe-area-context';
-
-// import WordService from '../services/WordService';
-
-// export default function WordDetailScreen({ route }) {
-
-//   const dispatch = useDispatch();
-
-//   const { word } = route.params;
-
-//   useEffect(() => {
-//     dispatch(WordService.getDetailWord(word.id));
-//   }, [word]);
-
-//   return (
-
-//     <SafeAreaView style={styles.container}> 
-//       <View >
-//         <Text style={styles.en}>{word.en}</Text>
-//         <Text style={styles.type}>{word.type}</Text>
-//         <Text style={styles.ru}>{word.ru}</Text>
-//       </View>
-//     </SafeAreaView>
-
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//   },
-//   en: { fontSize: 30, fontWeight: 'bold' },
-//   type: { fontSize: 20, marginVertical: 10 },
-//   ru: { fontSize: 26, color: '#007acc' },
-// });

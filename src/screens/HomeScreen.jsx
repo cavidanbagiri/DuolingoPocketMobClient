@@ -75,11 +75,11 @@ export default function HomeScreen() {
           />
         }
 
-        {/* <Image
+        <Image
           source={require('../../assets/HomeImage.png')}
           style={styles.image}
           resizeMode="contain"
-        /> */}
+        />
 
 
         {/* Wrapper View with proper width */}
