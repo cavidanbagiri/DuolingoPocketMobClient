@@ -24,6 +24,17 @@ export const wordSlice = createSlice({
     reducers: {
         clearDetail: (state) => {
             state.detail = null;
+        },
+        
+        setDetail: (state, action) => {
+            const { actionType, value } = action.payload;
+            if (state.detail) {
+                if (actionType === 'star') {
+                    state.detail.is_starred = value;
+                } else if (actionType === 'learned') {
+                    state.detail.is_learned = value;
+                }
+            }
         }
     },
     extraReducers: (builder) => {
@@ -55,9 +66,6 @@ export const wordSlice = createSlice({
             state.loading = true;
         });
         builder.addCase(WordService.getDetailWord.fulfilled, (state, action) => {
-            // state.loading = false;
-            // console.log('get detail word is ', action.payload);
-            // state.detail = action.payload;
             state.loading = false;
             const payload = action.payload || {};
             state.detail = {
@@ -76,6 +84,6 @@ export const wordSlice = createSlice({
     },
 })
 
-export const { clearDetail } = wordSlice.actions;
+export const { clearDetail, setDetail  } = wordSlice.actions;
 
 export default wordSlice.reducer;
