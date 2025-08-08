@@ -1,6 +1,4 @@
-1 - Need to add confirm password and add to register - Stopped
+
 2 - After registering error happen for logout. Need to fix - Stopped
 3 - After starred and learned word, maybe need to delete from user_words table - Stopped
-4 - Maybe dont need to hide the starred words, l am not sure - Stopped
-5 - Set starred and learned btn in word detail screen - Stopped
 6 - If there is not any starred words, need to show a message: "Doesnt have any starred words" - Stopped

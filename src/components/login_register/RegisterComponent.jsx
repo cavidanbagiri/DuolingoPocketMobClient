@@ -23,6 +23,7 @@ export default function RegisterComponent({setMode, onRegister }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
+  const [confirm, setConfirm] = useState('');
 
   const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -43,6 +44,10 @@ export default function RegisterComponent({setMode, onRegister }) {
 
     if (password.length < 8) {
       Alert.alert('Validation Error', 'Password must be at least 8 characters');
+      return;
+    }
+    if (password !== confirm) {
+      Alert.alert('Validation Error', 'Passwords do not match');
       return;
     }
 
@@ -94,6 +99,12 @@ export default function RegisterComponent({setMode, onRegister }) {
         placeholder="Password"
         style={styles.input}
         onChangeText={setPassword}
+        secureTextEntry
+      />
+      <TextInput
+        placeholder="Confirm Password"
+        style={styles.input}
+        onChangeText={setConfirm}
         secureTextEntry
       />
     
