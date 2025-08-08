@@ -1,5 +1,5 @@
 
-import { Text, View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 
 
 import React, { Component, useEffect } from 'react'
@@ -34,14 +34,17 @@ export default function WordScreen() {
         <SafeAreaView>
             <FilterComponent />
 
-            <Text>
-                {words_pending === true ? 'True' : 'False'}
-            </Text>
-
             <ScrollView contentContainerStyle={styles.container}>
-                {words_pending && <Text>Fetching Words...</Text>}
+                {words_pending && (
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+                        <ActivityIndicator
+                            size="large"
+                            color="#0000ff" // Change to your preferred color
+                        />
+                        <Text style={{ marginTop: 10 }}>Loading words...</Text>
+                    </View>
+                )}
 
-                {/* No starred words message */}
                 {!words_pending && words.length === 0 && (
                     <Text style={{ textAlign: 'center', marginTop: 20 }}>
                         There is not any starred word
