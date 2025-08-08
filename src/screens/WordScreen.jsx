@@ -32,24 +32,50 @@ export default function WordScreen() {
     return (
 
         <SafeAreaView>
-
             <FilterComponent />
 
-            <ScrollView contentContainerStyle={styles.container}>
+            <Text>
+                {words_pending === true ? 'True' : 'False'}
+            </Text>
 
-                {
-                    words_pending &&
-                    <Text>Fetching Words</Text>
-                }
-                {
+            <ScrollView contentContainerStyle={styles.container}>
+                {words_pending && <Text>Fetching Words...</Text>}
+
+                {/* No starred words message */}
+                {!words_pending && words.length === 0 && (
+                    <Text style={{ textAlign: 'center', marginTop: 20 }}>
+                        There is not any starred word
+                    </Text>
+                )}
+
+                {/* Words list */}
+                {!words_pending && words.length > 0 &&
                     words.map((word, index) => (
                         <VocabCard word={word} key={index} />
                     ))
                 }
-
             </ScrollView>
-
         </SafeAreaView>
+
+        // <SafeAreaView>
+
+        //     <FilterComponent />
+
+        //     <ScrollView contentContainerStyle={styles.container}>
+
+        //         {
+        //             words_pending &&
+        //             <Text>Fetching Words</Text>
+        //         }
+        //         {
+        //             words.map((word, index) => (
+        //                 <VocabCard word={word} key={index} />
+        //             ))
+        //         }
+
+        //     </ScrollView>
+
+        // </SafeAreaView>
 
     )
 }

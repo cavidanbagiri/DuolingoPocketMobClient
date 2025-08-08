@@ -22,6 +22,11 @@ export const wordSlice = createSlice({
     name: 'words',
     initialState,
     reducers: {
+
+        setWordsPendingFalse: (state) => {
+            state.words_pending = false;
+        },
+
         clearDetail: (state) => {
             state.detail = null;
         },
@@ -45,12 +50,19 @@ export const wordSlice = createSlice({
         })
         builder.addCase(WordService.fetchWords.fulfilled, (state, action) => {
             state.words_pending = false;
-            state.words = action.payload.payload.data[0]['en'];
+            if (action.payload.payload.data.length === 0) {
+                state.words = [];
+                return;
+            }
+            else{
+                state.words = action.payload.payload.data[0]['en'];
+            }
             state.is_words_success = true;
         });
         builder.addCase(WordService.fetchWords.rejected, (state, action) => {
             state.words_pending = false;
             state.is_words_error = true;
+            console.log('rejected action')
         });
 
         // WordService setStatus
@@ -84,6 +96,6 @@ export const wordSlice = createSlice({
     },
 })
 
-export const { clearDetail, setDetail  } = wordSlice.actions;
+export const { setWordsPendingFalse, clearDetail, setDetail  } = wordSlice.actions;
 
 export default wordSlice.reducer;

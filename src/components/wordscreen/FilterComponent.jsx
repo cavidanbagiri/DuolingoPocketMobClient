@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; // Make sure this is installed
-import Fontisto from '@expo/vector-icons/Fontisto';
 import Feather from '@expo/vector-icons/Feather';
+
+import { setWordsPendingFalse } from '../../store/word_store';
 
 
 import WordService from '../../services/WordService';
@@ -21,6 +22,7 @@ const FilterComponent = () => {
     };
 
     useEffect(() => {
+        dispatch(setWordsPendingFalse());
         dispatch(WordService.fetchWords({ filter }));
     }, [filter]);
 
