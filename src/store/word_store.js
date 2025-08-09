@@ -16,6 +16,8 @@ const initialState = {
     detail: {},
     loading: false,
 
+    statistics: null,
+
 }
 
 export const wordSlice = createSlice({
@@ -62,7 +64,6 @@ export const wordSlice = createSlice({
         builder.addCase(WordService.fetchWords.rejected, (state, action) => {
             state.words_pending = false;
             state.is_words_error = true;
-            console.log('rejected action')
         });
 
         // WordService setStatus
@@ -88,6 +89,21 @@ export const wordSlice = createSlice({
             };
         });
         builder.addCase(WordService.getDetailWord.rejected, (state, action) => {
+            state.loading = false;
+            console.log('get detail word error is ', action.payload);
+        });
+
+
+        // WordService getStatisticsForDashboard
+        builder.addCase(WordService.getStatisticsForDashboard.pending, (state, action) => {
+            state.loading = true;
+        });
+        builder.addCase(WordService.getStatisticsForDashboard.fulfilled, (state, action) => {
+            console.log('get statistics is ', action.payload);
+            state.loading = false;
+            state.statistics = action.payload;
+        });
+        builder.addCase(WordService.getStatisticsForDashboard.rejected, (state, action) => {
             state.loading = false;
             console.log('get detail word error is ', action.payload);
         });

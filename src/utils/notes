@@ -12,39 +12,55 @@ New
 
 
 --------------------------------- Chat GPT -------------------------------------
+
 Act like a fastapi senior engineer
-Goal: When l click the screen, l wanna fetch the words from database.
-Code:
-	WordScreen.jsx
-		
-        const dispatch = useDispatch();
-
-        const { is_auth } = useSelector((state) => state.authSlice);
-
-        const { words, words_pending, is_words_error, is_words_success } = useSelector((state) => state.wordSlice);
-
-        useEffect(() => {
-            if (is_auth === false) {
-                return;
-            }
-            dispatch(WordService.fetchWords({filter:'all'}));
-        }, [is_auth]);
-
-    LearnedScreen.jsx
-        
-        const dispatch = useDispatch();
-
-        const { is_auth } = useSelector((state) => state.authSlice);
-
-        const { words, words_pending, is_words_error, is_words_success } = useSelector((state) => state.wordSlice);
+Goal: I want to get statistics of total words + learned words + starred words
+Code: 
+	
+    This is my Repository
+    class GetStatisticsForDashboardRepository:
+        def __init__(self, db: AsyncSession, user_id: int):
+            self.db = db
+            self.user_id = user_id
+        async def get_statistics(self):
+            user = await self.db.execute(
+                select(UserModel).where(UserModel.id == self.user_id)
+            )
+            user = user.scalar_one_or_none()
+            return user
 
 
-        useEffect(() => {
-            if (is_auth === false) {
-            return;
-            }
-            dispatch(WordService.fetchWords({filter: 'learned'}));
-        }, [is_auth]);
+    This is Main Models
+    
+    class Word(Base):
+        __tablename__ = "words"
+        id = Column(Integer, primary_key=True)
+        text = Column(String(100), unique=True)  
+        language_code = Column(String(2))     
+        frequency_rank = Column(Integer)
+        level = mapped_column(String(2)) 
 
-Now: When l click the screen, just one time is working the fetch words. But when l click the screen again, it is not working. 
-Goal: When l click the screen, Each touching the screen, l wanna fetch the words from database.
+        meanings = relationship("WordMeaning", back_populates="word")
+        translations = relationship("Translation", back_populates="source_word") 
+        in_sentences = relationship("SentenceWord", back_populates="word") 
+
+        def __repr__(self):
+            return f'Word(id:({self.id}), text({self.text}, language_code({self.language_code}, frequency_rank:({self.frequency_rank}, level({self.level})))))'
+
+    
+    
+
+    class UserWord(Base):
+        __tablename__ = "user_words"
+
+        id = mapped_column(Integer, primary_key=True)
+        user_id = mapped_column(Integer, ForeignKey("users.id"))
+        word_id = mapped_column(Integer, ForeignKey("words.id"))
+
+        is_starred = mapped_column(Boolean, default=False)
+        is_learned = mapped_column(Boolean, default=False)
+
+        created_at = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+ 
+

@@ -85,6 +85,26 @@ class WordService {
     )
 
 
+    static getStatisticsForDashboard = createAsyncThunk(
+        '/words/get_statistics',
+        async (data, thunkAPI) => {
+            try {
+                const response = await $api.get(`/words/get_statistics`);
+                return response.data;
+            } catch (error) {
+                // Extract error details
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
+                // Pass custom error payload
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
+        }
+    )
+
+
 }
 
 
