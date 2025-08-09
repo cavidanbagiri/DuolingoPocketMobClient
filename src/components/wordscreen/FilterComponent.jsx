@@ -47,7 +47,10 @@ const FilterComponent = () => {
 
                 {/* For Fetch BTN */}
                 <TouchableOpacity className=' p-1'
-                 onPress={() => dispatch(WordService.fetchWords())}>
+                 onPress={() => {
+                     setFilter('all')
+                    dispatch(WordService.fetchWords())
+                 }}>
                     <Feather name="refresh-ccw" size={24} color="black" />
                 </TouchableOpacity>
 

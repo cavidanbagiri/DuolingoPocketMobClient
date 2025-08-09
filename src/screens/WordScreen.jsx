@@ -26,7 +26,7 @@ export default function WordScreen() {
         if (is_auth === false) {
             return;
         }
-        dispatch(WordService.fetchWords());
+        dispatch(WordService.fetchWords({filter:'all'}));
     }, [is_auth]);
 
     return (
@@ -59,26 +59,6 @@ export default function WordScreen() {
                 }
             </ScrollView>
         </SafeAreaView>
-
-        // <SafeAreaView>
-
-        //     <FilterComponent />
-
-        //     <ScrollView contentContainerStyle={styles.container}>
-
-        //         {
-        //             words_pending &&
-        //             <Text>Fetching Words</Text>
-        //         }
-        //         {
-        //             words.map((word, index) => (
-        //                 <VocabCard word={word} key={index} />
-        //             ))
-        //         }
-
-        //     </ScrollView>
-
-        // </SafeAreaView>
 
     )
 }

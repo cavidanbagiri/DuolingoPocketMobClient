@@ -10,15 +10,22 @@ class WordService {
         async ({ filter = 'all' } = {}, thunkAPI) => {
             try {
                 let starred = false;
-
+                let learned = false;
                 if (filter === 'starred') {
                     starred = true;
                 }
+                if (filter === 'learned') {
+                    learned = true;
+                }
+                console.log('filter is ', filter);
+                console.log('temp is ', starred)
+                console.log('temp is ', )
                 const response = await $api.get(`/words/fetch_words`,
                     { 
                         params: 
                         { 
-                            only_starred: starred
+                            only_starred: starred,
+                            only_learned: learned
                         } 
                     }
                 );

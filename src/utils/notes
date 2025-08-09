@@ -1,5 +1,13 @@
 
 1 - After registering error happen for logout. Need to fix - Stopped
-2 - After starred and learned word, maybe need to delete from user_words table - Stopped
+2 - Fix fetching words from words and learned section. both of them work as the same - Working
+3 - Dont show starred btn in filter component in learned screen - Stopped
+4 - Add clickable event for learned words - Stopped
 
 
+--------------------------------- Today Plan -------------------------------------
+Fix 
+    2,3,4
+New
+    1 - Show statistic in dashboard
+    2 - Set only login user can see learned words and starred words. [User not login, dont show starred words]
