@@ -1,11 +1,17 @@
 
 import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 
-
 import React, { Component, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useDispatch, useSelector } from 'react-redux';
+
+
+
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
+
+
 
 import WordService from '../services/WordService.js';
 
@@ -22,17 +28,21 @@ export default function WordScreen() {
 
     const { words, words_pending, is_words_error, is_words_success } = useSelector((state) => state.wordSlice);
 
-    useEffect(() => {
-        if (is_auth === false) {
-            return;
-        }
-        dispatch(WordService.fetchWords({filter:'all'}));
-    }, [is_auth]);
+    useFocusEffect(
+        useCallback(() => {
+            if (is_auth) {
+            dispatch(WordService.fetchWords({ filter: 'all' }));
+            }
+        }, [is_auth, dispatch])
+    );
+
+
+
 
     return (
 
         <SafeAreaView>
-            <FilterComponent />
+            <FilterComponent screen='all'/>
 
             <ScrollView contentContainerStyle={styles.container}>
                 {words_pending && (

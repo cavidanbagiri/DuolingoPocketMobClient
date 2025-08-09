@@ -17,9 +17,6 @@ class WordService {
                 if (filter === 'learned') {
                     learned = true;
                 }
-                console.log('filter is ', filter);
-                console.log('temp is ', starred)
-                console.log('temp is ', )
                 const response = await $api.get(`/words/fetch_words`,
                     { 
                         params: 

@@ -11,7 +11,7 @@ import { setWordsPendingFalse } from '../../store/word_store';
 
 import WordService from '../../services/WordService';
 
-const FilterComponent = () => {
+const FilterComponent = ({screen = 'all'}) => {
 
     const dispatch = useDispatch();
 
@@ -28,33 +28,38 @@ const FilterComponent = () => {
 
     return (
         <View className='flex flex-col px-10 py-5 '>
+
+            {
+                screen !== 'learned' &&
+                <View className='flex flex-row justify-between'>
+                    
+                    {/* For starred words */}
+                    <TouchableOpacity className='flex flex-row  justify-center items-center'
+                    onPress={toggleFilter}>
+                        <Ionicons
+                            name={filter === 'starred' ? 'star' : 'star-outline'}
+                            size={20}
+                            color={filter === 'starred' ? '#facc15' : '#6b7280'}
+                            style={styles.icon}
+                        />
+                        <Text className='text-xl text-gray-800 font-medium'>
+                            {filter === 'starred' ? 'Starred' : 'All'}
+                        </Text>
+                    </TouchableOpacity>
+
+                    {/* For Fetch BTN */}
+                    <TouchableOpacity className=' p-1'
+                    onPress={() => {
+                        setFilter('all')
+                        dispatch(WordService.fetchWords())
+                    }}>
+                        <Feather name="refresh-ccw" size={24} color="black" />
+                    </TouchableOpacity>
+
+                </View>
+
+            }
             
-            <View className='flex flex-row justify-between'>
-                
-                {/* For starred words */}
-                <TouchableOpacity className='flex flex-row  justify-center items-center'
-                onPress={toggleFilter}>
-                    <Ionicons
-                        name={filter === 'starred' ? 'star' : 'star-outline'}
-                        size={20}
-                        color={filter === 'starred' ? '#facc15' : '#6b7280'}
-                        style={styles.icon}
-                    />
-                    <Text className='text-xl text-gray-800 font-medium'>
-                        {filter === 'starred' ? 'Starred' : 'All'}
-                    </Text>
-                </TouchableOpacity>
-
-                {/* For Fetch BTN */}
-                <TouchableOpacity className=' p-1'
-                 onPress={() => {
-                     setFilter('all')
-                    dispatch(WordService.fetchWords())
-                 }}>
-                    <Feather name="refresh-ccw" size={24} color="black" />
-                </TouchableOpacity>
-
-            </View>
 
 
 
