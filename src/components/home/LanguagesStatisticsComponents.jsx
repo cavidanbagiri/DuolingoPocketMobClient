@@ -3,32 +3,29 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import WordService from '../../services/WordService';
-import VocabCard from '../cards/VocabCard';
-import FilterComponent from '../wordscreen/FilterComponent.jsx';
+// import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 
+
+import WordService from '../../services/WordService';
 
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
 
-
-
 export default function LanguagesStatisticsComponents() {
 
   const dispatch = useDispatch();
-  
+
   const { is_auth } = useSelector((state) => state.authSlice);
   const { statistics } = useSelector((state) => state.wordSlice);
 
-  
   useFocusEffect(
-      useCallback(() => {
-          if (is_auth) {
-          dispatch(WordService.getStatisticsForDashboard());
-          }
-      }, [is_auth, dispatch])
+    useCallback(() => {
+      if (is_auth) {
+        dispatch(WordService.getStatisticsForDashboard());
+      }
+    }, [is_auth, dispatch])
   );
-
 
   return (
     <View style={styles.container}>
@@ -36,57 +33,78 @@ export default function LanguagesStatisticsComponents() {
 
       <ScrollView style={styles.boxContainer}>
 
-
-      {
-        statistics &&
-        statistics.map((item, index) => (
-          <View key={index} style={styles.langBox}>
-            <View style={styles.langLeft}>
-              <Text style={styles.langName}>{item.language_code}</Text>
-              <Text style={styles.stats}>
-                Total: {item.total_words} | Learned: {item.learned_words} | ⭐ {item.starred_words}
-              </Text>
-            </View>
-          </View>
-        ))
-      }
-
-
-
-        {/* {
+        {
           statistics &&
-          Object.keys(statistics).map((lang, index) => (
-            <View key={index} style={styles.langBox}>
-              <View style={styles.langLeft}>
-                <Text style={styles.langName}>{lang[index]['language_code']} {index} </Text>
-                <Text style={styles.stats}>
-                  Total: {lang[index]['total_words']} | Learned: {lang.learned_words} | ⭐ {lang.starred_words} 
+          statistics.map((item, index) => (
+            <View className='rounded-xl overflow-hidden'
+            key={index}>
+              
+            <LinearGradient
+              colors={['#22c55e', '#BBF7D0']} // green-500 to green-300
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              className='flex flex-col justify-between h-48 p-5 rounded-lg shadow-lg'
+            >
+              {/* Language Header */}
+              <View className='flex-row items-center ' >
+                <Text className='text-4xl font-bold text-white'>
+                  {item.language_name}
+                </Text>
+                <Text className='text-3xl font-bold text-black opacity-80' style={{fontFamily: 'Poppins-SemiBold'}}>
+                  {item.language_code.toUpperCase()}
                 </Text>
               </View>
+
+              <View className='flex-row items-center ' >
+                <Text className='text-lg text-black opacity-80 font-normal' style={{fontFamily: 'IBMPlexSans-Regular'}}>
+                  🚀 You've learned {item.learned_words} words! Just {item.total_words - item.learned_words} to go!
+                </Text>
+              </View>
+
+              {/* Stats Row */}
+              <View className='flex-row justify-between '>
+                <View className='flex flex-row bg-white/20 p-2 rounded-lg backdrop-blur'>
+                  <Text className='text-black text-lg font-semibold text-center'>
+                    Total
+                  </Text>
+                  <Text className='text-black text-xl font-bold text-center ml-1'>
+                    {item.total_words}
+                  </Text>
+                </View>
+
+                <View className='flex flex-row bg-white/20 p-2 rounded-lg backdrop-blur'>
+                  <Text className=' text-black text-lg font-semibold text-center'>
+                    Learned 
+                  </Text>
+                  <Text className='text-black text-xl font-bold text-center ml-1'>
+                    {item.learned_words}
+                  </Text>
+                </View>
+
+                <View className='flex flex-row bg-white/20 p-2 rounded-lg backdrop-blur'>
+                  <Text className='text-black text-lg font-semibold text-center'>
+                    ⭐ Starred
+                  </Text>
+                  <Text className='text-black text-xl font-bold text-center ml-1'>
+                    {item.starred_words}
+                  </Text>
+                </View>
+              </View>
+            </LinearGradient>
             </View>
           ))
-        } */}
+        }
 
-
-        {/* {selectedLanguages.map((lang, index) => (
-          <View key={index} style={styles.langBox}>
-            <View style={styles.langLeft}>
-              <Text style={styles.langName}>{lang.name}</Text>
-              <Text style={styles.stats}>
-                Total: {lang.totalWords} | Learned: {lang.learnedWords} | ⭐ {lang.starredWords}
-              </Text>
-            </View>
-          </View>
-        ))} */}
       </ScrollView>
     </View>
   );
 }
 
+
+
 const styles = StyleSheet.create({
   container: {
     marginTop: 20,
-    paddingHorizontal: 20,
   },
   title: {
     fontSize: 24,

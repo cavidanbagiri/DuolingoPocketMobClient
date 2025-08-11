@@ -51,7 +51,7 @@ export default function LearnedScreen() {
 
         {!words_pending && words.length === 0 && (
           <Text style={{ textAlign: 'center', marginTop: 20 }}>
-            There is not any starred word
+            There is not any learned words yet.
           </Text>
         )}
 

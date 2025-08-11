@@ -21,6 +21,9 @@ export default function App() {
     'Poppins-SemiBold': require('./assets/fonts/Poppins/Poppins-SemiBold.ttf'),
     'OpenSans-Regular': require('./assets/fonts/Open_Sans/static/OpenSans-Regular.ttf'),
     'OpenSans-Bold': require('./assets/fonts/Open_Sans/static/OpenSans-Bold.ttf'),
+    'OpenSans-SemiBold': require('./assets/fonts/Open_Sans/static/OpenSans-SemiBold.ttf'),
+    'IBMPlexSans-Regular': require('./assets/fonts/IBM_Plex_Sans/static/IBMPlexSans-Regular.ttf'),
+    'IBMPlexMono-Regular': require('./assets/fonts/IBM_Plex_Mono/IBMPlexMono-Bold.ttf'),
     // Add more as needed
   });
 
