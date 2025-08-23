@@ -21,14 +21,13 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
   useEffect(() => {
     const getNativeLang = async () => {
       const native = await SecureStore.getItemAsync('native');
-      console.log('native is {}', native);
       setNativeLangCode(native); // should be like 'en', 'tr', 'ru'
     };
     getNativeLang();
   }, []);
 
   const languages = [
-    { name: 'Turkish', image: require('../../../assets/flags/turkish.png'), code: 'tr' },
+    { name: 'Spanish', image: require('../../../assets/flags/spanish.png'), code: 'es' },
     { name: 'Russian', image: require('../../../assets/flags/russian.png'), code: 'ru' },
     { name: 'English', image: require('../../../assets/flags/england.png'), code: 'en' },
   ];

@@ -1,14 +1,11 @@
 
 Problems:
-    1 - Add spanish lang section to native lang dropdown - Working
-    2 - Add spanish lang flag to home screen as target language - Working
     3 - if choosen native lang, dont show that lang to learn languages section - Working
     4 - Dont show if selected languages statistics in home screen - Working
-    5 - Spanish doesnt show to selected languages section as title - Working
 
 
 Today Fix:
-    1,2,3,4,5
+    3,4
 
 Future:
     1 - Add user progile image to app.

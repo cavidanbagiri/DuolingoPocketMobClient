@@ -28,6 +28,7 @@ export default function DropdownNativeLangComponent({ selectedLanguage, setSelec
                 <Picker.Item label="Select Native" value="" />
                 <Picker.Item label="English" value="English" />
                 <Picker.Item label="Russian" value="Russian" />
+                <Picker.Item label="Spanish" value="Spanish" />
             </Picker>
         </View>
     );
