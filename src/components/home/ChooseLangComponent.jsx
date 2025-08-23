@@ -10,7 +10,7 @@ import AuthService from '../../services/AuthService';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
 
-export default function ChooseLangComponent({ selectedLanguage, setSelectedLanguage }) {
+export default function ChooseLangComponent({ selectedLanguage, setSelectedLanguage, nativeLanguage }) {
 
   const dispatch = useDispatch();
 
@@ -18,13 +18,7 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
 
   const [nativeLangCode, setNativeLangCode] = useState(null);
 
-  useEffect(() => {
-    const getNativeLang = async () => {
-      const native = await SecureStore.getItemAsync('native');
-      setNativeLangCode(native); // should be like 'en', 'tr', 'ru'
-    };
-    getNativeLang();
-  }, []);
+  const [filteredLanguages, setFilteredLanguages] = useState([]);
 
   const languages = [
     { name: 'Spanish', image: require('../../../assets/flags/spanish.png'), code: 'es' },
@@ -34,12 +28,30 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
 
   const selectedLangCodes = user?.target_langs || [];
 
-  // ✅ Filter out already selected languages and native language
-  const filteredLanguages = languages.filter(
-    (lang) =>
-      !selectedLangCodes.includes(lang.code) &&
-      lang.name !== nativeLangCode
-  );
+
+  useEffect(() => {
+    const getNativeLang = async () => {
+      const native = await SecureStore.getItemAsync('native');
+      setNativeLangCode(native); 
+    };
+    getNativeLang();
+  }, []);
+
+
+  useEffect(() => {
+    // ✅ Filter languages based on selected languages and native language
+    const filtered = languages.filter(
+      (lang) =>
+        !selectedLangCodes.includes(lang.code) &&
+        lang.name !== nativeLanguage &&
+        lang.name !== nativeLangCode
+        // ✅ Filter out native language
+    );
+    
+    setFilteredLanguages(filtered);
+  }, [nativeLanguage, selectedLangCodes, nativeLangCode]); // ✅ Add dependencies
+
+
 
   return (
     <View style={styles.container}>
