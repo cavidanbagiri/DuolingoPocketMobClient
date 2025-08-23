@@ -21,7 +21,6 @@ import FilterComponent from '../components/wordscreen/FilterComponent.jsx';
 
 export default function WordScreen() {
 
-
     const dispatch = useDispatch();
 
     const { is_auth } = useSelector((state) => state.authSlice);
@@ -36,12 +35,9 @@ export default function WordScreen() {
         }, [is_auth, dispatch])
     );
 
-
-
-
     return (
 
-        <SafeAreaView>
+        <SafeAreaView className={'bg-white'}>
             <FilterComponent screen='all'/>
 
             <ScrollView contentContainerStyle={styles.container}>
@@ -74,11 +70,9 @@ export default function WordScreen() {
 }
 
 
-
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
         paddingVertical: 20,
-        backgroundColor: '#FFFFFF',
     },
 });

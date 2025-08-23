@@ -26,7 +26,6 @@ class WordService {
                         } 
                     }
                 );
-                // console.log('coming data is {}', response.data);
                 return {
                     payload: response.data,
                     status: response.status,
@@ -84,7 +83,6 @@ class WordService {
         }
     )
 
-
     static getStatisticsForDashboard = createAsyncThunk(
         '/words/get_statistics',
         async (data, thunkAPI) => {
@@ -103,6 +101,47 @@ class WordService {
             }
         }
     )
+
+    static getPosStatistics = createAsyncThunk(
+        '/words/get_pos_statistics',
+        async (data, thunkAPI) => {
+            try {
+                const response = await $api.get(`/words/get_pos_statistics`);
+                console.log('coming statistics is ', response.data);
+                return response.data;
+            } catch (error) {
+                // Extract error details
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
+                // Pass custom error payload
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
+        }
+    )
+
+
+    static getWordWithPos = createAsyncThunk(
+        '/words/get_word_with_pos',
+        async (data, thunkAPI) => {
+            try {
+                const response = await $api.get(`/words/get_word_with_pos/${data.lang}/${data.pos}`);
+                return response.data;
+            } catch (error) {
+                // Extract error details
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
+                // Pass custom error payload
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
+        }
+    )
+
 
 
 }

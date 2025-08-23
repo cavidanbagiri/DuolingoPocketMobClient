@@ -66,6 +66,18 @@ export const authSlice = createSlice({
             state.user = action.payload;
             state.login_success = true;
             state.login_message = 'Successfully registered';
+            state.user.target_langs = action.payload?.payload?.user?.learning_targets;
+            saveToStorage('token', action.payload?.payload?.access_token);
+            saveToStorage('sub', action.payload?.payload?.user?.sub);  
+            saveToStorage('username', action.payload?.payload?.user?.username); 
+            if (action.payload.payload.user.native === null) {
+                saveToStorage('native', '');
+            }
+            else {
+                saveToStorage('native', action.payload.payload.user.native);
+                state.native_lang = action.payload.payload.user.native
+            }
+            console.log('auth is ', state.is_auth);
         });
         builder.addCase(AuthService.register.rejected, (state, action) => {
             state.login_pending = false;

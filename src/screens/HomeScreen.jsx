@@ -35,7 +35,7 @@ export default function HomeScreen() {
 
   useEffect(() => {
     const loadUsername = async () => {
-      const storedUsername = await getFromStorage('username');
+      let storedUsername = await getFromStorage('username');
       if (is_auth === false) {
         setUsername('');
         storedUsername = '';
@@ -48,7 +48,7 @@ export default function HomeScreen() {
 
   useEffect(() => {
     const loadNativeLanguage = async () => {
-      const storedNativeLanguage = await getFromStorage('native');
+      let storedNativeLanguage = await getFromStorage('native');
       if (is_auth === false) {
         setNativeLanguage('');
         storedNativeLanguage = '';

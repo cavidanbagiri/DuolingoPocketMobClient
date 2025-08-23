@@ -10,6 +10,7 @@ import { setWordsPendingFalse } from '../../store/word_store';
 
 
 import WordService from '../../services/WordService';
+import PosStatistics from "./PosStatistics";
 
 const FilterComponent = ({screen = 'all'}) => {
 
@@ -26,8 +27,17 @@ const FilterComponent = ({screen = 'all'}) => {
         dispatch(WordService.fetchWords({ filter }));
     }, [filter]);
 
+
+
     return (
         <View className='flex flex-col px-10 py-5 '>
+
+            {/* Fetch POS Statistics and show it */}
+
+            {
+                screen !== 'learned' &&
+                    <PosStatistics  />
+            }
 
             {
                 screen !== 'learned' &&

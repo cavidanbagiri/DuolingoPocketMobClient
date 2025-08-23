@@ -1,66 +1,15 @@
 
-1 - After registering error happen for logout. Need to fix - Stopped
+Problems:
+    1 - Add spanish lang section to native lang dropdown - Working
+    2 - Add spanish lang flag to home screen as target language - Working
+    3 - if choosen native lang, dont show that lang to learn languages section - Working
+    4 - Dont show if selected languages statistics in home screen - Working
+    5 - Spanish doesnt show to selected languages section as title - Working
 
 
---------------------------------- Today Plan -------------------------------------
-Fix 
-        
-New
-    1 - Show statistic in dashboard
-    2 - Set only login user can see learned words and starred words. [User not login, dont show starred words]
+Today Fix:
+    1,2,3,4,5
 
-
-
---------------------------------- Chat GPT -------------------------------------
-
-Act like a fastapi senior engineer
-Goal: I want to get statistics of total words + learned words + starred words
-Code: 
-	
-    This is my Repository
-    class GetStatisticsForDashboardRepository:
-        def __init__(self, db: AsyncSession, user_id: int):
-            self.db = db
-            self.user_id = user_id
-        async def get_statistics(self):
-            user = await self.db.execute(
-                select(UserModel).where(UserModel.id == self.user_id)
-            )
-            user = user.scalar_one_or_none()
-            return user
-
-
-    This is Main Models
-    
-    class Word(Base):
-        __tablename__ = "words"
-        id = Column(Integer, primary_key=True)
-        text = Column(String(100), unique=True)  
-        language_code = Column(String(2))     
-        frequency_rank = Column(Integer)
-        level = mapped_column(String(2)) 
-
-        meanings = relationship("WordMeaning", back_populates="word")
-        translations = relationship("Translation", back_populates="source_word") 
-        in_sentences = relationship("SentenceWord", back_populates="word") 
-
-        def __repr__(self):
-            return f'Word(id:({self.id}), text({self.text}, language_code({self.language_code}, frequency_rank:({self.frequency_rank}, level({self.level})))))'
-
-    
-    
-
-    class UserWord(Base):
-        __tablename__ = "user_words"
-
-        id = mapped_column(Integer, primary_key=True)
-        user_id = mapped_column(Integer, ForeignKey("users.id"))
-        word_id = mapped_column(Integer, ForeignKey("words.id"))
-
-        is_starred = mapped_column(Boolean, default=False)
-        is_learned = mapped_column(Boolean, default=False)
-
-        created_at = mapped_column(DateTime(timezone=True), server_default=func.now())
-
- 
-
+Future:
+    1 - Add user progile image to app.
+    2 - Create messaging section to app for user communication. 

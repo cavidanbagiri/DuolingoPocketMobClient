@@ -36,7 +36,7 @@ export default function LanguagesStatisticsComponents() {
         {
           statistics &&
           statistics.map((item, index) => (
-            <View className='rounded-xl overflow-hidden'
+            <View className='rounded-xl overflow-hidden mt-10'
             key={index}>
               
             <LinearGradient
@@ -51,7 +51,7 @@ export default function LanguagesStatisticsComponents() {
                   {item.language_name}
                 </Text>
                 <Text className='text-3xl font-bold text-black opacity-80' style={{fontFamily: 'Poppins-SemiBold'}}>
-                  {item.language_code.toUpperCase()}
+                  {item?.language_code?.toUpperCase()}
                 </Text>
               </View>
 

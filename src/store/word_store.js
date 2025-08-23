@@ -18,6 +18,8 @@ const initialState = {
 
     statistics: null,
 
+    pos_statistics: null,
+
 }
 
 export const wordSlice = createSlice({
@@ -99,13 +101,25 @@ export const wordSlice = createSlice({
             state.loading = true;
         });
         builder.addCase(WordService.getStatisticsForDashboard.fulfilled, (state, action) => {
-            console.log('get statistics is ', action.payload);
             state.loading = false;
             state.statistics = action.payload;
         });
         builder.addCase(WordService.getStatisticsForDashboard.rejected, (state, action) => {
             state.loading = false;
             console.log('get detail word error is ', action.payload);
+        });
+
+
+        // WordService getPosStatisticsForDashboard
+        builder.addCase(WordService.getPosStatistics.pending, (state, action) => {
+            state.loading = true;
+        });
+        builder.addCase(WordService.getPosStatistics.fulfilled, (state, action) => {
+            state.loading = false;
+            state.pos_statistics = action.payload;
+        });
+        builder.addCase(WordService.getPosStatistics.rejected, (state, action) => {
+            state.loading = false;
         });
 
 
