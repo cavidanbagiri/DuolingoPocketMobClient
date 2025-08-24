@@ -26,6 +26,8 @@ export default function WordScreen() {
 
     const { is_auth } = useSelector((state) => state.authSlice);
 
+    const [screen, setScreen] = useState('all');
+
     useFocusEffect(
         useCallback(() => {
             if (is_auth) {
@@ -36,12 +38,12 @@ export default function WordScreen() {
     
     useEffect(() => {
         if (availableLanguages.length === 1) {
-            // dispatch(WordService.handleLanguageSelect(availableLanguages[0].lang));
             dispatch(WordService.handleLanguageSelect({
                 filter: 'all',
                 langCode: availableLanguages[0].lang
             }));
             dispatch(setSelectedLanguage(availableLanguages[0].lang));
+            setScreen('all');
         }
     }, [availableLanguages]);
 
@@ -52,7 +54,7 @@ export default function WordScreen() {
             {/* <FilterComponent/> */}
             {
                 selectedLanguage &&
-                <FilterComponent screen='all'/>
+                <FilterComponent screen={screen} setScreen={setScreen}/>
             }
 
             {/* Language Selector */}

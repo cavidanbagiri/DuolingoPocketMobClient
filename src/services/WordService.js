@@ -50,7 +50,6 @@ class WordService {
         async () => {
             try {
                 const response = await $api.get('/words/user/languages');
-                console.log('fetch available is work and response is ', response.data);
                 return response.data;
             } catch (error) {
                 // Extract error details
@@ -79,10 +78,7 @@ class WordService {
                 learned = true;
             }
 
-            console.log('language code is ', langCode);
-            
             try {
-                console.log('this function is running');
                 const response = await $api.get(`/words/${langCode}?limit=50`,{
                     params: 
                     { 
@@ -90,7 +86,6 @@ class WordService {
                         only_learned: learned
                     }
                 });
-                console.log('coming response is ', response.data);
                 return response.data;
             } catch (error) {
                 // Extract error details

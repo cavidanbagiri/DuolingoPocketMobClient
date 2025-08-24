@@ -25,16 +25,15 @@ const FilterComponent = ({screen = 'all'}) => {
     };
 
     useEffect(() => {
-        // dispatch(setWordsPendingFalse());
-        // dispatch(WordService.fetchWords({ filter }));
-        console.log('here is working and the filter is ', filter);
         dispatch(WordService.handleLanguageSelect({
           langCode: selectedLanguage,
           filter: filter
         }));
     }, [filter]);
 
-
+    useEffect(() => {
+        setFilter('all');
+    }, [selectedLanguage]);
 
     return (
         <View className='flex flex-col px-10 py-5 '>
