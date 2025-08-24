@@ -48,6 +48,13 @@ export default function WordScreen() {
 
     return (
         <SafeAreaView>
+
+            {/* <FilterComponent/> */}
+            {
+                selectedLanguage &&
+                <FilterComponent screen='all'/>
+            }
+
             {/* Language Selector */}
             {availableLanguages?.length > 1 && (
                 <View >

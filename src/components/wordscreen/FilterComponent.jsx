@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; // Make sure this is installed
 import Feather from '@expo/vector-icons/Feather';
@@ -18,6 +18,8 @@ const FilterComponent = ({screen = 'all'}) => {
 
     const [filter, setFilter] = useState('all'); // 'all' or 'starred'
 
+    const { selectedLanguage, availableLanguages } = useSelector((state) => state.wordSlice);
+
     const toggleFilter = () => {
         setFilter(prev => prev === 'all' ? 'starred' : 'all');
     };
@@ -25,6 +27,11 @@ const FilterComponent = ({screen = 'all'}) => {
     useEffect(() => {
         // dispatch(setWordsPendingFalse());
         // dispatch(WordService.fetchWords({ filter }));
+        console.log('here is working and the filter is ', filter);
+        dispatch(WordService.handleLanguageSelect({
+          langCode: selectedLanguage,
+          filter: filter
+        }));
     }, [filter]);
 
 
@@ -32,18 +39,19 @@ const FilterComponent = ({screen = 'all'}) => {
     return (
         <View className='flex flex-col px-10 py-5 '>
 
+            <Text>FilterComponent</Text>
+
             {/* Fetch POS Statistics and show it */}
 
-            {
+            {/* {
                 screen !== 'learned' &&
                     <PosStatistics  />
-            }
+            } */}
 
             {
                 screen !== 'learned' &&
                 <View className='flex flex-row justify-between'>
                     
-                    {/* For starred words */}
                     <TouchableOpacity className='flex flex-row  justify-center items-center'
                     onPress={toggleFilter}>
                         <Ionicons
@@ -57,11 +65,14 @@ const FilterComponent = ({screen = 'all'}) => {
                         </Text>
                     </TouchableOpacity>
 
-                    {/* For Fetch BTN */}
                     <TouchableOpacity className=' p-1'
                     onPress={() => {
                         setFilter('all')
-                        dispatch(WordService.fetchWords())
+                        // dispatch(WordService.fetchWords())
+                        dispatch(WordService.handleLanguageSelect({
+                            langCode: selectedLanguage,
+                            filter: 'all'
+                        }));
                     }}>
                         <Feather name="refresh-ccw" size={24} color="black" />
                     </TouchableOpacity>
