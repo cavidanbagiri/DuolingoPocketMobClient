@@ -1,5 +1,1 @@
-1 - after login, need to go to the last target lang code 
-2 - Need to add confirm password and add to register - Stopped
-3 - Now need to after adding new lang to learning lang, dont show n nin realtime - Working. for exaample after choosing ru, will not show to homescreen again in realtime
-4 - When clicked refresh btn in word screen, need reset starred words - Stopped
-5 - Need to after clicking the btn, give the information about the word with sentences - Stopped
+1 - Need to solve after registering user, l see the error in choosing lang section. the error is max deep level in useEffect

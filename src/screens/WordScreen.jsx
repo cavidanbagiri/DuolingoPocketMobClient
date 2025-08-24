@@ -18,8 +18,6 @@ import WordService from '../services/WordService.js';
 import VocabCard from '../components/cards/VocabCard';
 import FilterComponent from '../components/wordscreen/FilterComponent.jsx';
 
-import $api from '../http/api.js';
-
 // WordsScreen.jsx
 export default function WordScreen() {
     const dispatch = useDispatch();
@@ -38,25 +36,15 @@ export default function WordScreen() {
     
     useEffect(() => {
         if (availableLanguages.length === 1) {
-            dispatch(WordService.handleLanguageSelect(availableLanguages[0].lang));
+            // dispatch(WordService.handleLanguageSelect(availableLanguages[0].lang));
+            dispatch(WordService.handleLanguageSelect({
+                filter: 'all',
+                langCode: availableLanguages[0].lang
+            }));
             dispatch(setSelectedLanguage(availableLanguages[0].lang));
         }
     }, [availableLanguages]);
 
-
-    // const fetchAvailableLanguages = async () => {
-    //     try {
-    //         const response = await $api.get('/words/user/languages');
-    //         setAvailableLanguages(response.data);
-            
-    //         if (response.data.length === 1) {
-    //             dispatch(WordService.handleLanguageSelect(response.data[0].lang));
-    //             dispatch(setSelectedLanguage(response.data[0].lang));
-    //         }
-    //     } catch (error) {
-    //         console.error('Error fetching languages:', error);
-    //     }
-    // };
 
     return (
         <SafeAreaView>
@@ -70,7 +58,10 @@ export default function WordScreen() {
                                 key={lang.lang}
                                 onPress={() => {
                                     dispatch(setSelectedLanguage(lang.lang));
-                                    dispatch(WordService.handleLanguageSelect(lang.lang))
+                                    dispatch(WordService.handleLanguageSelect({
+                                        filter: 'all',
+                                        langCode: lang.lang
+                                    }))
                                 }}
                             >
                                 <Text>{lang.language_name}</Text>
@@ -91,7 +82,10 @@ export default function WordScreen() {
                     // onRefresh={() => handleLanguageSelect(selectedLanguage)}
                     onRefresh={() => {
                         dispatch(setSelectedLanguage(selectedLanguage));
-                        dispatch(WordService.handleLanguageSelect(selectedLanguage))
+                        dispatch(WordService.handleLanguageSelect({
+                            filter: 'all',
+                            langCode: selectedLanguage
+                        }))
                     }}
                 />
             ) : (

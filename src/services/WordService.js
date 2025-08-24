@@ -67,9 +67,30 @@ class WordService {
 
     static handleLanguageSelect = createAsyncThunk(
         '/words/:langCode',
-        async (langCode, thunkAPI) => {
+        async ({ langCode, filter = 'all' }, thunkAPI) => {
+
+            let starred = false;
+            let learned = false;
+
+            if (filter === 'starred') {
+                starred = true;
+            }
+            if (filter === 'learned') {
+                learned = true;
+            }
+
+            console.log('language code is ', langCode);
+            
             try {
-                const response = await $api.get(`/words/${langCode}?limit=50`);
+                console.log('this function is running');
+                const response = await $api.get(`/words/${langCode}?limit=50`,{
+                    params: 
+                    { 
+                        only_starred: starred,
+                        only_learned: learned
+                    }
+                });
+                console.log('coming response is ', response.data);
                 return response.data;
             } catch (error) {
                 // Extract error details

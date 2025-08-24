@@ -23,8 +23,8 @@ const FilterComponent = ({screen = 'all'}) => {
     };
 
     useEffect(() => {
-        dispatch(setWordsPendingFalse());
-        dispatch(WordService.fetchWords({ filter }));
+        // dispatch(setWordsPendingFalse());
+        // dispatch(WordService.fetchWords({ filter }));
     }, [filter]);
 
 
