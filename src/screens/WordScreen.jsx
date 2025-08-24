@@ -1,12 +1,14 @@
 
 import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
 
-import React, { Component, useEffect, useState } from 'react'
+import React, { Component, use, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useDispatch, useSelector } from 'react-redux';
 
 import LanguageSelector from '../components/wordscreen/LanguageSelector.jsx';
+
+import {setSelectedLanguage} from '../store/word_store';
 
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
@@ -22,50 +24,34 @@ import $api from '../http/api.js';
 export default function WordScreen() {
     const dispatch = useDispatch();
 
-    const {words, loading} = useSelector((state) => state.wordSlice);
+    const {words, loading, selectedLanguage} = useSelector((state) => state.wordSlice);
 
     const { is_auth } = useSelector((state) => state.authSlice);
     const [availableLanguages, setAvailableLanguages] = useState([]);
-    const [selectedLanguage, setSelectedLanguage] = useState(null);
-    // const [words, setWords] = useState([]);
-    // const [loading, setLoading] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
             if (is_auth) {
                 fetchAvailableLanguages();
+                // dispatch(WordService.fetchAvailableLanguages());
             }
         }, [is_auth])
     );
+
 
     const fetchAvailableLanguages = async () => {
         try {
             const response = await $api.get('/words/user/languages');
             setAvailableLanguages(response.data);
             
-            // If only one language, auto-select it
             if (response.data.length === 1) {
-                // handleLanguageSelect(response.data[0].lang);
                 dispatch(WordService.handleLanguageSelect(response.data[0].lang));
+                dispatch(setSelectedLanguage(response.data[0].lang));
             }
         } catch (error) {
             console.error('Error fetching languages:', error);
         }
     };
-
-    // const handleLanguageSelect = async (langCode) => {
-    //     setSelectedLanguage(langCode);
-    //     setLoading(true);
-        
-    //     try {
-    //         const response = await $api.get(`/words/${langCode}?limit=50`);
-    //         setWords(response.data);
-    //     } catch (error) {
-    //         console.error('Error fetching words:', error);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
 
     return (
         <SafeAreaView>
@@ -78,7 +64,7 @@ export default function WordScreen() {
                             <TouchableOpacity
                                 key={lang.lang}
                                 onPress={() => {
-                                    setSelectedLanguage(lang.lang);
+                                    dispatch(setSelectedLanguage(lang.lang));
                                     dispatch(WordService.handleLanguageSelect(lang.lang))
                                 }}
                             >
@@ -99,7 +85,7 @@ export default function WordScreen() {
                     refreshing={loading}
                     // onRefresh={() => handleLanguageSelect(selectedLanguage)}
                     onRefresh={() => {
-                        setSelectedLanguage(selectedLanguage);
+                        dispatch(setSelectedLanguage(selectedLanguage));
                         dispatch(WordService.handleLanguageSelect(selectedLanguage))
                     }}
                 />

@@ -26,7 +26,7 @@ const initialState = {
     words: [],
     wordsData: [], // New: stores the complete language-wise data
     availableLanguages: [], // New: stores available language codes
-    //selectedLanguage: null, // New: currently selected language
+    selectedLanguage: null, // New: currently selected language
     words_pending: false,
     is_words_error: false,
     is_words_success: false,
@@ -63,14 +63,14 @@ export const wordSlice = createSlice({
             }
         },
 
-        // setSelectedLanguage: (state, action) => {
-        //     state.selectedLanguage = action.payload;
-        //     // Find and set words for the selected language
-        //     const selectedLangData = state.wordsData.find(data => data.lang === action.payload);
-        //     if (selectedLangData) {
-        //         state.words = selectedLangData.words;
-        //     }
-        // }
+        setSelectedLanguage: (state, action) => {
+            state.selectedLanguage = action.payload;
+            // Find and set words for the selected language
+            // const selectedLangData = state.wordsData.find(data => data.lang === action.payload);
+            // if (selectedLangData) {
+            //     state.words = selectedLangData.words;
+            // }
+        }
 
     },
     extraReducers: (builder) => {
@@ -88,6 +88,18 @@ export const wordSlice = createSlice({
             state.loading = false;
         });
 
+
+
+        // builder.addCase(WordService.fetchAvailableLanguages.pending, (state, action) => {
+        //     state.loading = true;
+        // });
+        // builder.addCase(WordService.fetchAvailableLanguages.fulfilled, (state, action) => {
+        //     state.loading = false;
+        //     state.availableLanguages = action.payload;
+        // });
+        // builder.addCase(WordService.fetchAvailableLanguages.rejected, (state, action) => {
+        //     state.loading = false;
+        // });
 
 
 
@@ -223,6 +235,6 @@ export const wordSlice = createSlice({
     },
 })
 
-export const { setWordsPendingFalse, clearDetail, setDetail  } = wordSlice.actions;
+export const { setWordsPendingFalse, clearDetail, setDetail, setSelectedLanguage  } = wordSlice.actions;
 
 export default wordSlice.reducer;
