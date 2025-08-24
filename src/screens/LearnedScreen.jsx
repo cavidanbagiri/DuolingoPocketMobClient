@@ -25,11 +25,17 @@ export default function LearnedScreen() {
 
 
   useFocusEffect(
+        useCallback(() => {
+            if (is_auth && availableLanguages.length === 0) {
+                dispatch(WordService.fetchAvailableLanguages());
+            }
+        }, [is_auth])
+    );
+
+
+  useFocusEffect(
     useCallback(() => {
       if (is_auth) {
-        // dispatch(WordService.fetchWords({ filter: 'learned' }));
-        // dispatch(WordService.handleLanguageSelect({ filter: 'learned' }, lang_code='ru'));
-        console.log('selected language is ', selectedLanguage);
         dispatch(WordService.handleLanguageSelect({
           langCode: selectedLanguage,
           filter: 'learned'
@@ -42,7 +48,6 @@ export default function LearnedScreen() {
 
   return (
     <SafeAreaView>
-      {/* <FilterComponent screen='learned'/> */}
 
       {availableLanguages?.length > 1 && (
         <View >
