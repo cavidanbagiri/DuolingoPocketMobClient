@@ -29,14 +29,14 @@ export default function LanguagesStatisticsComponents() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Selected Languages</Text>
+      <Text style={styles.title}>Languages Statistics</Text>
 
       <ScrollView style={styles.boxContainer}>
 
         {
           statistics &&
           statistics.map((item, index) => (
-            <View className='rounded-xl overflow-hidden mt-10'
+            <View className='rounded-xl overflow-hidden mt-5'
             key={index}>
               
             <LinearGradient
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '600',
-    marginBottom: 10,
+    marginBottom: 5,
   },
   boxContainer: {
     width: '100%',

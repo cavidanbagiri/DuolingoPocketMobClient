@@ -16,7 +16,6 @@ $api.interceptors.request.use(
     // const token = await SecureStore.getItemAsync('token');
     const token = await getFromStorage('token');
     
-    console.log('comes token is ', token)
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

@@ -5,31 +5,71 @@ import $api from '../http/api';
 
 class WordService {
 
-    static fetchWords = createAsyncThunk(
-        '/words/fetch_words',
-        async ({ filter = 'all' } = {}, thunkAPI) => {
+    // static fetchWords = createAsyncThunk(
+    //     '/words/fetch_words',
+    //     async ({ filter = 'all' } = {}, thunkAPI) => {
+    //         try {
+    //             let starred = false;
+    //             let learned = false;
+    //             if (filter === 'starred') {
+    //                 starred = true;
+    //             }
+    //             if (filter === 'learned') {
+    //                 learned = true;
+    //             }
+    //             const response = await $api.get(`/words/fetch_words`,
+    //                 { 
+    //                     params: 
+    //                     { 
+    //                         only_starred: starred,
+    //                         only_learned: learned
+    //                     } 
+    //                 }
+    //             );
+    //             return {
+    //                 payload: response.data,
+    //                 status: response.status,
+    //             };
+    //         } catch (error) {
+    //             // Extract error details
+    //             const errorData = error.response?.data || { message: error.message };
+    //             const statusCode = error.response?.status || 500;
+    //             // Pass custom error payload
+    //             return thunkAPI.rejectWithValue({
+    //                 payload: errorData,
+    //                 status: statusCode,
+    //             });
+                
+    //         }
+    //     }
+    // )
+
+
+    // static fetchAvailableLanguages = createAsyncThunk(
+    //     '/user/languages',
+    //     async () => {
+    //         try {
+    //             const response = await $api.get('/user/languages');
+    //             return response.data;
+    //         } catch (error) {
+    //             // Extract error details
+    //             const errorData = error.response?.data || { message: error.message };
+    //             const statusCode = error.response?.status || 500;
+    //             // Pass custom error payload
+    //             return thunkAPI.rejectWithValue({
+    //                 payload: errorData,
+    //                 status: statusCode,
+    //             });
+    //         }
+    //     }
+    // )
+
+    static handleLanguageSelect = createAsyncThunk(
+        '/words/:langCode',
+        async (langCode, thunkAPI) => {
             try {
-                let starred = false;
-                let learned = false;
-                if (filter === 'starred') {
-                    starred = true;
-                }
-                if (filter === 'learned') {
-                    learned = true;
-                }
-                const response = await $api.get(`/words/fetch_words`,
-                    { 
-                        params: 
-                        { 
-                            only_starred: starred,
-                            only_learned: learned
-                        } 
-                    }
-                );
-                return {
-                    payload: response.data,
-                    status: response.status,
-                };
+                const response = await $api.get(`/words/${langCode}?limit=50`);
+                return response.data;
             } catch (error) {
                 // Extract error details
                 const errorData = error.response?.data || { message: error.message };
@@ -39,10 +79,12 @@ class WordService {
                     payload: errorData,
                     status: statusCode,
                 });
-                
             }
         }
     )
+
+
+
 
     static setStatus = createAsyncThunk(
         '/words/setstatus',
