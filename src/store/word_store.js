@@ -90,16 +90,16 @@ export const wordSlice = createSlice({
 
 
 
-        // builder.addCase(WordService.fetchAvailableLanguages.pending, (state, action) => {
-        //     state.loading = true;
-        // });
-        // builder.addCase(WordService.fetchAvailableLanguages.fulfilled, (state, action) => {
-        //     state.loading = false;
-        //     state.availableLanguages = action.payload;
-        // });
-        // builder.addCase(WordService.fetchAvailableLanguages.rejected, (state, action) => {
-        //     state.loading = false;
-        // });
+        builder.addCase(WordService.fetchAvailableLanguages.pending, (state, action) => {
+            state.loading = true;
+        });
+        builder.addCase(WordService.fetchAvailableLanguages.fulfilled, (state, action) => {
+            state.loading = false;
+            state.availableLanguages = action.payload;
+        });
+        builder.addCase(WordService.fetchAvailableLanguages.rejected, (state, action) => {
+            state.loading = false;
+        });
 
 
 

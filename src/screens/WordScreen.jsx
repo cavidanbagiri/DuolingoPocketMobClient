@@ -24,39 +24,44 @@ import $api from '../http/api.js';
 export default function WordScreen() {
     const dispatch = useDispatch();
 
-    const {words, loading, selectedLanguage} = useSelector((state) => state.wordSlice);
+    const {words, loading, selectedLanguage, availableLanguages} = useSelector((state) => state.wordSlice);
 
     const { is_auth } = useSelector((state) => state.authSlice);
-    const [availableLanguages, setAvailableLanguages] = useState([]);
 
     useFocusEffect(
         useCallback(() => {
             if (is_auth) {
-                fetchAvailableLanguages();
-                // dispatch(WordService.fetchAvailableLanguages());
+                dispatch(WordService.fetchAvailableLanguages());
             }
         }, [is_auth])
     );
-
-
-    const fetchAvailableLanguages = async () => {
-        try {
-            const response = await $api.get('/words/user/languages');
-            setAvailableLanguages(response.data);
-            
-            if (response.data.length === 1) {
-                dispatch(WordService.handleLanguageSelect(response.data[0].lang));
-                dispatch(setSelectedLanguage(response.data[0].lang));
-            }
-        } catch (error) {
-            console.error('Error fetching languages:', error);
+    
+    useEffect(() => {
+        if (availableLanguages.length === 1) {
+            dispatch(WordService.handleLanguageSelect(availableLanguages[0].lang));
+            dispatch(setSelectedLanguage(availableLanguages[0].lang));
         }
-    };
+    }, [availableLanguages]);
+
+
+    // const fetchAvailableLanguages = async () => {
+    //     try {
+    //         const response = await $api.get('/words/user/languages');
+    //         setAvailableLanguages(response.data);
+            
+    //         if (response.data.length === 1) {
+    //             dispatch(WordService.handleLanguageSelect(response.data[0].lang));
+    //             dispatch(setSelectedLanguage(response.data[0].lang));
+    //         }
+    //     } catch (error) {
+    //         console.error('Error fetching languages:', error);
+    //     }
+    // };
 
     return (
         <SafeAreaView>
             {/* Language Selector */}
-            {availableLanguages.length > 1 && (
+            {availableLanguages?.length > 1 && (
                 <View >
                     <Text>Select Language:</Text>
                     <View >

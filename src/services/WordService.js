@@ -49,7 +49,8 @@ class WordService {
         '/user/languages',
         async () => {
             try {
-                const response = await $api.get('/user/languages');
+                const response = await $api.get('/words/user/languages');
+                console.log('fetch available is work and response is ', response.data);
                 return response.data;
             } catch (error) {
                 // Extract error details

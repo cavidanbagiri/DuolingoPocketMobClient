@@ -30,7 +30,6 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
 
 
   useEffect(() => {
-    console.log('first work')
     const getNativeLang = async () => {
       const native = await SecureStore.getItemAsync('native');
       setNativeLangCode(native); 
@@ -40,7 +39,6 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
   
   
   useEffect(() => {
-    console.log('second work')
     // ✅ Filter languages based on selected languages and native language
     const filtered = languages.filter(
       (lang) =>
