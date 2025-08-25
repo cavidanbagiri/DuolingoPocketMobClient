@@ -16,7 +16,7 @@ class AuthService {
         async (credentials, thunkAPI) => {
             try {
                 // const response = await $api.post('/auth/register', credentials);
-                const response = await axios.post('http://10.0.2.2:8000/api/auth/register', credentials);
+                const response = await $api.post('/auth/register', credentials);
 
                 return {
                     payload: response.data,
@@ -39,7 +39,7 @@ class AuthService {
         '/auth/login',
         async (credentials, thunkAPI) => {
             try {
-                const response = await $api.post('http://10.0.2.2:8000/api/auth/login', credentials);
+                const response = await $api.post('/auth/login', credentials);
                 // Return data on success
                 return {
                     payload: response.data,
@@ -85,7 +85,7 @@ class AuthService {
         'http://10.0.2.2:8000/api/auth/logout',
         async () => {
             try {
-                const response = await $api.post('http://10.0.2.2:8000/api/auth/logout');
+                const response = await $api.post('/auth/logout');
                 return {
                     payload: response.data,
                     status: response.status,
