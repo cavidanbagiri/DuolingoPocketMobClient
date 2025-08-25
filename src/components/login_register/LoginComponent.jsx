@@ -88,7 +88,11 @@ export default function LoginComponent({ onLogin }) {
       placeholder="Password" onChangeText={setPassword} secureTextEntry /> */}
 
 
-      
+      <Text
+            style={{ fontFamily: 'IBMPlexSans-Regular' }}
+            className='text-[32px] font-bold text-center mb-4 '>
+            Sign In
+          </Text>
 
       {/* Email Input with Icon */}
       <View className='flex flex-row items-center mt-5 w-full border border-gray-300 rounded-lg py-1 px-3'>

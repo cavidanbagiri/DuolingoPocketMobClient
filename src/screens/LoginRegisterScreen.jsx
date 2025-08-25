@@ -22,17 +22,20 @@ export default function LoginRegisterScreen({ onLogin }) {
 
         <View className='flex flex-1 justify-start p-8 bg-white '>
 
-          <Image
+          {
+            mode === 'login' &&
+            <Image
             source={require('../../assets/login-register-image.jpg')}
             className='w-full h-1/3  mt-10'
             resizeMode="contain"
           />
+          }
 
-          <Text
+          {/* <Text
             style={{ fontFamily: 'IBMPlexSans-Regular' }}
             className='text-[32px] font-bold text-center mb-4 '>
             {mode === 'login' ? 'Sign In' : 'Register'}
-          </Text>
+          </Text> */}
 
           {mode === 'login' ? (
             <LoginComponent onLogin={onLogin} />

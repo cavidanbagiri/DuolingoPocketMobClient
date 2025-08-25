@@ -18,7 +18,7 @@ export default function DropdownNativeLangComponent({ selectedLanguage, setSelec
             <Picker
                 selectedValue={selectedLanguage}
                 onValueChange={(itemValue) => {
-                    dispatch(AuthService.setNativeLanguage({ native: itemValue }));
+                    // dispatch(AuthService.setNativeLanguage({ native: itemValue }));
                     setSelectedLanguage(itemValue)
                 }}
                 style={styles.picker}
@@ -46,6 +46,6 @@ const styles = StyleSheet.create({
     },
     picker: {
         // width: '50%',
-        height: 50,
+        height: 60,
     },
 });

@@ -86,7 +86,7 @@ export default function HomeScreen() {
             {/* Wrapper View with proper width */}
             <View style={styles.dropdownMainWrapper}>
 
-              {
+              {/* {
                 native === '' && is_auth === true &&
                 <View style={styles.dropdownWrapper}>
                   <DropdownNativeLangComponent
@@ -94,7 +94,7 @@ export default function HomeScreen() {
                     setSelectedLanguage={setNativeLanguage}
                   />
                 </View>
-              }
+              } */}
 
               {
                 is_auth === true &&

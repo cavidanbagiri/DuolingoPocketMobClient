@@ -15,6 +15,7 @@ import MsgBox from '../layouts/MsgBox';
 
 import { setIsLoginErrorFalse, setIsLoginSuccessFalse } from '../../store/auth_store';
 
+import DropdownNativeLangComponent from '../home/DropdownNativeLangComponent.jsx';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Feather from '@expo/vector-icons/Feather';
@@ -30,13 +31,22 @@ export default function RegisterComponent({ setMode, onRegister }) {
   const [username, setUsername] = useState('');
   const [confirm, setConfirm] = useState('');
 
+  const [nativeLanguage, setNativeLanguage] = useState('');
+
   const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
   };
 
+
+
   const handleRegister = () => {
-    // Client-side validation
+    
+    
+    if (nativeLanguage === '') {
+      Alert.alert('Validation Error', 'Native Language is required');
+      return;
+    }
     if (!username.trim()) {
       Alert.alert('Validation Error', 'Username is required');
       return;
@@ -56,7 +66,8 @@ export default function RegisterComponent({ setMode, onRegister }) {
       return;
     }
 
-    dispatch(AuthService.register({ email, password, username }));
+
+    dispatch(AuthService.register({ email, password, username, native: nativeLanguage }));
   };
 
   useEffect(() => {
@@ -79,10 +90,7 @@ export default function RegisterComponent({ setMode, onRegister }) {
 
   return (
 
-
-    
-
-    <View >
+    <View className='flex-1 justify-center items-center '>
       {
         (is_login_error || login_success) &&
         <MsgBox
@@ -92,7 +100,18 @@ export default function RegisterComponent({ setMode, onRegister }) {
         />
       }
 
-      <View className='flex flex-row items-center mt-3 w-full border border-gray-300 rounded-lg  px-3'>
+      <Text
+                  style={{ fontFamily: 'IBMPlexSans-Regular' }}
+                  className='text-[32px] font-bold text-center mb-4 '>
+                  Register
+                </Text>
+
+      <DropdownNativeLangComponent
+        selectedLanguage={nativeLanguage}
+        setSelectedLanguage={setNativeLanguage}
+      />
+
+      <View className='flex flex-row items-center mt-5 w-full border border-gray-300 rounded-lg  px-3'>
         <Feather name="user" size={20} color="#666" style={{ marginRight: 10 }} />
         <TextInput
           style={{ fontFamily: 'IBMPlexSans-Regular', flex: 1 }}
@@ -102,7 +121,7 @@ export default function RegisterComponent({ setMode, onRegister }) {
         />
       </View>
 
-      <View className='flex flex-row items-center mt-3 w-full border border-gray-300 rounded-lg px-3'>
+      <View className='flex flex-row items-center mt-5 w-full border border-gray-300 rounded-lg px-3'>
         <Icon name="mail-outline" size={20} color="#666" style={{ marginRight: 10 }} />
         <TextInput
           style={{ fontFamily: 'IBMPlexSans-Regular', flex: 1 }}
@@ -112,23 +131,25 @@ export default function RegisterComponent({ setMode, onRegister }) {
         />
       </View>
 
-      <View className='flex flex-row items-center mt-3 w-full border border-gray-300 rounded-lg px-3'>
+      <View className='flex flex-row items-center mt-5 w-full border border-gray-300 rounded-lg px-3'>
         <Feather name="lock" size={20} color="#666" style={{ marginRight: 10 }} />
         <TextInput
           style={{ fontFamily: 'IBMPlexSans-Regular', flex: 1 }}
           className='text-lg font-medium'
           placeholder="Password"
           onChangeText={setPassword}
+          secureTextEntry
         />
       </View>
 
-      <View className='flex flex-row items-center mt-3 w-full border border-gray-300 rounded-lg px-3'>
+      <View className='flex flex-row items-center mt-5 w-full border border-gray-300 rounded-lg px-3'>
         <Feather name="lock" size={20} color="#666" style={{ marginRight: 10 }} />
         <TextInput
           style={{ fontFamily: 'IBMPlexSans-Regular', flex: 1 }}
           className='text-lg font-medium'
           placeholder="Confirm Password"
           onChangeText={setConfirm}
+          secureTextEntry
         />
       </View>
 
