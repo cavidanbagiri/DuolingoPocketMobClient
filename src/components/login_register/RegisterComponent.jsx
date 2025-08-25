@@ -8,13 +8,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ActivityIndicator } from 'react-native';
 
 
+
 import AuthService from '../../services/AuthService.js';
 
 import MsgBox from '../layouts/MsgBox';
 
 import { setIsLoginErrorFalse, setIsLoginSuccessFalse } from '../../store/auth_store';
 
-export default function RegisterComponent({setMode, onRegister }) {
+
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import Feather from '@expo/vector-icons/Feather';
+
+export default function RegisterComponent({ setMode, onRegister }) {
 
   const dispatch = useDispatch();
 
@@ -54,7 +59,7 @@ export default function RegisterComponent({setMode, onRegister }) {
     dispatch(AuthService.register({ email, password, username }));
   };
 
-   useEffect(() => {
+  useEffect(() => {
     if (is_login_error) {
       setTimeout(() => {
         dispatch(setIsLoginErrorFalse());
@@ -73,62 +78,76 @@ export default function RegisterComponent({setMode, onRegister }) {
 
 
   return (
+
+
+    
+
     <View >
       {
         (is_login_error || login_success) &&
         <MsgBox
-        message={login_message}
-        visible={login_success || is_login_error}
-        type={login_success ? 'success' : 'error'}
-      />
+          message={login_message}
+          visible={login_success || is_login_error}
+          type={login_success ? 'success' : 'error'}
+        />
       }
-      <TextInput
-        placeholder="Username"
-        style={styles.input}
-        onChangeText={setUsername}
-        autoCapitalize="none"
-      />
-      <TextInput
-        placeholder="Email"
-        style={styles.input}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        keyboardType="email-address"
-      />
-      <TextInput
-        placeholder="Password"
-        style={styles.input}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <TextInput
-        placeholder="Confirm Password"
-        style={styles.input}
-        onChangeText={setConfirm}
-        secureTextEntry
-      />
-    
-        <TouchableOpacity
-          style={[styles.button, login_pending && { backgroundColor: '#aaa' }]}
-          onPress={handleRegister}
-          disabled={login_pending}
-        >
-          {login_pending ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Register</Text>
-          )}
-        </TouchableOpacity>
+
+      <View className='flex flex-row items-center mt-3 w-full border border-gray-300 rounded-lg  px-3'>
+        <Feather name="user" size={20} color="#666" style={{ marginRight: 10 }} />
+        <TextInput
+          style={{ fontFamily: 'IBMPlexSans-Regular', flex: 1 }}
+          className='text-lg font-medium'
+          placeholder="Username"
+          onChangeText={setUsername}
+        />
+      </View>
+
+      <View className='flex flex-row items-center mt-3 w-full border border-gray-300 rounded-lg px-3'>
+        <Icon name="mail-outline" size={20} color="#666" style={{ marginRight: 10 }} />
+        <TextInput
+          style={{ fontFamily: 'IBMPlexSans-Regular', flex: 1 }}
+          className='text-lg font-medium'
+          placeholder="Email"
+          onChangeText={setEmail}
+        />
+      </View>
+
+      <View className='flex flex-row items-center mt-3 w-full border border-gray-300 rounded-lg px-3'>
+        <Feather name="lock" size={20} color="#666" style={{ marginRight: 10 }} />
+        <TextInput
+          style={{ fontFamily: 'IBMPlexSans-Regular', flex: 1 }}
+          className='text-lg font-medium'
+          placeholder="Password"
+          onChangeText={setPassword}
+        />
+      </View>
+
+      <View className='flex flex-row items-center mt-3 w-full border border-gray-300 rounded-lg px-3'>
+        <Feather name="lock" size={20} color="#666" style={{ marginRight: 10 }} />
+        <TextInput
+          style={{ fontFamily: 'IBMPlexSans-Regular', flex: 1 }}
+          className='text-lg font-medium'
+          placeholder="Confirm Password"
+          onChangeText={setConfirm}
+        />
+      </View>
+
+      <TouchableOpacity
+        className='flex flex-row justify-center items-center mt-5 w-full bg-blue-600 py-5 px-4 rounded-lg '
+        onPress={handleRegister}
+        disabled={login_pending}
+      >
+        {login_pending ? (
+          <ActivityIndicator size="small" color="#fff" />
+        ) : (
+          <Text style={{ fontFamily: 'IBMPlexSans-Regular' }}
+            className='text-white text-lg'>Register</Text>
+        )}
+      </TouchableOpacity>
 
     </View>
+
+
+
   );
 }
-
-const styles = StyleSheet.create({
-  input: { borderWidth: 1, borderRadius: 10, marginVertical: 10, padding: 10 },
-  button: { backgroundColor: '#28a745', padding: 14, borderRadius: 10, alignItems: 'center', marginTop: 10 },
-  buttonText: { color: '#fff', fontWeight: 'bold' },
-});
-
-
-

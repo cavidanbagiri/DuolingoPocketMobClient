@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, StyleSheet, Image } from 'react-native';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -10,6 +10,10 @@ import AuthService from '../../services/AuthService.js';
 import MsgBox from '../layouts/MsgBox';
 
 import { setIsLoginErrorFalse, setIsLoginSuccessFalse } from '../../store/auth_store';
+
+
+import Icon from 'react-native-vector-icons/MaterialIcons';
+
 
 export default function LoginComponent({ onLogin }) {
 
@@ -29,7 +33,7 @@ export default function LoginComponent({ onLogin }) {
   };
 
   const handleLogin = async () => {
-    
+
 
     if (!validateEmail(email)) {
       Alert.alert('Validation Error', 'Please enter a valid email address');
@@ -41,63 +45,91 @@ export default function LoginComponent({ onLogin }) {
       return;
     }
 
-    dispatch(AuthService.login({ email, password })); 
+    dispatch(AuthService.login({ email, password }));
   };
 
 
-    useEffect(() => {
-      if (is_login_error) {
-        setTimeout(() => {
-          dispatch(setIsLoginErrorFalse());
-        }, 500);
-      }
-    }, [is_login_error]);
-  
-    useEffect(() => {
-      if (login_success) {
-        setTimeout(() => {
-          dispatch(setIsLoginSuccessFalse());
-        }, 500);
-      }
-    }, [login_success]);
+  useEffect(() => {
+    if (is_login_error) {
+      setTimeout(() => {
+        dispatch(setIsLoginErrorFalse());
+      }, 500);
+    }
+  }, [is_login_error]);
+
+  useEffect(() => {
+    if (login_success) {
+      setTimeout(() => {
+        dispatch(setIsLoginSuccessFalse());
+      }, 500);
+    }
+  }, [login_success]);
 
   return (
 
     <View>
 
-
-     {
-       (is_login_error || login_success) &&
+      {
+        (is_login_error || login_success) &&
         <MsgBox
-        message={login_message}
-        visible={login_success || is_login_error}
-        type={login_success ? 'success' : 'error'}
+          message={login_message}
+          visible={login_success || is_login_error}
+          type={login_success ? 'success' : 'error'}
         />
-     }
+      }
 
-      <TextInput placeholder="Email" style={styles.input} onChangeText={setEmail} />
-      <TextInput placeholder="Password" style={styles.input} onChangeText={setPassword} secureTextEntry />
+      {/* <TextInput 
+      style={{fontFamily: 'IBMPlexSans-Regular', flex:1}}
+      className='text-lg font-medium mt-5 w-full border border-gray-300 rounded-lg py-3 px-3'
+      placeholder="Email" onChangeText={setEmail} />
+      <TextInput 
+      style={{fontFamily: 'IBMPlexSans-Regular', flex:1}}
+      className='text-lg font-medium mt-4 w-full border border-gray-300 rounded-lg py-3 px-3'
+      placeholder="Password" onChangeText={setPassword} secureTextEntry /> */}
+
+
       
+
+      {/* Email Input with Icon */}
+      <View className='flex flex-row items-center mt-5 w-full border border-gray-300 rounded-lg py-1 px-3'>
+        <Icon name="mail-outline" size={20} color="#666" style={{ marginRight: 10 }} />
+        <TextInput
+          style={{ fontFamily: 'IBMPlexSans-Regular', flex: 1 }}
+          className='text-lg font-medium'
+          placeholder="Email"
+          onChangeText={setEmail}
+        />
+      </View>
+
+      {/* Password Input with Icon */}
+      <View className='flex flex-row items-center mt-4 w-full border border-gray-300 rounded-lg py-1 px-3'>
+        <Icon name="lock-outline" size={20} color="#666" style={{ marginRight: 10 }} />
+        <TextInput
+          style={{ fontFamily: 'IBMPlexSans-Regular', flex: 1 }}
+          className='text-lg font-medium'
+          placeholder="Password"
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+      </View>
+
+
       <TouchableOpacity
-        style={[styles.button, login_pending && { backgroundColor: '#aaa' }]}
+        // style={[styles.button, login_pending && { backgroundColor: '#aaa' }]}
+        className='flex flex-row justify-center items-center mt-5 w-full bg-blue-600 py-5 px-4 rounded-lg '
         onPress={handleLogin}
         disabled={login_pending}
       >
         {login_pending ? (
           <ActivityIndicator size="small" color="#fff" />
         ) : (
-          <Text style={styles.buttonText}>Login</Text>
+          <Text style={{ fontFamily: 'IBMPlexSans-Regular' }}
+            className='text-white text-lg'>Login</Text>
         )}
       </TouchableOpacity>
 
 
     </View>
-  
-);
-}
 
-const styles = StyleSheet.create({
-  input: { borderWidth: 1, borderRadius: 10, marginVertical: 10, padding: 10 },
-  button: { backgroundColor: '#4A90E2', padding: 14, borderRadius: 10, alignItems: 'center', marginTop: 10 },
-  buttonText: { color: '#fff', fontWeight: 'bold' },
-});
+  );
+}
