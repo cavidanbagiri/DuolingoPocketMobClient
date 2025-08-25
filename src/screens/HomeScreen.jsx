@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { ScrollView, StyleSheet, Text, View, Image } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getFromStorage } from '../utils/storage';
 
@@ -13,7 +13,11 @@ import ChooseLangComponent from '../components/home/ChooseLangComponent';
 import { setNewTargetLanguageCondFalse } from '../store/auth_store';
 import LanguagesStatisticsComponents from '../components/home/LanguagesStatisticsComponents';
 
+import { useNavigation } from '@react-navigation/native'; // 👈 Import this
+
 export default function HomeScreen() {
+
+  const navigation = useNavigation(); // 👈 Get navigation object
 
   const dispatch = useDispatch();
 
@@ -60,63 +64,147 @@ export default function HomeScreen() {
 
 
   return (
+
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.scroll}>
-        <Text className='text-3xl font-bold text-center'>
-          {username ? `Hi, ${username}!` : 'Hi, There!'}
-        </Text>
 
-        {
-          new_target_lang_cond.is_cond &&
-          <MsgBox
-            message={new_target_lang_cond.msg}
-            visible={new_target_lang_cond.is_cond}
-            type="error"
-          />
-        }
+      {
+        is_auth ?
+          <ScrollView contentContainerStyle={styles.scroll}>
+            <Text className='text-3xl font-bold text-center'>
+              {username ? `Hi, ${username}!` : 'Hi, There!'}
+            </Text>
 
-        <Image
-          source={require('../../assets/HomeImage.png')}
-          style={styles.image}
-          resizeMode="contain"
-        />
+            {
+              new_target_lang_cond.is_cond &&
+              <MsgBox
+                message={new_target_lang_cond.msg}
+                visible={new_target_lang_cond.is_cond}
+                type="error"
+              />
+            }
+
+            <Image
+              source={require('../../assets/HomeImage.png')}
+              style={styles.image}
+              resizeMode="contain"
+            />
 
 
-        {/* Wrapper View with proper width */}
-        <View style={styles.dropdownMainWrapper}>
+            {/* Wrapper View with proper width */}
+            <View style={styles.dropdownMainWrapper}>
 
-          {
-            native === '' && is_auth === true &&
-            <View style={styles.dropdownWrapper}>
-              <DropdownNativeLangComponent
-                selectedLanguage={nativeLanguage}
-                setSelectedLanguage={setNativeLanguage}
+              {
+                native === '' && is_auth === true &&
+                <View style={styles.dropdownWrapper}>
+                  <DropdownNativeLangComponent
+                    selectedLanguage={nativeLanguage}
+                    setSelectedLanguage={setNativeLanguage}
+                  />
+                </View>
+              }
+
+              {
+                is_auth === true &&
+                <View>
+                  <ChooseLangComponent
+                    selectedLanguage={choosenLanguage}
+                    setSelectedLanguage={setChoosenLanguage}
+                    nativeLanguage={nativeLanguage}
+                  />
+                </View>
+              }
+
+              {
+                is_auth === true &&
+                <View>
+                  <LanguagesStatisticsComponents />
+                </View>
+              }
+
+            </View>
+
+          </ScrollView>
+          :
+
+          <View className="flex-1 bg-white p-6">
+            {/* Welcome Section */}
+            <View className="items-center mt-20 mb-6">
+              <Text
+                style={{ fontFamily: 'Poppins-Regular' }}
+                className="text-5xl font-bold text-gray-800"
+              >
+                Welcome
+              </Text>
+            </View>
+
+            {/* Logo Image */}
+            <View className="items-center mb-8">
+              <Image
+                source={require('../../assets/logo.png')}
+                style={{
+                  width: '70%',
+                  marginTop: 20,
+                  marginBottom: 20,
+                  height: 100,
+                  resizeMode: 'cover',
+                }}
               />
             </View>
-          }
 
-          {
-           is_auth === true &&
-            <View>
-              <ChooseLangComponent
-                selectedLanguage={choosenLanguage}
-                setSelectedLanguage={setChoosenLanguage}
-                nativeLanguage = {nativeLanguage}
-              />
+            {/* Feature Card */}
+            <View
+              className="bg-white p-6 rounded-2xl mb-8 "
+            >
+              <Text
+                style={{ fontFamily: 'OpenSans-Regular' }}
+                className="text-2xl text-center text-gray-800 mb-2 font-bold"
+              >
+                Learn Top Words
+              </Text>
+              <Text
+                style={{ fontFamily: 'IBMPlexSans-Regular' }}
+                className="text-center text-lg text-gray-600 leading-relaxed"
+              >
+                Master the most common words in 3 languages through real-life sentences and interactive practice.
+              </Text>
             </View>
-          }
 
-          {
-           is_auth === true &&
-            <View>
-              <LanguagesStatisticsComponents/>
+            {/* Call-to-Action Button */}
+            <TouchableOpacity
+              className="flex flex-row justify-center items-center mt-12 bg-blue-600 py-4 rounded-xl shadow-md"
+              onPress={() => {
+                  navigation.navigate('Login/Register')
+                }}
+              activeOpacity={0.8}
+            >
+              <Text
+                style={{ fontFamily: 'IBMPlexSans-SemiBold' }}
+                className="text-white text-lg"
+              >
+                Continue Learning
+              </Text>
+            </TouchableOpacity>
+
+            {/* Optional: Sign Up Link (small) */}
+            <View className="mt-4 items-center">
+              <Text
+                style={{ fontFamily: 'IBMPlexSans-Regular' }}
+                className="text-sm text-gray-500"
+              >
+                New here?{' '}
+                <Text className="text-blue-600 font-semibold"
+                onPress={() => {
+                  navigation.navigate('Login/Register')
+                }}
+                >Create an account</Text>
+              </Text>
             </View>
-          }
+          </View>
 
-        </View>
+      }
 
-      </ScrollView>
     </SafeAreaView>
+
   );
 }
 
@@ -137,17 +225,13 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: 250,
-    borderRadius: 12,
   },
   dropdownMainWrapper: {
     width: '100%',
-    // flexDirection: 'row',
-    // justifyContent: 'space-between',
-    // gap: 10, // optional (if React Native version supports it)
     marginBottom: 20,
   },
   dropdownWrapper: {
-  flex: 1, // each takes half width
-},
+    flex: 1, // each takes half width
+  },
 });
 
