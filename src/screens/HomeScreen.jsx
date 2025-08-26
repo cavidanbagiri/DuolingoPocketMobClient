@@ -7,13 +7,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { getFromStorage } from '../utils/storage';
 
 import MsgBox from '../components/layouts/MsgBox';
-import DropdownNativeLangComponent from '../components/home/DropdownNativeLangComponent';
 import ChooseLangComponent from '../components/home/ChooseLangComponent';
+
+import Feather from '@expo/vector-icons/Feather';
 
 import { setNewTargetLanguageCondFalse } from '../store/auth_store';
 import LanguagesStatisticsComponents from '../components/home/LanguagesStatisticsComponents';
 
 import { useNavigation } from '@react-navigation/native'; // 👈 Import this
+import HeaderComponent from '../components/home/HeaderComponent';
 
 export default function HomeScreen() {
 
@@ -65,14 +67,14 @@ export default function HomeScreen() {
 
   return (
 
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} className='bg-slate-100'>
 
       {
         is_auth ?
           <ScrollView contentContainerStyle={styles.scroll}>
-            <Text className='text-3xl font-bold text-center'>
-              {username ? `Hi, ${username}!` : 'Hi, There!'}
-            </Text>
+
+        
+            
 
             {
               new_target_lang_cond.is_cond &&
@@ -83,18 +85,14 @@ export default function HomeScreen() {
               />
             }
 
-            {/* Wrapper View with proper width */}
-            <View style={styles.dropdownMainWrapper}>
+            <HeaderComponent username={username} />
 
-              {/* {
-                native === '' && is_auth === true &&
-                <View style={styles.dropdownWrapper}>
-                  <DropdownNativeLangComponent
-                    selectedLanguage={nativeLanguage}
-                    setSelectedLanguage={setNativeLanguage}
-                  />
-                </View>
-              } */}
+
+            {/* Wrapper View with proper width */}
+            <View 
+            className='rounded-2xl'
+            style={styles.dropdownMainWrapper}>
+
 
               {
                 is_auth === true &&
@@ -166,8 +164,8 @@ export default function HomeScreen() {
             <TouchableOpacity
               className="flex flex-row justify-center items-center mt-12 bg-blue-600 py-4 rounded-xl shadow-md"
               onPress={() => {
-                  navigation.navigate('Login/Register')
-                }}
+                navigation.navigate('Login/Register')
+              }}
               activeOpacity={0.8}
             >
               <Text
@@ -186,9 +184,9 @@ export default function HomeScreen() {
               >
                 New here?{' '}
                 <Text className="text-blue-600 font-semibold"
-                onPress={() => {
-                  navigation.navigate('Login/Register')
-                }}
+                  onPress={() => {
+                    navigation.navigate('Login/Register')
+                  }}
                 >Create an account</Text>
               </Text>
             </View>
@@ -204,10 +202,10 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    // backgroundColor: '#FFFFFF',
   },
   scroll: {
-    padding: 16,
+    paddingHorizontal: 16,
     alignItems: 'flex-start', // text and image align to the left
   },
   title_text: {
