@@ -73,8 +73,6 @@ export default function HomeScreen() {
         is_auth ?
           <ScrollView contentContainerStyle={styles.scroll}>
 
-        
-            
 
             {
               new_target_lang_cond.is_cond &&
@@ -89,28 +87,22 @@ export default function HomeScreen() {
 
 
             {/* Wrapper View with proper width */}
-            <View 
-            className='rounded-2xl'
-            style={styles.dropdownMainWrapper}>
+            <View
+              className='rounded-2xl'
+              style={styles.dropdownMainWrapper}>
 
 
-              {
-                is_auth === true &&
                 <View>
-                  <ChooseLangComponent
+                  <ChooseLangComponent 
                     selectedLanguage={choosenLanguage}
-                    setSelectedLanguage={setChoosenLanguage}
-                    nativeLanguage={nativeLanguage}
+                    setSelectedLanguage={setChoosenLanguage} 
+                    nativeLanguage={nativeLanguage} 
                   />
                 </View>
-              }
 
-              {
-                is_auth === true &&
-                <View>
+                <View >
                   <LanguagesStatisticsComponents />
                 </View>
-              }
 
             </View>
 
