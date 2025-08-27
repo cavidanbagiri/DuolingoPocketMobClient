@@ -71,13 +71,7 @@ const FilterComponent = ({screen = 'all'}) => {
       onPress={toggleFilter}
       activeOpacity={0.7}
       className="flex-row items-center space-x-2 bg-gray-100 px-4 py-2.5 rounded-full"
-      style={{
-        elevation: 1,
-        shadowColor: '#000',
-        // shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 2,
-      }}
+     
     >
       <Ionicons
         name={filter === 'starred' ? 'star' : 'star-outline'}
@@ -108,13 +102,7 @@ const FilterComponent = ({screen = 'all'}) => {
       }}
       activeOpacity={0.6}
       className="w-10 h-10 bg-gray-200 rounded-full justify-center items-center"
-      style={{
-        elevation: 1,
-        shadowColor: '#000',
-        // shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 1.5,
-      }}
+    
     >
       <Feather name="refresh-cw" size={18} color="#4b5563" />
     </TouchableOpacity>
@@ -176,64 +164,3 @@ const FilterComponent = ({screen = 'all'}) => {
 
 export default FilterComponent;
 
-const styles = StyleSheet.create({
-    container: {
-        paddingHorizontal: 16,
-        paddingTop: 10,
-        alignItems: 'flex-start',
-        backgroundColor: '#f3f4f6',
-        width: '100%',
-    },
-    button: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#f3f4f6',
-        paddingVertical: 8,
-        paddingHorizontal: 12,
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: '#d1d5db',
-    },
-    toggleButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#e5e7eb',
-        paddingVertical: 8,
-        paddingHorizontal: 12,
-        borderRadius: 8,
-    },
-    icon: {
-        marginRight: 8,
-    },
-    text: {
-        fontSize: 16,
-        color: '#1f2937',
-        fontWeight: '500',
-    },
-});
-
-
-
-// import React from 'react'
-// import { useDispatch } from 'react-redux'
-
-// import { View, Text, TouchableOpacity } from 'react-native'
-
-// import WordService from '../../services/WordService'
-
-
-// const FilterComponent = () => {
-
-//     const dispatch = useDispatch();
-
-//     return (
-//         <View>
-//             <TouchableOpacity onPress={() => dispatch(WordService.fetchWords())}>
-//                 <Text>Fetch Words</Text>
-//             </TouchableOpacity>
-//         </View>
-//     )
-
-// }
-
-// export default FilterComponent
