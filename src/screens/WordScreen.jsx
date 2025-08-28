@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import LanguageSelector from '../components/wordscreen/LanguageSelector.jsx';
 
-import {setSelectedLanguage} from '../store/word_store';
+import { setSelectedLanguage } from '../store/word_store';
 
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
@@ -18,13 +18,13 @@ import WordService from '../services/WordService.js';
 import VocabCard from '../components/cards/VocabCard';
 import FilterComponent from '../components/wordscreen/FilterComponent.jsx';
 
-import Feather from '@expo/vector-icons/Feather'; 
+import Feather from '@expo/vector-icons/Feather';
 
 // WordsScreen.jsx
 export default function WordScreen() {
     const dispatch = useDispatch();
 
-    const {words, loading, selectedLanguage, availableLanguages} = useSelector((state) => state.wordSlice);
+    const { words, loading, selectedLanguage, availableLanguages } = useSelector((state) => state.wordSlice);
 
     const { is_auth } = useSelector((state) => state.authSlice);
 
@@ -34,10 +34,14 @@ export default function WordScreen() {
         useCallback(() => {
             if (is_auth) {
                 dispatch(WordService.fetchAvailableLanguages());
+                dispatch(WordService.handleLanguageSelect({
+                            filter: 'all',
+                            langCode: selectedLanguage
+                        }))
             }
         }, [is_auth])
     );
-    
+
     useEffect(() => {
         if (availableLanguages.length === 1) {
             dispatch(WordService.handleLanguageSelect({
@@ -51,16 +55,16 @@ export default function WordScreen() {
 
 
     return (
-        <SafeAreaView className='bg-white'>
+        <SafeAreaView className='bg-white flex-1'>
 
             {
                 selectedLanguage &&
-                <FilterComponent screen={screen} setScreen={setScreen}/>
+                <FilterComponent screen={screen} setScreen={setScreen} />
             }
 
             {/* Language Selector */}
             {availableLanguages?.length > 1 && (
-                
+
                 <View className="px-3 pb-1 bg-white border-b border-gray-100">
 
                     {/* Section Header */}
@@ -89,11 +93,10 @@ export default function WordScreen() {
                                         );
                                     }}
                                     activeOpacity={0.7}
-                                    className={`flex-row items-center p-4 rounded-2xl border-2 transition-all duration-150 my-1 ${
-                                        isSelected
+                                    className={`flex-row items-center p-4 rounded-2xl border-2 transition-all duration-150 my-1 ${isSelected
                                             ? 'border-blue-500 bg-blue-50 '
                                             : 'border-gray-200 bg-white hover:border-gray-300 '
-                                    }`}
+                                        }`}
                                     style={{
                                         elevation: isSelected ? 3 : 1,
                                     }}
@@ -110,9 +113,8 @@ export default function WordScreen() {
                                     {/* Language Info */}
                                     <View className="flex-1">
                                         <Text
-                                            className={`text-base font-bold ${
-                                                isSelected ? 'text-gray-900' : 'text-gray-800'
-                                            }`}
+                                            className={`text-base font-bold ${isSelected ? 'text-gray-900' : 'text-gray-800'
+                                                }`}
                                             style={{ fontFamily: 'IBMPlexSans-SemiBold' }}
                                         >
                                             {lang.language_name}
@@ -127,9 +129,8 @@ export default function WordScreen() {
                                             </Text>
                                             <View className="mx-1 w-1 h-1 bg-gray-400 rounded-full" />
                                             <Text
-                                                className={`text-sm ${
-                                                    isSelected ? 'text-blue-600' : 'text-gray-500'
-                                                }`}
+                                                className={`text-sm ${isSelected ? 'text-blue-600' : 'text-gray-500'
+                                                    }`}
                                                 style={{ fontFamily: 'IBMPlexSans-Regular' }}
                                             >
                                                 Tap to select
@@ -139,9 +140,8 @@ export default function WordScreen() {
 
                                     {/* Selection Indicator */}
                                     <View
-                                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                                            isSelected ? 'border-blue-500 bg-blue-100' : 'border-gray-300'
-                                        }`}
+                                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-blue-500 bg-blue-100' : 'border-gray-300'
+                                            }`}
                                     >
                                         {isSelected && (
                                             <View className="w-2 h-2 rounded-full bg-blue-600" />
@@ -157,7 +157,7 @@ export default function WordScreen() {
             {/* Words List */}
             {selectedLanguage ? (
                 <FlatList
-                className='bg-white mt-1'
+                    className='bg-white mt-1'
                     data={words}
                     renderItem={({ item }) => <VocabCard word={item} />}
                     keyExtractor={(item) => item.id.toString()}
@@ -171,9 +171,54 @@ export default function WordScreen() {
                     }}
                 />
             ) : (
-                <Text>Please select a language</Text>
+                <View className="flex-1 justify-center items-center px-6 py-8">
+                    {/* Icon */}
+                    <View className="w-16 h-16 bg-indigo-100 rounded-full justify-center items-center mb-5">
+                        <Feather name="book-open" size={32} color="#4f46e5" />
+                    </View>
+
+                    {/* Message */}
+                    <Text
+                        className="text-2xl font-bold text-gray-800 text-center mb-2"
+                        style={{ fontFamily: 'Poppins-SemiBold' }}
+                    >
+                        Choose language
+                    </Text>
+
+                    {
+                        selectedLanguage && <Text
+                            className="text-lg text-gray-600 text-center mb-6 leading-relaxed"
+                            style={{ fontFamily: 'IBMPlexSans-Regular' }}
+                        >
+                            You haven't learned any words in {selectedLanguage} yet.
+                        </Text>
+                    }
+
+                    {/* CTA Button */}
+                    {/* <TouchableOpacity
+                        onPress={() => navigation.navigate('Learn', { lang: selectedLanguage })}
+                        activeOpacity={0.8}
+                        className="flex-row items-center bg-indigo-600 px-6 py-3 rounded-xl "
+                    >
+                        <Feather name="play" size={18} color="white" style={{ marginRight: 8 }} />
+                        <Text
+                            className="text-white text-lg font-semibold"
+                            style={{ fontFamily: 'IBMPlexSans-SemiBold' }}
+                        >
+                            Start Learning
+                        </Text>
+                    </TouchableOpacity> */}
+
+                    {/* Tip */}
+                    <Text
+                        className="text-sm text-gray-500 text-center mt-6"
+                        style={{ fontFamily: 'IBMPlexSans-Regular' }}
+                    >
+                        Tap the language for words.
+                    </Text>
+                </View>
             )}
-            
+
         </SafeAreaView>
     );
 }

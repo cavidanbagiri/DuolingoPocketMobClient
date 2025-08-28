@@ -1,9 +1,11 @@
-import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import WordService from '../services/WordService.js'
+
+import { useNavigation } from '@react-navigation/native';
 
 import Feather from '@expo/vector-icons/Feather';
 
@@ -23,6 +25,7 @@ export default function LearnedScreen() {
 
   const { words, words_pending, selectedLanguage, availableLanguages } = useSelector((state) => state.wordSlice);
 
+  const navigation = useNavigation();
 
   useFocusEffect(
     useCallback(() => {
@@ -147,7 +150,7 @@ export default function LearnedScreen() {
 
     <SafeAreaView className="flex-1 bg-gray-50"> {/* ✅ Add flex-1 here */}
       {/* Language Selector */}
-      {availableLanguages?.length > 1 && (
+      {/* {availableLanguages?.length > 1 && (
         <View className="px-4 mb-4">
           <Text className="text-lg font-semibold text-gray-800 mb-2">Select Language:</Text>
           <View className="flex-row flex-wrap gap-2 bg-red-400">
@@ -170,8 +173,98 @@ export default function LearnedScreen() {
               </TouchableOpacity>
             ))}
           </View>
-        </View>
-      )}
+        </View> */}
+        {availableLanguages?.length > 1 && (
+
+                <View className="px-3 pb-1 bg-white border-b border-gray-100">
+
+                    {/* Section Header */}
+                    <Text
+                        className="text-xl font-bold text-gray-800 mb-4 tracking-tight"
+                        style={{ fontFamily: 'IBMPlexSans-Regular' }}
+                    >
+                        Choose Language
+                    </Text>
+
+                    {/* Language List */}
+                    <View className="space-y-3 ">
+                        {availableLanguages.map((lang) => {
+                            const isSelected = selectedLanguage === lang.lang;
+
+                            return (
+                                <TouchableOpacity
+                                    key={lang.lang}
+                                    onPress={() => {
+                                        dispatch(setSelectedLanguage(lang.lang));
+                                        dispatch(
+                                            WordService.handleLanguageSelect({
+                                                filter: 'learned',
+                                                langCode: lang.lang,
+                                            })
+                                        );
+                                    }}
+                                    activeOpacity={0.7}
+                                    className={`flex-row items-center p-4 rounded-2xl border-2 transition-all duration-150 my-1 ${isSelected
+                                            ? 'border-blue-500 bg-blue-50 '
+                                            : 'border-gray-200 bg-white hover:border-gray-300 '
+                                        }`}
+                                    style={{
+                                        elevation: isSelected ? 3 : 1,
+                                    }}
+                                >
+                                    {/* Flag Badge */}
+                                    <View className="w-12 h-10 rounded-xl overflow-hidden border-2 border-white mr-4">
+                                        <Image
+                                            source={lang.flag}
+                                            style={{ width: '100%', height: '100%' }}
+                                            resizeMode="cover"
+                                        />
+                                    </View>
+
+                                    {/* Language Info */}
+                                    <View className="flex-1">
+                                        <Text
+                                            className={`text-base font-bold ${isSelected ? 'text-gray-900' : 'text-gray-800'
+                                                }`}
+                                            style={{ fontFamily: 'IBMPlexSans-SemiBold' }}
+                                        >
+                                            {lang.language_name}
+                                        </Text>
+
+                                        <View className="flex-row items-center mt-1">
+                                            <Text
+                                                className="text-sm text-gray-500"
+                                                style={{ fontFamily: 'IBMPlexSans-Regular' }}
+                                            >
+                                                {lang.total_words} words
+                                            </Text>
+                                            <View className="mx-1 w-1 h-1 bg-gray-400 rounded-full" />
+                                            <Text
+                                                className={`text-sm ${isSelected ? 'text-blue-600' : 'text-gray-500'
+                                                    }`}
+                                                style={{ fontFamily: 'IBMPlexSans-Regular' }}
+                                            >
+                                                Tap to select
+                                            </Text>
+                                        </View>
+                                    </View>
+
+                                    {/* Selection Indicator */}
+                                    <View
+                                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-blue-500 bg-blue-100' : 'border-gray-300'
+                                            }`}
+                                    >
+                                        {isSelected && (
+                                            <View className="w-2 h-2 rounded-full bg-blue-600" />
+                                        )}
+                                    </View>
+                                </TouchableOpacity>
+                            );
+                        })}
+                    </View>
+                </View>
+            )}
+      
 
       {/* Loading State */}
       {selectedLanguage && words_pending && (
@@ -208,7 +301,7 @@ export default function LearnedScreen() {
 
           {/* CTA Button */}
           <TouchableOpacity
-            onPress={() => navigation.navigate('Learn', { lang: selectedLanguage })}
+            onPress={() => navigation.navigate('Word', { lang: selectedLanguage })}
             activeOpacity={0.8}
             className="flex-row items-center bg-indigo-600 px-6 py-3 rounded-xl "
           >
