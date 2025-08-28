@@ -26,56 +26,106 @@ export default function WordScreen() {
 
     const { words, loading, selectedLanguage, availableLanguages } = useSelector((state) => state.wordSlice);
 
+
+    const [filter, setFilter] = useState('all'); // 'all' or 'starred'
+
     const { is_auth } = useSelector((state) => state.authSlice);
 
-    const [screen, setScreen] = useState('all');
-
-    // Fetch all available languages
     useFocusEffect(
         useCallback(() => {
-            console.log('selected language is in the words secreen ...........................................................', selectedLanguage)
-            if (is_auth) {
-                dispatch(WordService.fetchAvailableLanguages());
-                dispatch(WordService.handleLanguageSelect({
-                            filter: 'all',
-                            langCode: selectedLanguage
-                        }))
-            }
+        if (is_auth) {
+            dispatch(WordService.fetchAvailableLanguages());
+        }
         }, [is_auth])
     );
 
-    // Fetch the Selecting words
-    // useFocusEffect(
-    //     useCallback(() => {
-    //         if (is_auth) {
-    //             dispatch(WordService.handleLanguageSelect({
-    //                         filter: 'all',
-    //                         langCode: selectedLanguage
-    //                     }))
-    //         }
-    //     }, [is_auth])
-    // );
+    // ✅ Fetch words when selectedLanguage OR filter changes
     useFocusEffect(
         useCallback(() => {
-            if (is_auth && selectedLanguage) {
-            dispatch(WordService.handleLanguageSelect({
-                filter: 'all',
-                langCode: selectedLanguage, // ✅ Now safe — runs when it changes
-            }));
-            }
-        }, [is_auth, dispatch, selectedLanguage]) // ✅ Added dependency
+        if (is_auth && selectedLanguage) {
+            dispatch(
+            WordService.handleLanguageSelect({
+                filter,
+                langCode: selectedLanguage,
+            })
+            );
+        }
+        }, [is_auth, dispatch, selectedLanguage, filter]) // ✅ Added `filter`
     );
 
     useEffect(() => {
         if (availableLanguages.length === 1) {
-            dispatch(WordService.handleLanguageSelect({
-                filter: 'all',
-                langCode: availableLanguages[0].lang
-            }));
-            dispatch(setSelectedLanguage(availableLanguages[0].lang));
-            setScreen('all');
+        const lang = availableLanguages[0].lang;
+        dispatch(setSelectedLanguage(lang));
+        dispatch(
+            WordService.handleLanguageSelect({
+            filter: 'all',
+            langCode: lang,
+            })
+        );
+        setFilter('all'); // Sync local state
         }
     }, [availableLanguages]);
+
+
+    // Fetch all available languages
+    // useFocusEffect(
+    //     useCallback(() => {
+    //         console.log('selected language is in the words secreen ...........................................................', selectedLanguage)
+    //         if (is_auth) {
+    //             dispatch(WordService.fetchAvailableLanguages());
+    //             console.log('starred is 2', starred)
+    //             if (starred){
+
+    //                 dispatch(WordService.handleLanguageSelect({
+    //                             filter: 'starred',
+    //                             langCode: selectedLanguage
+    //                         }))
+    //             }
+    //             else{
+    //                 dispatch(WordService.handleLanguageSelect({
+    //                             filter: 'all',
+    //                             langCode: selectedLanguage
+    //                         }))
+    //             }
+    //         }
+    //     }, [is_auth])
+    // );
+
+    // useFocusEffect(
+    //     useCallback(() => {
+    //         if (is_auth && selectedLanguage) {
+    //         // dispatch(WordService.handleLanguageSelect({
+    //         //     filter: 'all',
+    //         //     langCode: selectedLanguage, // ✅ Now safe — runs when it changes
+    //         // }));
+    //         console.log('starred is 2', starred)
+    //         if (starred){
+    //                 dispatch(WordService.handleLanguageSelect({
+    //                             filter: 'starred',
+    //                             langCode: selectedLanguage
+    //                         }))
+    //             }
+    //             else{
+    //                 dispatch(WordService.handleLanguageSelect({
+    //                             filter: 'all',
+    //                             langCode: selectedLanguage
+    //                         }))
+    //             }
+    //         }
+    //     }, [is_auth, dispatch, selectedLanguage]) // ✅ Added dependency
+    // );
+
+    // useEffect(() => {
+    //     if (availableLanguages.length === 1) {
+    //         dispatch(WordService.handleLanguageSelect({
+    //             filter: 'all',
+    //             langCode: availableLanguages[0].lang
+    //         }));
+    //         dispatch(setSelectedLanguage(availableLanguages[0].lang));
+    //         setScreen('all');
+    //     }
+    // }, [availableLanguages]);
 
 
     return (
@@ -83,7 +133,11 @@ export default function WordScreen() {
 
             {
                 selectedLanguage &&
-                <FilterComponent screen={screen} setScreen={setScreen} />
+                <FilterComponent 
+                    // screen={screen}
+                     filter={filter}
+                     setFilter={setFilter}
+                />
             }
 
             {/* Language Selector */}
@@ -190,7 +244,7 @@ export default function WordScreen() {
                     onRefresh={() => {
                         dispatch(setSelectedLanguage(selectedLanguage));
                         dispatch(WordService.handleLanguageSelect({
-                            filter: 'all',
+                            filter,
                             langCode: selectedLanguage
                         }))
                     }}

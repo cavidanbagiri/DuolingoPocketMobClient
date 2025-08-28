@@ -12,30 +12,51 @@ import { setWordsPendingFalse } from '../../store/word_store';
 import WordService from '../../services/WordService';
 import PosStatistics from "./PosStatistics";
 
-const FilterComponent = ({screen = 'all'}) => {
+const FilterComponent = ({ filter, setFilter }) => {
 
     const dispatch = useDispatch();
 
-    const [filter, setFilter] = useState('all'); // 'all' or 'starred'
+    // // const [filter, setFilter] = useState('all'); // 'all' or 'starred'
+
+    // const [searchQuery, setSearchQuery] = useState('');
+
+    // const { selectedLanguage, availableLanguages } = useSelector((state) => state.wordSlice);
+
+    // const toggleFilter = () => {
+    //     setFilter(prev => prev === 'all' ? 'starred' : 'all');
+    // };
+
+    // useEffect(() => {
+    //     dispatch(WordService.handleLanguageSelect({
+    //       langCode: selectedLanguage,
+    //       filter: filter
+    //     }));
+    //     setStarred(filter === 'starred' ? true : false);
+    // }, [filter]);
+
+    // useEffect(() => {
+    //     setFilter('all');
+    // }, [selectedLanguage]);
 
     const [searchQuery, setSearchQuery] = useState('');
 
-    const { selectedLanguage, availableLanguages } = useSelector((state) => state.wordSlice);
+  const { selectedLanguage } = useSelector((state) => state.wordSlice);
 
-    const toggleFilter = () => {
-        setFilter(prev => prev === 'all' ? 'starred' : 'all');
-    };
+  const toggleFilter = () => {
+    const newFilter = filter === 'all' ? 'starred' : 'all';
+    setFilter(newFilter);
+  };
 
-    useEffect(() => {
-        dispatch(WordService.handleLanguageSelect({
-          langCode: selectedLanguage,
-          filter: filter
-        }));
-    }, [filter]);
+  // ✅ Remove the effect that resets filter on language change
+  // We no longer need: useEffect(() => { setFilter('all'); }, [selectedLanguage]);
 
-    useEffect(() => {
-        setFilter('all');
-    }, [selectedLanguage]);
+  // ✅ Sync with Redux when filter changes
+  useEffect(() => {
+    if (selectedLanguage) {
+      // This is already handled in WordScreen via useFocusEffect
+      // But if you want immediate UI feedback, keep it
+    }
+  }, [filter, selectedLanguage]);
 
     return (
 
@@ -95,8 +116,10 @@ const FilterComponent = ({screen = 'all'}) => {
         setSearchQuery('');
         dispatch(
           WordService.handleLanguageSelect({
-            langCode: selectedLanguage,
-            filter: 'all',
+            // langCode: selectedLanguage,
+            // filter: 'all',
+            filter,
+                langCode: selectedLanguage,
           })
         );
       }}
@@ -109,14 +132,14 @@ const FilterComponent = ({screen = 'all'}) => {
   </View>
 
   {/* Optional Hint Text */}
-  {screen !== 'learned' && (
+  {/* {screen !== 'learned' && (
     <Text
       className="text-xs text-gray-500 mt-2 ml-1"
       style={{ fontFamily: 'IBMPlexSans-Regular' }}
     >
       Tap the star to toggle favorites
     </Text>
-  )}
+  )} */}
 </View>
 
 

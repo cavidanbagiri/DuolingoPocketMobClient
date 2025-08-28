@@ -7,86 +7,121 @@ Problems
     4 - When choose the starred words, then go to the learned words and return again words screen, starred shows as starred but showing the all woprds not starred - Working
 
 
+Please act like a senior reacti-native and expo developer and help me to fix the problem in the code.
+Problem: When l select the starred in filter, l see the starred words, but when l go to the another screen and return back, l wanna see again the starred words, but l see all words again. I wanna change starred in WordScreen.jsx 
+for starred words, l cant see it. 
 
-I have a very interesting problem. I am working on a react native app. I am using redux for state management. I have a problem with the state management. The state is not updating properly.
-Firstly, l need to select a language for fetching the learned words. l select 'Russian', selected_lang show as null. But when l click second time Spanish lang, l see the seelcted lang as 'ru' when l click
-first time. why this happen and how can solve this problem
-
-LearnedScreen.jsx
-
-    export default function LearnedScreen() {
-
+WordScreen.jsx
+    
+// WordsScreen.jsx
+export default function WordScreen() {
     const dispatch = useDispatch();
+
+    const { words, loading, selectedLanguage, availableLanguages } = useSelector((state) => state.wordSlice);
+
+    const [starred, setStarred] = useState(false);
 
     const { is_auth } = useSelector((state) => state.authSlice);
 
-    const { words, words_pending, selectedLanguage, availableLanguages } = useSelector((state) => state.wordSlice);
+    const [screen, setScreen] = useState('all');
 
-    const navigation = useNavigation();
-
+    // Fetch all available languages
     useFocusEffect(
         useCallback(() => {
-        if (is_auth && availableLanguages.length === 0) {
-            dispatch(WordService.fetchAvailableLanguages());
-        }
+            console.log('selected language is in the words secreen ...........................................................', selectedLanguage)
+            if (is_auth) {
+                dispatch(WordService.fetchAvailableLanguages());
+                console.log('starred is 2', starred)
+                if (starred){
+
+                    dispatch(WordService.handleLanguageSelect({
+                                filter: 'starred',
+                                langCode: selectedLanguage
+                            }))
+                }
+                else{
+                    dispatch(WordService.handleLanguageSelect({
+                                filter: 'all',
+                                langCode: selectedLanguage
+                            }))
+                }
+            }
         }, [is_auth])
     );
 
-
     useFocusEffect(
         useCallback(() => {
-        if (is_auth) {
-            console.log('selected language is in the learned secreen ...........................................................', selectedLanguage)
-                
-            dispatch(WordService.handleLanguageSelect({
-            langCode: selectedLanguage,
-            filter: 'learned'
-            }));
-            dispatch(setSelectedLanguage(selectedLanguage));
-        }
-        console.log('fething learned words is working')
-        }, [is_auth, dispatch])
+            if (is_auth && selectedLanguage) {
+            // dispatch(WordService.handleLanguageSelect({
+            //     filter: 'all',
+            //     langCode: selectedLanguage, // ✅ Now safe — runs when it changes
+            // }));
+            console.log('starred is 2', starred)
+            if (starred){
+                    dispatch(WordService.handleLanguageSelect({
+                                filter: 'starred',
+                                langCode: selectedLanguage
+                            }))
+                }
+                else{
+                    dispatch(WordService.handleLanguageSelect({
+                                filter: 'all',
+                                langCode: selectedLanguage
+                            }))
+                }
+            }
+        }, [is_auth, dispatch, selectedLanguage]) // ✅ Added dependency
     );
+
+    useEffect(() => {
+        if (availableLanguages.length === 1) {
+            dispatch(WordService.handleLanguageSelect({
+                filter: 'all',
+                langCode: availableLanguages[0].lang
+            }));
+            dispatch(setSelectedLanguage(availableLanguages[0].lang));
+            setScreen('all');
+        }
+    }, [availableLanguages]);
 
 
     return (
+        <SafeAreaView className='bg-white flex-1'>
 
-        <SafeAreaView className="flex-1 bg-gray-50">
-        {/* Language Selector */}
-            {availableLanguages?.length > 1 && (
+            {
+                selectedLanguage &&
+                <FilterComponent 
+                    screen={screen}
+                    setScreen={setScreen}
+                    setStarred={setStarred}
+                />
+            }
 
-                    <View className="px-3 pb-1 bg-white border-b border-gray-100">
+FilterComponent.jsx
 
-                        {/* Section Header */}
-                        <Text
-                            className="text-xl font-bold text-gray-800 mb-4 tracking-tight"
-                            style={{ fontFamily: 'IBMPlexSans-Regular' }}
-                        >
-                            Choose Language
-                        </Text>
+    const FilterComponent = ({screen = 'all', setStarred}) => {
 
-                        {/* Language List */}
-                        <View className="space-y-3 ">
-                            {availableLanguages.map((lang) => {
-                                const isSelected = selectedLanguage === lang.lang;
+        const dispatch = useDispatch();
 
-                                return (
-                                    <TouchableOpacity
-                                        key={lang.lang}
-                                        onPress={() => {
-                                            dispatch(setSelectedLanguage(lang.lang));
-                                            console.log('now selected language is in learned ...........................................................', selectedLanguage)
-                                            console.log('now selected language is in learned ...........................................................', lang)
-                                            console.log('now selected language is in learned ...........................................................', lang.lang)
-                                            dispatch(
-                                                // WordService.handleLanguageSelect({
-                                                //     filter: 'learned',
-                                                //     langCode: lang.lang,
-                                                // })
-                                                WordService.handleLanguageSelect({
-                                                    filter: 'learned',
-                                                    langCode: selectedLanguage,
-                                                })
-                                            );
-                                        }}
-                            ...
+        const [filter, setFilter] = useState('all'); // 'all' or 'starred'
+
+        const [searchQuery, setSearchQuery] = useState('');
+
+        const { selectedLanguage, availableLanguages } = useSelector((state) => state.wordSlice);
+
+        const toggleFilter = () => {
+            setFilter(prev => prev === 'all' ? 'starred' : 'all');
+        };
+
+        useEffect(() => {
+            dispatch(WordService.handleLanguageSelect({
+            langCode: selectedLanguage,
+            filter: filter
+            }));
+            setStarred(filter === 'starred' ? true : false);
+        }, [filter]);
+
+        useEffect(() => {
+            setFilter('all');
+        }, [selectedLanguage]);
+
