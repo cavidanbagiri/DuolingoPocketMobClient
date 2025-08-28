@@ -21,8 +21,11 @@ export default function LoginComponent({ onLogin }) {
 
   const { login_message, login_success, is_login_error, login_pending } = useSelector((state) => state.authSlice);
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  // const [email, setEmail] = useState('');
+  // const [password, setPassword] = useState('');
+
+   const [email, setEmail] = useState('cavidanbagiri@gmail.com');
+  const [password, setPassword] = useState('cavidan1');
 
 
 

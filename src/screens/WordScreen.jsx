@@ -30,8 +30,10 @@ export default function WordScreen() {
 
     const [screen, setScreen] = useState('all');
 
+    // Fetch all available languages
     useFocusEffect(
         useCallback(() => {
+            console.log('selected language is in the words secreen ...........................................................', selectedLanguage)
             if (is_auth) {
                 dispatch(WordService.fetchAvailableLanguages());
                 dispatch(WordService.handleLanguageSelect({
@@ -40,6 +42,28 @@ export default function WordScreen() {
                         }))
             }
         }, [is_auth])
+    );
+
+    // Fetch the Selecting words
+    // useFocusEffect(
+    //     useCallback(() => {
+    //         if (is_auth) {
+    //             dispatch(WordService.handleLanguageSelect({
+    //                         filter: 'all',
+    //                         langCode: selectedLanguage
+    //                     }))
+    //         }
+    //     }, [is_auth])
+    // );
+    useFocusEffect(
+        useCallback(() => {
+            if (is_auth && selectedLanguage) {
+            dispatch(WordService.handleLanguageSelect({
+                filter: 'all',
+                langCode: selectedLanguage, // ✅ Now safe — runs when it changes
+            }));
+            }
+        }, [is_auth, dispatch, selectedLanguage]) // ✅ Added dependency
     );
 
     useEffect(() => {
@@ -84,11 +108,12 @@ export default function WordScreen() {
                                 <TouchableOpacity
                                     key={lang.lang}
                                     onPress={() => {
-                                        dispatch(setSelectedLanguage(lang.lang));
+                                        const new_lang_code = lang.lang;
+                                        dispatch(setSelectedLanguage(new_lang_code));
                                         dispatch(
                                             WordService.handleLanguageSelect({
                                                 filter: 'all',
-                                                langCode: lang.lang,
+                                                langCode: new_lang_code,
                                             })
                                         );
                                     }}

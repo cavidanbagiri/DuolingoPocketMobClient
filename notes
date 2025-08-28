@@ -4,432 +4,89 @@ Problems
     1 - After registering user, l see deep execution problem in the home apge, especially in choose languagecomponent
     2 - Need to also adding some statistics for learned screen. if the one language select, show only words.
     3 - Need to also, solve the problem in choosing language section in learned woords screen
-    4 - After login, if you directly going to the learned wortds, you cant see the select language sectionm, that's why need to fix that problem.
-    5 - If the learned section is an empty, l see text error.
+    4 - When choose the starred words, then go to the learned words and return again words screen, starred shows as starred but showing the all woprds not starred - Working
 
 
-Please act like a senior react native enginner. l have a problem with this code. l see this error : " ERROR  You are setting the style `{ %s: ... }` as a prop. You should nest it in a style object. E.g. `{ style: { %s: ... } }` shadowOffset shadowOffset"
 
-WordsScreen.jsx
+I have a very interesting problem. I am working on a react native app. I am using redux for state management. I have a problem with the state management. The state is not updating properly.
+Firstly, l need to select a language for fetching the learned words. l select 'Russian', selected_lang show as null. But when l click second time Spanish lang, l see the seelcted lang as 'ru' when l click
+first time. why this happen and how can solve this problem
 
+LearnedScreen.jsx
 
-// WordsScreen.jsx
-export default function WordScreen() {
+    export default function LearnedScreen() {
+
     const dispatch = useDispatch();
-
-    const {words, loading, selectedLanguage, availableLanguages} = useSelector((state) => state.wordSlice);
 
     const { is_auth } = useSelector((state) => state.authSlice);
 
-    const [screen, setScreen] = useState('all');
-
-    useFocusEffect(
-        useCallback(() => {
-            if (is_auth) {
-                dispatch(WordService.fetchAvailableLanguages());
-            }
-        }, [is_auth])
-    );
-    
-    useEffect(() => {
-        if (availableLanguages.length === 1) {
-            dispatch(WordService.handleLanguageSelect({
-                filter: 'all',
-                langCode: availableLanguages[0].lang
-            }));
-            dispatch(setSelectedLanguage(availableLanguages[0].lang));
-            setScreen('all');
-        }
-    }, [availableLanguages]);
-
-
-    return (
-        <SafeAreaView className='bg-white'>
-
-            {
-                selectedLanguage &&
-                <FilterComponent screen={screen} setScreen={setScreen}/>
-            }
-
-            {/* Language Selector */}
-            {availableLanguages?.length > 1 && (
-                
-                <View className="px-3 pb-1 bg-white border-b border-gray-100">
-
-                    {/* Section Header */}
-                    <Text
-                        className="text-xl font-bold text-gray-800 mb-4 tracking-tight"
-                        style={{ fontFamily: 'IBMPlexSans-Regular' }}
-                    >
-                        Choose Language
-                    </Text>
-
-                    {/* Language List */}
-                    <View className="space-y-3 ">
-                        {availableLanguages.map((lang) => {
-                            const isSelected = selectedLanguage === lang.lang;
-
-                            return (
-                                <TouchableOpacity
-                                    key={lang.lang}
-                                    onPress={() => {
-                                        dispatch(setSelectedLanguage(lang.lang));
-                                        dispatch(
-                                            WordService.handleLanguageSelect({
-                                                filter: 'all',
-                                                langCode: lang.lang,
-                                            })
-                                        );
-                                    }}
-                                    activeOpacity={0.7}
-                                    className={`flex-row items-center p-4 rounded-2xl border-2 transition-all duration-150 my-1 ${
-                                        isSelected
-                                            ? 'border-blue-500 bg-blue-50 shadow-md'
-                                            : 'border-gray-200 bg-white hover:border-gray-300 shadow-sm'
-                                    }`}
-                                    style={{
-                                        elevation: isSelected ? 3 : 1,
-                                    }}
-                                >
-                                    {/* Flag Badge */}
-                                    <View className="w-12 h-10 rounded-xl overflow-hidden border-2 border-white shadow-xs mr-4">
-                                        <Image
-                                            source={lang.flag}
-                                            style={{ width: '100%', height: '100%' }}
-                                            resizeMode="cover"
-                                        />
-                                    </View>
-
-                                    {/* Language Info */}
-                                    <View className="flex-1">
-                                        <Text
-                                            className={`text-base font-bold ${
-                                                isSelected ? 'text-gray-900' : 'text-gray-800'
-                                            }`}
-                                            style={{ fontFamily: 'IBMPlexSans-SemiBold' }}
-                                        >
-                                            {lang.language_name}
-                                        </Text>
-
-                                        <View className="flex-row items-center mt-1">
-                                            <Text
-                                                className="text-sm text-gray-500"
-                                                style={{ fontFamily: 'IBMPlexSans-Regular' }}
-                                            >
-                                                {lang.total_words} words
-                                            </Text>
-                                            <View className="mx-1 w-1 h-1 bg-gray-400 rounded-full" />
-                                            <Text
-                                                className={`text-sm ${
-                                                    isSelected ? 'text-blue-600' : 'text-gray-500'
-                                                }`}
-                                                style={{ fontFamily: 'IBMPlexSans-Regular' }}
-                                            >
-                                                Tap to select
-                                            </Text>
-                                        </View>
-                                    </View>
-
-                                    {/* Selection Indicator */}
-                                    <View
-                                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                                            isSelected ? 'border-blue-500 bg-blue-100' : 'border-gray-300'
-                                        }`}
-                                    >
-                                        {isSelected && (
-                                            <View className="w-2 h-2 rounded-full bg-blue-600" />
-                                        )}
-                                    </View>
-                                </TouchableOpacity>
-                            );
-                        })}
-                    </View>
-                </View>
-            )}
-
-            {/* Words List */}
-            {selectedLanguage ? (
-                <FlatList
-                className='bg-white mt-1'
-                    data={words}
-                    renderItem={({ item }) => <VocabCard word={item} />}
-                    keyExtractor={(item) => item.id.toString()}
-                    refreshing={loading}
-                    // onRefresh={() => handleLanguageSelect(selectedLanguage)}
-                    onRefresh={() => {
-                        dispatch(setSelectedLanguage(selectedLanguage));
-                        dispatch(WordService.handleLanguageSelect({
-                            filter: 'all',
-                            langCode: selectedLanguage
-                        }))
-                    }}
-                />
-            ) : (
-                <Text>Please select a language</Text>
-            )}
-            
-        </SafeAreaView>
-    );
-}
-
-FilterComponent.jsx
-
-
-const FilterComponent = ({screen = 'all'}) => {
-
-    const dispatch = useDispatch();
-
-    const [filter, setFilter] = useState('all'); // 'all' or 'starred'
-
-    const [searchQuery, setSearchQuery] = useState('');
-
-    const { selectedLanguage, availableLanguages } = useSelector((state) => state.wordSlice);
-
-    const toggleFilter = () => {
-        setFilter(prev => prev === 'all' ? 'starred' : 'all');
-    };
-
-    useEffect(() => {
-        dispatch(WordService.handleLanguageSelect({
-          langCode: selectedLanguage,
-          filter: filter
-        }));
-    }, [filter]);
-
-    useEffect(() => {
-        setFilter('all');
-    }, [selectedLanguage]);
-
-    return (
-
-        <View className="px-5 pb-4 pt-2 bg-white border-b border-gray-100">
-
-  {/* 🔍 Search Bar */}
-  <View className="flex-row items-center bg-gray-100 rounded-xl px-4 py-3 mb-3">
-    <Ionicons name="search" size={18} color="#6b7280" />
-
-    <TextInput
-      placeholder="Search words..."
-      placeholderTextColor="#6b7280"
-      value={searchQuery}
-      onChangeText={setSearchQuery}
-      className="flex-1 ml-2 text-base text-gray-800"
-      style={{ fontFamily: 'IBMPlexSans-Regular' }}
-      autoCapitalize="none"
-      returnKeyType="search"
-    />
-
-    {searchQuery.length > 0 && (
-      <TouchableOpacity onPress={() => setSearchQuery('')}>
-        <Ionicons name="close-circle" size={20} color="#9ca3af" />
-      </TouchableOpacity>
-    )}
-  </View>
-
-  {/* Filter & Actions Row */}
-  <View className="flex-row items-center justify-between">
-
-    {/* Filter Toggle: Starred vs All */}
-    <TouchableOpacity
-      onPress={toggleFilter}
-      activeOpacity={0.7}
-      className="flex-row items-center space-x-2 bg-gray-100 px-4 py-2.5 rounded-full"
-      style={{
-        elevation: 1,
-        shadowColor: '#000',
-        // shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 2,
-      }}
-    >
-      <Ionicons
-        name={filter === 'starred' ? 'star' : 'star-outline'}
-        size={20}
-        color={filter === 'starred' ? '#facc15' : '#6b7280'}
-      />
-      <Text
-        className={`font-semibold ${
-          filter === 'starred' ? 'text-amber-700' : 'text-gray-700'
-        }`}
-        style={{ fontFamily: 'IBMPlexSans-SemiBold' }}
-      >
-        {filter === 'starred' ? 'Starred' : 'All Words'}
-      </Text>
-    </TouchableOpacity>
-
-    {/* Refresh Button */}
-    <TouchableOpacity
-      onPress={() => {
-        setFilter('all');
-        setSearchQuery('');
-        dispatch(
-          WordService.handleLanguageSelect({
-            langCode: selectedLanguage,
-            filter: 'all',
-          })
-        );
-      }}
-      activeOpacity={0.6}
-      className="w-10 h-10 bg-gray-200 rounded-full justify-center items-center"
-      style={{
-        elevation: 1,
-        shadowColor: '#000',
-        // shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 1.5,
-      }}
-    >
-      <Feather name="refresh-cw" size={18} color="#4b5563" />
-    </TouchableOpacity>
-  </View>
-
-  {/* Optional Hint Text */}
-  {screen !== 'learned' && (
-    <Text
-      className="text-xs text-gray-500 mt-2 ml-1"
-      style={{ fontFamily: 'IBMPlexSans-Regular' }}
-    >
-      Tap the star to toggle favorites
-    </Text>
-  )}
-</View>
-
-
-VocabCard.jsx
-
-export default function VocabCard({ word }) {
-
-    const dispatch = useDispatch();
+    const { words, words_pending, selectedLanguage, availableLanguages } = useSelector((state) => state.wordSlice);
 
     const navigation = useNavigation();
 
-    const [isStarred, setIsStarred] = useState(false);
-    const [isLearned, setIsLearned] = useState(false);
-
-    const handleToggle = async (actionType) => {
-        try {
-            const res = await dispatch(WordService.setStatus({
-                word_id: word.id,
-                action: actionType,
-            })).unwrap();
-
-            setIsStarred(res.is_starred);
-            setIsLearned(res.is_learned);
-
-        } catch (error) {
-            console.error('Failed to update status:', error);
+    useFocusEffect(
+        useCallback(() => {
+        if (is_auth && availableLanguages.length === 0) {
+            dispatch(WordService.fetchAvailableLanguages());
         }
-    };
+        }, [is_auth])
+    );
 
-    useEffect(() => {
-        setIsStarred(word.is_starred);
-        setIsLearned(word.is_learned);
-    }, [word.id, word.is_starred, word.is_learned]);
+
+    useFocusEffect(
+        useCallback(() => {
+        if (is_auth) {
+            console.log('selected language is in the learned secreen ...........................................................', selectedLanguage)
+                
+            dispatch(WordService.handleLanguageSelect({
+            langCode: selectedLanguage,
+            filter: 'learned'
+            }));
+            dispatch(setSelectedLanguage(selectedLanguage));
+        }
+        console.log('fething learned words is working')
+        }, [is_auth, dispatch])
+    );
 
 
     return (
 
-        <TouchableOpacity
-  onPress={() => navigation.navigate('CardDetail', { word })}
-  activeOpacity={0.7}
-  className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm mb-4 mx-3"
-  style={{
-    elevation: 2,
-    shadowColor: '#000',
-    // shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-  }}
->
-  {/* Top Row: Word + Level Badge */}
-  <View className="flex-row items-start justify-between mb-3">
-    <Text
-      className="text-2xl font-bold text-gray-800 flex-1"
-      style={{ fontFamily: 'Poppins-Bold' }}
-    >
-      {word.text}
-    </Text>
+        <SafeAreaView className="flex-1 bg-gray-50">
+        {/* Language Selector */}
+            {availableLanguages?.length > 1 && (
 
-    <View className="ml-3 bg-indigo-100 px-2.5 py-1 rounded-full">
-      <Text
-        className="text-xs font-semibold text-indigo-700"
-        style={{ fontFamily: 'IBMPlexSans-SemiBold' }}
-      >
-        Level {word.level ?? '1'}
-      </Text>
-    </View>
-  </View>
+                    <View className="px-3 pb-1 bg-white border-b border-gray-100">
 
-  {/* Middle: POS + Translation */}
-  <View className="mb-4">
-    {word.pos && (
-      <Text
-        className="text-xs uppercase tracking-wide text-indigo-600 mb-1"
-        style={{ fontFamily: 'IBMPlexSans-Regular' }}
-      >
-        {word.pos}
-      </Text>
-    )}
-    <Text
-      className="text-xl text-gray-700 leading-relaxed"
-      style={{ fontFamily: 'Poppins-Regular' }}
-    >
-      {word.translation_to_native ?? 'Translation'}
-    </Text>
-  </View>
+                        {/* Section Header */}
+                        <Text
+                            className="text-xl font-bold text-gray-800 mb-4 tracking-tight"
+                            style={{ fontFamily: 'IBMPlexSans-Regular' }}
+                        >
+                            Choose Language
+                        </Text>
 
-  {/* Bottom: Frequency + Action Icons */}
-  <View className="flex-row items-center justify-between">
-    {/* Frequency Rank */}
-    <View className="flex-row items-center">
-      <View className="w-6 h-6 bg-gray-100 rounded-full items-center justify-center mr-2">
-        <Feather name="trending-up" size={12} color="#6b7280" />
-      </View>
-      <Text
-        className="text-sm text-gray-500"
-        style={{ fontFamily: 'IBMPlexSans-Regular' }}
-      >
-        #{word.frequency_rank ?? '–'}
-      </Text>
-    </View>
+                        {/* Language List */}
+                        <View className="space-y-3 ">
+                            {availableLanguages.map((lang) => {
+                                const isSelected = selectedLanguage === lang.lang;
 
-    {/* Action Icons */}
-    <View className="flex-row items-center space-x-4">
-      {/* Star Toggle */}
-      <TouchableOpacity
-        onPress={(e) => {
-          e.stopPropagation(); // Prevent card navigation
-          handleToggle('star');
-        }}
-        className="p-2"
-        accessibilityLabel={isStarred ? "Remove from favorites" : "Add to favorites"}
-      >
-        <Ionicons
-          name={isStarred ? 'star' : 'star-outline'}
-          size={24}
-          color={isStarred ? '#facc15' : '#9ca3af'}
-        />
-      </TouchableOpacity>
-
-      {/* Learned Toggle */}
-      <TouchableOpacity
-        onPress={(e) => {
-          e.stopPropagation(); // Prevent card navigation
-          handleToggle('learned');
-        }}
-        className="p-2"
-        accessibilityLabel={isLearned ? "Mark as not learned" : "Mark as learned"}
-      >
-        <Ionicons
-          name={isLearned ? 'checkmark-circle' : 'checkmark-circle-outline'}
-          size={24}
-          color={isLearned ? '#4ade80' : '#9ca3af'}
-        />
-      </TouchableOpacity>
-    </View>
-  </View>
-</TouchableOpacity>
-
-    );
-}
-
+                                return (
+                                    <TouchableOpacity
+                                        key={lang.lang}
+                                        onPress={() => {
+                                            dispatch(setSelectedLanguage(lang.lang));
+                                            console.log('now selected language is in learned ...........................................................', selectedLanguage)
+                                            console.log('now selected language is in learned ...........................................................', lang)
+                                            console.log('now selected language is in learned ...........................................................', lang.lang)
+                                            dispatch(
+                                                // WordService.handleLanguageSelect({
+                                                //     filter: 'learned',
+                                                //     langCode: lang.lang,
+                                                // })
+                                                WordService.handleLanguageSelect({
+                                                    filter: 'learned',
+                                                    langCode: selectedLanguage,
+                                                })
+                                            );
+                                        }}
+                            ...
