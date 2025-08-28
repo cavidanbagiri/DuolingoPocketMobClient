@@ -62,7 +62,12 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
   }
 
   return (
-    <View className="bg-gray-50 px-6 py-8 rounded-2xl mt-5">
+
+    <View>
+
+      {
+        filteredLanguages.length > 0 ?
+        <View className="bg-gray-50 px-6 py-8 rounded-2xl mt-5">
       {/* Header */}
       <Text
         className="text-3xl font-bold text-gray-800 mb-2 text-center"
@@ -131,9 +136,19 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
         </View>
       )}
     </View>
+        :
+        <View className="flex-1 justify-center items-center p-4">
+        </View>
+      }
+
+    </View>
+
+
+      
+
   );
+
+
 }
-
-
 
 
