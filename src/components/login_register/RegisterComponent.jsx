@@ -26,10 +26,10 @@ export default function RegisterComponent({ setMode, onRegister }) {
 
   const { login_message, login_success, is_login_error, login_pending } = useSelector((state) => state.authSlice);
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
-  const [confirm, setConfirm] = useState('');
+  const [email, setEmail] = useState('temp2@gmail.com');
+  const [password, setPassword] = useState('11111111');
+  const [username, setUsername] = useState('temp2');
+  const [confirm, setConfirm] = useState('11111111');
 
   const [nativeLanguage, setNativeLanguage] = useState('');
 

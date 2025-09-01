@@ -96,7 +96,7 @@ export default function HomeScreen() {
                   <ChooseLangComponent 
                     selectedLanguage={choosenLanguage}
                     setSelectedLanguage={setChoosenLanguage} 
-                    nativeLanguage={nativeLanguage} 
+                    // nativeLanguage={nativeLanguage} 
                   />
                 </View>
 

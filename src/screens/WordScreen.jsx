@@ -68,65 +68,6 @@ export default function WordScreen() {
     }, [availableLanguages]);
 
 
-    // Fetch all available languages
-    // useFocusEffect(
-    //     useCallback(() => {
-    //         console.log('selected language is in the words secreen ...........................................................', selectedLanguage)
-    //         if (is_auth) {
-    //             dispatch(WordService.fetchAvailableLanguages());
-    //             console.log('starred is 2', starred)
-    //             if (starred){
-
-    //                 dispatch(WordService.handleLanguageSelect({
-    //                             filter: 'starred',
-    //                             langCode: selectedLanguage
-    //                         }))
-    //             }
-    //             else{
-    //                 dispatch(WordService.handleLanguageSelect({
-    //                             filter: 'all',
-    //                             langCode: selectedLanguage
-    //                         }))
-    //             }
-    //         }
-    //     }, [is_auth])
-    // );
-
-    // useFocusEffect(
-    //     useCallback(() => {
-    //         if (is_auth && selectedLanguage) {
-    //         // dispatch(WordService.handleLanguageSelect({
-    //         //     filter: 'all',
-    //         //     langCode: selectedLanguage, // ✅ Now safe — runs when it changes
-    //         // }));
-    //         console.log('starred is 2', starred)
-    //         if (starred){
-    //                 dispatch(WordService.handleLanguageSelect({
-    //                             filter: 'starred',
-    //                             langCode: selectedLanguage
-    //                         }))
-    //             }
-    //             else{
-    //                 dispatch(WordService.handleLanguageSelect({
-    //                             filter: 'all',
-    //                             langCode: selectedLanguage
-    //                         }))
-    //             }
-    //         }
-    //     }, [is_auth, dispatch, selectedLanguage]) // ✅ Added dependency
-    // );
-
-    // useEffect(() => {
-    //     if (availableLanguages.length === 1) {
-    //         dispatch(WordService.handleLanguageSelect({
-    //             filter: 'all',
-    //             langCode: availableLanguages[0].lang
-    //         }));
-    //         dispatch(setSelectedLanguage(availableLanguages[0].lang));
-    //         setScreen('all');
-    //     }
-    // }, [availableLanguages]);
-
 
     return (
         <SafeAreaView className='bg-white flex-1'>
@@ -155,12 +96,14 @@ export default function WordScreen() {
 
                     {/* Language List */}
                     <View className="space-y-3 ">
-                        {availableLanguages.map((lang) => {
+                        {/*  Inside of the return of available languages, return with an index */}
+                        {/* {availableLanguages.map((lang) => { */}
+                        { availableLanguages.map((lang, index) => {
                             const isSelected = selectedLanguage === lang.lang;
 
                             return (
                                 <TouchableOpacity
-                                    key={lang.lang}
+                                    key={index}
                                     onPress={() => {
                                         const new_lang_code = lang.lang;
                                         dispatch(setSelectedLanguage(new_lang_code));
@@ -249,7 +192,8 @@ export default function WordScreen() {
                         }))
                     }}
                 />
-            ) : (
+            ) 
+            : (
                 <View className="flex-1 justify-center items-center px-6 py-8">
                     {/* Icon */}
                     <View className="w-16 h-16 bg-indigo-100 rounded-full justify-center items-center mb-5">

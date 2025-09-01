@@ -1,12 +1,28 @@
 
-import React from 'react'
+import React, { useState, useEffect } from 'react';
 
 import { Text, View, Image } from 'react-native'
 
 import Feather from '@expo/vector-icons/Feather';
 
+import * as SecureStore from 'expo-secure-store';
+
 
 export default function HeaderComponent({ username }) {
+
+
+  const [nativeLangCode, setNativeLangCode] = useState(null);
+  
+
+  // Load native language from SecureStore
+    useEffect(() => {
+      const getNativeLang = async () => {
+        const native = await SecureStore.getItemAsync('native');
+        setNativeLangCode(native);
+        setIsLoading(false); // ← Mark as loaded
+      };
+      getNativeLang();
+    }, []);
 
   return (
 
@@ -50,7 +66,7 @@ export default function HeaderComponent({ username }) {
             className='text-sm text-gray-600'
             style={{ fontFamily: 'IBMPlexSans-Regular' }}
           >
-            Native: English
+            Native: {nativeLangCode}
           </Text>
         </View>
       </View>

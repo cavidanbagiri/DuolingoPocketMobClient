@@ -133,8 +133,6 @@ class AuthService {
         async (credentials, thunkAPI) => {
             try {
                 const response = await $api.post('/auth/choose_lang', credentials);
-                console.log('coming response is {}1', response);
-                console.log('coming response is {}2', response.data);
                 return {
                     payload: response.data,
                     status: response.status,

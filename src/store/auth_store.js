@@ -66,7 +66,7 @@ export const authSlice = createSlice({
             state.user = action.payload;
             state.login_success = true;
             state.login_message = 'Successfully registered';
-            state.user.target_langs = action.payload?.payload?.user?.learning_targets;
+            state.user.target_langs = []
             saveToStorage('token', action.payload?.payload?.access_token);
             saveToStorage('sub', action.payload?.payload?.user?.sub);  
             saveToStorage('username', action.payload?.payload?.user?.username); 
@@ -77,7 +77,6 @@ export const authSlice = createSlice({
                 saveToStorage('native', action.payload.payload.user.native);
                 state.native_lang = action.payload.payload.user.native
             }
-            console.log('auth is ', state.is_auth);
         });
         builder.addCase(AuthService.register.rejected, (state, action) => {
             state.login_pending = false;
@@ -158,13 +157,22 @@ export const authSlice = createSlice({
             console.log('refresh second', action.payload);
         });
 
+        
         // UserService setChoosenLanguage
         builder.addCase(AuthService.setTargetLanguage.fulfilled, (state, action) => {
             state.choosen_lang = action.payload?.payload?.target_language_code
             state.new_target_lang_cond.is_cond = true;
             state.new_target_lang_cond.msg = action.payload?.payload?.msg;
-            state.user.target_langs = [...state.user.target_langs, action.payload?.payload?.target_language_code];
+            
+            
+            
             state.new_target_lang_cond.res = action.payload?.payload?.target_language_code;
+            code = action.payload?.payload?.target_language_code;
+            if (state.user.target_langs?.includes(code)) {
+                return state; // already exists → no change
+            }
+            state.user.target_langs = [...state.user.target_langs, action.payload?.payload?.target_language_code];
+
 
         });
         builder.addCase(AuthService.setTargetLanguage.rejected, (state, action) => {

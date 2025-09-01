@@ -3,125 +3,183 @@ Problems
 
     1 - After registering user, l see deep execution problem in the home apge, especially in choose languagecomponent
     2 - Need to also adding some statistics for learned screen. if the one language select, show only words.
-    3 - Dont show the choose language in home page, if there is not any languages
     4 - Add flag to the choosing languages in words and learned words screen
+    3 - Need to fix the flag choosing in the header compoentn in home page
+
+    5 - In the last code, in Words Screen, l change the lang with the index in key field. need to test there
+    
 
 
 Please act like a senior reacti-native and expo developer and help me to fix the problem in the code.
-Problem: When l select the starred in filter, l see the starred words, but when l go to the another screen and return back, l wanna see again the starred words, but l see all words again. I wanna change starred in WordScreen.jsx 
-for starred words, l cant see it. 
+Problem: I have very interesting problem here. Do you know, when l registered user, the l direct to the home page and the log writes to the console this messages when l select the language:
+LOG  the code is  en
+LOG  second code is  en
+LOG  the state is  undefined', and the code is not working. Yes in the backend, there is no problem. The problem happened in ui side. which after choosing lang l will see the message and selected language will not show in the chooselang component anytime in realtim.
+but, after registering l logout from the user and return login again, this time the code is working without any problem.
 
-WordScreen.jsx
-    
-// WordsScreen.jsx
-export default function WordScreen() {
-    const dispatch = useDispatch();
+Console code: 
+    the code is  en
+    second code is  en
+    the state is  undefined
 
-    const { words, loading, selectedLanguage, availableLanguages } = useSelector((state) => state.wordSlice);
 
-    const [starred, setStarred] = useState(false);
+auth_store.js
 
-    const { is_auth } = useSelector((state) => state.authSlice);
 
-    const [screen, setScreen] = useState('all');
 
-    // Fetch all available languages
-    useFocusEffect(
-        useCallback(() => {
-            console.log('selected language is in the words secreen ...........................................................', selectedLanguage)
-            if (is_auth) {
-                dispatch(WordService.fetchAvailableLanguages());
-                console.log('starred is 2', starred)
-                if (starred){
+const initialState = {
+    user: {
+        email: 'unknown',
+        username: '',
+        target_langs: [],
+    },
+    login_message: '',
+    login_pending: false,
+    is_auth: false,
+    native_lang: '', // New Added
+    choosen_lang: '', // New Added
+    is_login_error: false,
+    login_success: false,
+    new_target_lang_cond:{
+        is_cond: false,
+        msg: '',
+        res: null,
+    },
+}
 
-                    dispatch(WordService.handleLanguageSelect({
-                                filter: 'starred',
-                                langCode: selectedLanguage
-                            }))
-                }
-                else{
-                    dispatch(WordService.handleLanguageSelect({
-                                filter: 'all',
-                                langCode: selectedLanguage
-                            }))
-                }
-            }
-        }, [is_auth])
-    );
 
-    useFocusEffect(
-        useCallback(() => {
-            if (is_auth && selectedLanguage) {
-            // dispatch(WordService.handleLanguageSelect({
-            //     filter: 'all',
-            //     langCode: selectedLanguage, // ✅ Now safe — runs when it changes
-            // }));
-            console.log('starred is 2', starred)
-            if (starred){
-                    dispatch(WordService.handleLanguageSelect({
-                                filter: 'starred',
-                                langCode: selectedLanguage
-                            }))
-                }
-                else{
-                    dispatch(WordService.handleLanguageSelect({
-                                filter: 'all',
-                                langCode: selectedLanguage
-                            }))
-                }
-            }
-        }, [is_auth, dispatch, selectedLanguage]) // ✅ Added dependency
-    );
-
-    useEffect(() => {
-        if (availableLanguages.length === 1) {
-            dispatch(WordService.handleLanguageSelect({
-                filter: 'all',
-                langCode: availableLanguages[0].lang
-            }));
-            dispatch(setSelectedLanguage(availableLanguages[0].lang));
-            setScreen('all');
+    // UserService setChoosenLanguage
+    builder.addCase(AuthService.setTargetLanguage.fulfilled, (state, action) => {
+        state.choosen_lang = action.payload?.payload?.target_language_code
+        state.new_target_lang_cond.is_cond = true;
+        state.new_target_lang_cond.msg = action.payload?.payload?.msg;
+        
+        
+        
+        state.new_target_lang_cond.res = action.payload?.payload?.target_language_code;
+        console.log('the code is ', state.new_target_lang_cond.res)
+        // state.user.target_langs = [...state.user.target_langs, action.payload?.payload?.target_language_code];
+        code = action.payload?.payload?.target_language_code;
+        console.log('second code is ', code)
+        console.log('the state is ', state.user.target_langs)
+        if (state.user.target_langs.includes(code)) {
+            return state; // already exists → no change
         }
-    }, [availableLanguages]);
+        state.user.target_langs = [...state.user.target_langs, action.payload?.payload?.target_language_code];
+        console.log('here is working and the lannguages is ', state.user.target_langs)
+    });
+    builder.addCase(AuthService.setTargetLanguage.rejected, (state, action) => {
+        console.log('target rejected', action.payload);
+    });
+
+ChoiseLangComponent.jsx
 
 
+// export default function ChooseLangComponent({ selectedLanguage, setSelectedLanguage, nativeLanguage }) {
+export default function ChooseLangComponent({ selectedLanguage, setSelectedLanguage }) {
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.authSlice);
+
+  const [nativeLangName, setNativeLangName] = useState(null);
+  const [filteredLanguages, setFilteredLanguages] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // ← Add loading state
+
+  const languages = LANGUAGES;
+
+  // const selectedLangCodes = user?.target_langs || [];
+  const selectedLangCodes = useMemo(
+  () => user?.target_langs || [],
+  [user?.target_langs]
+);
+
+  // Load native language from SecureStore
+  useEffect(() => {
+    console.log('first use effect is working')
+    const getNativeLang = async () => {
+      try{
+        const native = await SecureStore.getItemAsync('native');
+        setNativeLangName(native);
+        setIsLoading(false); 
+      }
+      catch(error){
+        setNativeLangName(null);
+        
+      }
+      finally {
+        setIsLoading(false);
+      }
+    };
+    getNativeLang();
+  }, []);
+  
+  // Filter languages when dependencies change 
+  useEffect(() => {
+    console.log('second use effect is working')
+    if (isLoading) return; // ← Don't run until nativeLangCode is ready
+
+    const filtered = languages.filter(
+      (lang) =>
+        !selectedLangCodes.includes(lang.code) &&
+        lang.name !== nativeLangName
+    );
+
+    setFilteredLanguages(filtered);
+  }, [isLoading, selectedLangCodes, nativeLangName]);
+
+  // 🔁 Don't render grid until loading is done
+  if (isLoading) {
     return (
-        <SafeAreaView className='bg-white flex-1'>
+      <View className="flex-1 justify-center items-center p-4">
+        <ActivityIndicator size="small" color="#3b82f6" />
+        <Text className="text-gray-500 mt-2" style={{ fontFamily: 'IBMPlexSans-Regular' }}>
+          Loading languages...
+        </Text>
+      </View>
+    );
+  }
 
-            {
-                selectedLanguage &&
-                <FilterComponent 
-                    screen={screen}
-                    setScreen={setScreen}
-                    setStarred={setStarred}
-                />
-            }
+  return (
 
-FilterComponent.jsx
+    <View>
 
-    const FilterComponent = ({screen = 'all', setStarred}) => {
+      {
+        filteredLanguages.length > 0 &&
+          <View className="bg-gray-50 px-6 py-8 rounded-2xl mt-5">
+            {/* Header */}
+            <Text
+              className="text-3xl font-bold text-gray-800 mb-2 text-center"
+              style={{ fontFamily: 'Poppins-Bold' }}
+            >
+              Choose Your Language
+            </Text>
 
-        const dispatch = useDispatch();
+            <Text
+              className="text-lg text-gray-500 mb-8 text-center"
+              style={{ fontFamily: 'IBMPlexSans-Regular' }}
+            >
+              Start learning in just one tap
+            </Text>
 
-        const [filter, setFilter] = useState('all'); // 'all' or 'starred'
-
-        const [searchQuery, setSearchQuery] = useState('');
-
-        const { selectedLanguage, availableLanguages } = useSelector((state) => state.wordSlice);
-
-        const toggleFilter = () => {
-            setFilter(prev => prev === 'all' ? 'starred' : 'all');
-        };
-
-        useEffect(() => {
-            dispatch(WordService.handleLanguageSelect({
-            langCode: selectedLanguage,
-            filter: filter
-            }));
-            setStarred(filter === 'starred' ? true : false);
-        }, [filter]);
-
-        useEffect(() => {
-            setFilter('all');
-        }, [selectedLanguage]);
-
+            {/* Language Grid */}
+              <View className="grid grid-cols-3 gap-6">
+                {filteredLanguages.map((lang) => (
+                  <TouchableOpacity
+                  accessibilityLabel={`Select ${lang.name} language`}
+                  accessibilityRole="button"
+                    key={lang.code}
+                    onPress={() => {
+                      setSelectedLanguage(lang.name);
+                      dispatch(
+                        AuthService.setTargetLanguage({
+                          target_language_code: lang.code,
+                        })
+                      );
+                    }}
+                    activeOpacity={0.7}
+                    className={`items-center p-4 rounded-2xl border-2 ${selectedLanguage === lang.name
+                        ? 'border-blue-500 bg-blue-50 shadow-md'
+                        : 'border-gray-200 bg-white shadow-sm'
+                      }`}
+                    
+                  >
+                  ...
