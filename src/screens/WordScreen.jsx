@@ -201,21 +201,15 @@ export default function WordScreen() {
                             style={{ fontFamily: 'IBMPlexSans-Regular' }}
                         >
                             You haven't starred any words 
-                            {/* in{' '}
+                            in{' '}
                             {typeof selectedLanguage === 'object'
                                 ? selectedLanguage.name
                                 : selectedLanguage || 'this language'
                             }{' '}
-                            yet. */}
+                            yet.
                         </Text>
                     }
-                    {/* Tip */}
-                    {/* <Text
-                        className="text-sm text-gray-500 text-center mt-6"
-                        style={{ fontFamily: 'IBMPlexSans-Regular' }}
-                    >
-                        Tap a word and mark it as learned to track your progress.
-                    </Text> */}
+                   
                 </View>
 
 

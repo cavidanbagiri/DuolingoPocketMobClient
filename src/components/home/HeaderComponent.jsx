@@ -12,17 +12,36 @@ export default function HeaderComponent({ username }) {
 
 
   const [nativeLangCode, setNativeLangCode] = useState(null);
+  const [flagImage, setFlagImage] = useState(null);
+
+
+  const FLAG_IMAGES = {
+    'English': require('../../../assets/flags/england.png'),
+    'Spanish': require('../../../assets/flags/spanish.png'),
+    'Russian': require('../../../assets/flags/russian.png'),
+    'Turkish': require('../../../assets/flags/turkish.png'),
+    };
   
 
-  // Load native language from SecureStore
     useEffect(() => {
-      const getNativeLang = async () => {
+    const getNativeLang = async () => {
+      try {
         const native = await SecureStore.getItemAsync('native');
         setNativeLangCode(native);
-        setIsLoading(false); // ← Mark as loaded
-      };
-      getNativeLang();
-    }, []);
+
+        // ✅ 2. Map code to image
+        if (native && FLAG_IMAGES[native]) {
+          setFlagImage(FLAG_IMAGES[native]);
+        } 
+      } catch (error) {
+        console.error('Failed to load native language', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    getNativeLang();
+  }, []);
 
   return (
 
@@ -57,11 +76,14 @@ export default function HeaderComponent({ username }) {
 
         <View className='flex flex-row items-center mt-0.5'>
           {/* UK Flag Badge */}
+
+
           <Image
-            source={require('../../../assets/flags/england.png')} // ← UK flag (England/UK)
+            source={flagImage}
             style={{ width: 30, height: 24, borderRadius: 4, marginRight: 6 }}
             resizeMode='cover'
           />
+          
           <Text
             className='text-sm text-gray-600'
             style={{ fontFamily: 'IBMPlexSans-Regular' }}
