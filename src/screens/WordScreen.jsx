@@ -27,43 +27,43 @@ export default function WordScreen() {
     const { words, loading, selectedLanguage, availableLanguages } = useSelector((state) => state.wordSlice);
 
 
-    const [filter, setFilter] = useState('all'); // 'all' or 'starred'
+    const [filter, setFilter] = useState('all');
 
     const { is_auth } = useSelector((state) => state.authSlice);
 
     useFocusEffect(
         useCallback(() => {
-        if (is_auth) {
-            dispatch(WordService.fetchAvailableLanguages());
-        }
+            if (is_auth) {
+                dispatch(WordService.fetchAvailableLanguages());
+            }
         }, [is_auth])
     );
 
     // ✅ Fetch words when selectedLanguage OR filter changes
     useFocusEffect(
         useCallback(() => {
-        if (is_auth && selectedLanguage) {
-            dispatch(
-            WordService.handleLanguageSelect({
-                filter,
-                langCode: selectedLanguage,
-            })
-            );
-        }
+            if (is_auth && selectedLanguage) {
+                dispatch(
+                    WordService.handleLanguageSelect({
+                        filter,
+                        langCode: selectedLanguage,
+                    })
+                );
+            }
         }, [is_auth, dispatch, selectedLanguage, filter]) // ✅ Added `filter`
     );
 
     useEffect(() => {
         if (availableLanguages.length === 1) {
-        const lang = availableLanguages[0].lang;
-        dispatch(setSelectedLanguage(lang));
-        dispatch(
-            WordService.handleLanguageSelect({
-            filter: 'all',
-            langCode: lang,
-            })
-        );
-        setFilter('all'); // Sync local state
+            const lang = availableLanguages[0].lang;
+            dispatch(setSelectedLanguage(lang));
+            dispatch(
+                WordService.handleLanguageSelect({
+                    filter: 'all',
+                    langCode: lang,
+                })
+            );
+            setFilter('all'); // Sync local state
         }
     }, [availableLanguages]);
 
@@ -74,10 +74,10 @@ export default function WordScreen() {
 
             {
                 selectedLanguage &&
-                <FilterComponent 
+                <FilterComponent
                     // screen={screen}
-                     filter={filter}
-                     setFilter={setFilter}
+                    filter={filter}
+                    setFilter={setFilter}
                 />
             }
 
@@ -94,11 +94,12 @@ export default function WordScreen() {
                         Choose Language
                     </Text>
 
+
                     {/* Language List */}
                     <View className="space-y-3 ">
                         {/*  Inside of the return of available languages, return with an index */}
                         {/* {availableLanguages.map((lang) => { */}
-                        { availableLanguages.map((lang, index) => {
+                        {availableLanguages.map((lang, index) => {
                             const isSelected = selectedLanguage === lang.lang;
 
                             return (
@@ -116,8 +117,8 @@ export default function WordScreen() {
                                     }}
                                     activeOpacity={0.7}
                                     className={`flex-row items-center p-4 rounded-2xl border-2 transition-all duration-150 my-1 ${isSelected
-                                            ? 'border-blue-500 bg-blue-50 '
-                                            : 'border-gray-200 bg-white hover:border-gray-300 '
+                                        ? 'border-blue-500 bg-blue-50 '
+                                        : 'border-gray-200 bg-white hover:border-gray-300 '
                                         }`}
                                     style={{
                                         elevation: isSelected ? 3 : 1,
@@ -176,6 +177,51 @@ export default function WordScreen() {
                 </View>
             )}
 
+
+
+            {/* Check if starred is empty */}
+            {
+                filter === 'starred' && words?.length === 0 &&
+                <View className="flex-1 justify-center items-center px-6 py-8">
+                    {/* Icon */}
+                    <View className="w-16 h-16 bg-yellow-100 rounded-full justify-center items-center mb-5">
+                        <Feather name="star" size={32} color="#eab308" />
+                    </View>
+                    {/* Message */}
+                    <Text
+                        className="text-2xl font-bold text-gray-800 text-center mb-2"
+                        style={{ fontFamily: 'Poppins-SemiBold' }}
+                    >
+                        Not Yet, But Soon!
+                    </Text>
+                    {
+                        selectedLanguage &&
+                        <Text
+                            className="text-lg text-gray-600 text-center mb-6 leading-relaxed"
+                            style={{ fontFamily: 'IBMPlexSans-Regular' }}
+                        >
+                            You haven't starred any words 
+                            {/* in{' '}
+                            {typeof selectedLanguage === 'object'
+                                ? selectedLanguage.name
+                                : selectedLanguage || 'this language'
+                            }{' '}
+                            yet. */}
+                        </Text>
+                    }
+                    {/* Tip */}
+                    {/* <Text
+                        className="text-sm text-gray-500 text-center mt-6"
+                        style={{ fontFamily: 'IBMPlexSans-Regular' }}
+                    >
+                        Tap a word and mark it as learned to track your progress.
+                    </Text> */}
+                </View>
+
+
+            }
+
+
             {/* Words List */}
             {selectedLanguage ? (
                 <FlatList
@@ -192,33 +238,33 @@ export default function WordScreen() {
                         }))
                     }}
                 />
-            ) 
-            : (
-                <View className="flex-1 justify-center items-center px-6 py-8">
-                    {/* Icon */}
-                    <View className="w-16 h-16 bg-indigo-100 rounded-full justify-center items-center mb-5">
-                        <Feather name="book-open" size={32} color="#4f46e5" />
-                    </View>
+            )
+                : (
+                    <View className="flex-1 justify-center items-center px-6 py-8">
+                        {/* Icon */}
+                        <View className="w-16 h-16 bg-indigo-100 rounded-full justify-center items-center mb-5">
+                            <Feather name="book-open" size={32} color="#4f46e5" />
+                        </View>
 
-                    {/* Message */}
-                    <Text
-                        className="text-2xl font-bold text-gray-800 text-center mb-2"
-                        style={{ fontFamily: 'Poppins-SemiBold' }}
-                    >
-                        Choose language
-                    </Text>
-
-                    {
-                        selectedLanguage && <Text
-                            className="text-lg text-gray-600 text-center mb-6 leading-relaxed"
-                            style={{ fontFamily: 'IBMPlexSans-Regular' }}
+                        {/* Message */}
+                        <Text
+                            className="text-2xl font-bold text-gray-800 text-center mb-2"
+                            style={{ fontFamily: 'Poppins-SemiBold' }}
                         >
-                            You haven't learned any words in {selectedLanguage} yet.
+                            Choose language
                         </Text>
-                    }
 
-                    {/* CTA Button */}
-                    {/* <TouchableOpacity
+                        {
+                            selectedLanguage && <Text
+                                className="text-lg text-gray-600 text-center mb-6 leading-relaxed"
+                                style={{ fontFamily: 'IBMPlexSans-Regular' }}
+                            >
+                                You haven't learned any words in {selectedLanguage} yet.
+                            </Text>
+                        }
+
+                        {/* CTA Button */}
+                        {/* <TouchableOpacity
                         onPress={() => navigation.navigate('Learn', { lang: selectedLanguage })}
                         activeOpacity={0.8}
                         className="flex-row items-center bg-indigo-600 px-6 py-3 rounded-xl "
@@ -232,15 +278,15 @@ export default function WordScreen() {
                         </Text>
                     </TouchableOpacity> */}
 
-                    {/* Tip */}
-                    <Text
-                        className="text-sm text-gray-500 text-center mt-6"
-                        style={{ fontFamily: 'IBMPlexSans-Regular' }}
-                    >
-                        Tap the language for words.
-                    </Text>
-                </View>
-            )}
+                        {/* Tip */}
+                        <Text
+                            className="text-sm text-gray-500 text-center mt-6"
+                            style={{ fontFamily: 'IBMPlexSans-Regular' }}
+                        >
+                            Tap the language for words.
+                        </Text>
+                    </View>
+                )}
 
         </SafeAreaView>
     );
