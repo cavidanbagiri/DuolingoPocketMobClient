@@ -7,21 +7,6 @@ import { clearStorage, getFromStorage, saveToStorage } from '../utils/storage';
 
 axios.defaults.withCredentials = true;
 
-// const initialState = {
-//     words: [],
-//     words_pending: false,
-//     is_words_error: false,
-//     is_words_success: false,
-
-//     detail: {},
-//     loading: false,
-
-//     statistics: null,
-
-//     pos_statistics: null,
-
-// }
-
 const initialState = {
     words: [],
     wordsData: [], // New: stores the complete language-wise data
@@ -37,6 +22,10 @@ const initialState = {
     statistics: null,
 
     pos_statistics: null,
+
+    available_lang_toggle: true,
+
+
 };
 
 export const wordSlice = createSlice({
@@ -65,11 +54,11 @@ export const wordSlice = createSlice({
 
         setSelectedLanguage: (state, action) => {
             state.selectedLanguage = action.payload;
-            // Find and set words for the selected language
-            // const selectedLangData = state.wordsData.find(data => data.lang === action.payload);
-            // if (selectedLangData) {
-            //     state.words = selectedLangData.words;
-            // }
+        },
+        
+        setAvailableLangToggle: (state, action) => {
+            console.log('payload for available lang is ', action.payload)
+            state.available_lang_toggle = action.payload;
         }
 
     },
@@ -235,6 +224,6 @@ export const wordSlice = createSlice({
     },
 })
 
-export const { setWordsPendingFalse, clearDetail, setDetail, setSelectedLanguage  } = wordSlice.actions;
+export const { setWordsPendingFalse, clearDetail, setDetail, setSelectedLanguage, setAvailableLangToggle  } = wordSlice.actions;
 
 export default wordSlice.reducer;

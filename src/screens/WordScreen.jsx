@@ -24,7 +24,7 @@ import Feather from '@expo/vector-icons/Feather';
 export default function WordScreen() {
     const dispatch = useDispatch();
 
-    const { words, loading, selectedLanguage, availableLanguages } = useSelector((state) => state.wordSlice);
+    const { words, loading, selectedLanguage, availableLanguages, available_lang_toggle } = useSelector((state) => state.wordSlice);
 
 
     const [filter, setFilter] = useState('all');
@@ -75,14 +75,13 @@ export default function WordScreen() {
             {
                 selectedLanguage &&
                 <FilterComponent
-                    // screen={screen}
                     filter={filter}
                     setFilter={setFilter}
                 />
             }
 
             {/* Language Selector */}
-            {availableLanguages?.length > 1 && (
+            {availableLanguages?.length > 1 && available_lang_toggle && (
 
                 <View className="px-3 pb-1 bg-white border-b border-gray-100">
 

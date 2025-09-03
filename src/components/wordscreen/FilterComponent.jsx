@@ -6,7 +6,7 @@ import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-nativ
 import { Ionicons } from '@expo/vector-icons'; // Make sure this is installed
 import Feather from '@expo/vector-icons/Feather';
 
-import { setWordsPendingFalse } from '../../store/word_store';
+import { setAvailableLangToggle } from '../../store/word_store';
 
 
 import WordService from '../../services/WordService';
@@ -18,7 +18,7 @@ const FilterComponent = ({ filter, setFilter }) => {
 
   const [searchQuery, setSearchQuery] = useState('');
 
-  const { selectedLanguage } = useSelector((state) => state.wordSlice);
+  const { selectedLanguage, available_lang_toggle } = useSelector((state) => state.wordSlice);
 
   const toggleFilter = () => {
     const newFilter = filter === 'all' ? 'starred' : 'all';
@@ -98,6 +98,30 @@ const FilterComponent = ({ filter, setFilter }) => {
         >
           <Feather name="refresh-cw" size={18} color="#4b5563" />
         </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => {
+              dispatch(setAvailableLangToggle(!available_lang_toggle));
+            }}
+            activeOpacity={0.7}
+            className="flex-row items-center space-x-2 bg-gray-100 px-4 py-2.5 rounded-full"
+
+          >
+            <Ionicons
+              name={available_lang_toggle ? 'checkmark-circle' : 'checkmark-circle-outline'}
+              size={20}
+              color={available_lang_toggle ? '#facc15' : '#6b7280'}
+            />
+            <Text
+              className={`font-semibold ${available_lang_toggle ? 'text-amber-700' : 'text-gray-700'
+                }`}
+              style={{ fontFamily: 'IBMPlexSans-SemiBold' }}
+            >
+              {available_lang_toggle ? 'Available' : 'All'}
+            </Text>
+          </TouchableOpacity>
+
+
       </View>
 
     </View>
