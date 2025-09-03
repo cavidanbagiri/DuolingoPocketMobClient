@@ -25,21 +25,14 @@ export default function LearnedScreen() {
 
   const { is_auth } = useSelector((state) => state.authSlice);
 
-  const { words, words_pending, selectedLanguage, availableLanguages } = useSelector((state) => state.wordSlice);
+  const { words, words_pending, selectedLanguage, statistics } = useSelector((state) => state.wordSlice);
 
   const navigation = useNavigation();
 
-  // const FLAG_IMAGES = {
-  //   'English': require('../../assets/flags/england.png'),
-  //   'Spanish': require('../../assets/flags/spanish.png'),
-  //   'Russian': require('../../assets/flags/russian.png'),
-  //   'Turkish': require('../../assets/flags/turkish.png'),
-  // };
-
   useFocusEffect(
     useCallback(() => {
-      if (is_auth && availableLanguages.length === 0) {
-        dispatch(WordService.fetchAvailableLanguages());
+      if (is_auth && statistics.length === 0) {
+        dispatch(WordService.getStatisticsForDashboard());
       }
     }, [is_auth])
   );
@@ -60,9 +53,7 @@ export default function LearnedScreen() {
 
     <SafeAreaView className="flex-1 bg-gray-50">
       {/* Language Selector */}
-      {availableLanguages?.length > 1 && (
-        <LanguageSelected screen={'LearnedScreen'} />
-      )}
+      <LanguageSelected screen={'LearnedScreen'} />
       {/* Loading State */}
       {selectedLanguage && words_pending && (
         <View className="flex-1 justify-center items-center">

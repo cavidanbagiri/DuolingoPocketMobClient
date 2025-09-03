@@ -69,7 +69,7 @@ export default function LanguagesStatisticsComponents() {
             >
               {/* Gradient Header */}
               <LinearGradient
-                colors={getLanguageGradient(item.language_code)} // Dynamic by language
+                colors={getLanguageGradient(item.language_name)} // Dynamic by language
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 className="p-5"
@@ -77,16 +77,10 @@ export default function LanguagesStatisticsComponents() {
                 {/* Language Name & Code */}
                 <View className="flex-row items-start justify-between mb-3">
                   <Text
-                    className="text-2xl font-bold text-white"
-                    style={{ fontFamily: 'Poppins-Bold' }}
-                  >
-                    {item.language_name}
-                  </Text>
-                  <Text
                     className="text-lg text-white opacity-90"
                     style={{ fontFamily: 'Poppins-SemiBold' }}
                   >
-                    {item.language_code.toUpperCase()}
+                    {item.language_name}
                   </Text>
                 </View>
 

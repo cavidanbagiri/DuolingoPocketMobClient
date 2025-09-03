@@ -25,23 +25,17 @@ import LanguageSelected from '../components/layouts/LanguageSelected.jsx';
 export default function WordScreen() {
     const dispatch = useDispatch();
 
-    const { words, loading, selectedLanguage, availableLanguages, available_lang_toggle } = useSelector((state) => state.wordSlice);
+    const { words, loading, selectedLanguage, available_lang_toggle, statistics } = useSelector((state) => state.wordSlice);
 
     const [filter, setFilter] = useState('all');
 
     const { is_auth } = useSelector((state) => state.authSlice);
 
-    // const FLAG_IMAGES = {
-    //     'English': require('../../assets/flags/england.png'),
-    //     'Spanish': require('../../assets/flags/spanish.png'),
-    //     'Russian': require('../../assets/flags/russian.png'),
-    //     'Turkish': require('../../assets/flags/turkish.png'),
-    // };
 
     useFocusEffect(
         useCallback(() => {
             if (is_auth) {
-                dispatch(WordService.fetchAvailableLanguages());
+                dispatch(WordService.getStatisticsForDashboard());
             }
         }, [is_auth])
     );
@@ -60,19 +54,20 @@ export default function WordScreen() {
         }, [is_auth, dispatch, selectedLanguage, filter]) // ✅ Added `filter`
     );
 
+
     useEffect(() => {
-        if (availableLanguages.length === 1) {
-            const lang = availableLanguages[0].lang;
-            dispatch(setSelectedLanguage(lang));
+        if (statistics.length === 1) {
+            const lang_code = statistics[0]['language_code'];
+            dispatch(setSelectedLanguage(lang_code));
             dispatch(
                 WordService.handleLanguageSelect({
                     filter: 'all',
-                    langCode: lang,
+                    langCode: lang_code,
                 })
             );
             setFilter('all'); // Sync local state
         }
-    }, [availableLanguages]);
+    }, [statistics]);
 
 
 
@@ -88,7 +83,7 @@ export default function WordScreen() {
             }
 
             {/* Language Selector */}
-            {availableLanguages?.length > 1 && available_lang_toggle && (
+            {available_lang_toggle && (
 
                 <LanguageSelected screen={'WordScreen'} />
 
@@ -128,8 +123,6 @@ export default function WordScreen() {
                     }
 
                 </View>
-
-
             }
 
 
@@ -173,21 +166,6 @@ export default function WordScreen() {
                                 You haven't learned any words in {selectedLanguage} yet.
                             </Text>
                         }
-
-                        {/* CTA Button */}
-                        {/* <TouchableOpacity
-                        onPress={() => navigation.navigate('Learn', { lang: selectedLanguage })}
-                        activeOpacity={0.8}
-                        className="flex-row items-center bg-indigo-600 px-6 py-3 rounded-xl "
-                    >
-                        <Feather name="play" size={18} color="white" style={{ marginRight: 8 }} />
-                        <Text
-                            className="text-white text-lg font-semibold"
-                            style={{ fontFamily: 'IBMPlexSans-SemiBold' }}
-                        >
-                            Start Learning
-                        </Text>
-                    </TouchableOpacity> */}
 
                         {/* Tip */}
                         <Text

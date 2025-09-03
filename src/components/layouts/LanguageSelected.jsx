@@ -21,7 +21,7 @@ export default function LanguageSelected({ screen }) {
 
     const dispatch = useDispatch();
 
-    const { words, loading, selectedLanguage, availableLanguages, available_lang_toggle } = useSelector((state) => state.wordSlice);
+    const { words, loading, selectedLanguage, availableLanguages, available_lang_toggle, statistics } = useSelector((state) => state.wordSlice);
 
     const [filter, setFilter] = useState('all');
 
@@ -41,14 +41,15 @@ export default function LanguageSelected({ screen }) {
             <View className="space-y-3 ">
                 {/*  Inside of the return of available languages, return with an index */}
                 {/* {availableLanguages.map((lang) => { */}
-                {availableLanguages.map((lang, index) => {
-                    const isSelected = selectedLanguage === lang.lang;
+                {/* {availableLanguages.map((lang, index) => { */}
+                {statistics.map((lang, index) => {
+                    const isSelected = selectedLanguage === lang.language_code;
 
                     return (
                         <TouchableOpacity
                             key={index}
                             onPress={() => {
-                                const new_lang_code = lang.lang;
+                                const new_lang_code = lang.language_code;
                                 dispatch(setSelectedLanguage(new_lang_code));
                                 if (screen === 'WordScreen') {
                                     dispatch(
@@ -87,6 +88,7 @@ export default function LanguageSelected({ screen }) {
 
                             {/* Language Info */}
                             <View className="flex-1">
+
                                 <Text
                                     className={`text-base font-bold ${isSelected ? 'text-gray-900' : 'text-gray-800'
                                         }`}
@@ -94,6 +96,23 @@ export default function LanguageSelected({ screen }) {
                                 >
                                     {lang.language_name}
                                 </Text>
+
+                                <View className="flex-row items-center mt-1">
+                                    <Text
+                                        className="text-sm text-gray-500"
+                                        style={{ fontFamily: 'IBMPlexSans-Regular' }}
+                                    >
+                                        {lang.learned_words} words
+                                    </Text>
+                                    <View className="mx-1 w-1 h-1 bg-gray-400 rounded-full" />
+                                    <Text
+                                        className={`text-sm ${isSelected ? 'text-blue-600' : 'text-gray-500'
+                                            }`}
+                                        style={{ fontFamily: 'IBMPlexSans-Regular' }}
+                                    >
+                                        Learned Words
+                                    </Text>
+                                </View>
 
                                 <View className="flex-row items-center mt-1">
                                     <Text
@@ -111,7 +130,12 @@ export default function LanguageSelected({ screen }) {
                                         Tap to select
                                     </Text>
                                 </View>
+
+
                             </View>
+
+
+
 
                             {/* Selection Indicator */}
                             <View
