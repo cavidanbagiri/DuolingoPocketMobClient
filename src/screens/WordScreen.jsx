@@ -26,10 +26,16 @@ export default function WordScreen() {
 
     const { words, loading, selectedLanguage, availableLanguages, available_lang_toggle } = useSelector((state) => state.wordSlice);
 
-
     const [filter, setFilter] = useState('all');
 
     const { is_auth } = useSelector((state) => state.authSlice);
+
+    const FLAG_IMAGES = {
+        'English': require('../../assets/flags/england.png'),
+        'Spanish': require('../../assets/flags/spanish.png'),
+        'Russian': require('../../assets/flags/russian.png'),
+        'Turkish': require('../../assets/flags/turkish.png'),
+    };
 
     useFocusEffect(
         useCallback(() => {
@@ -126,7 +132,7 @@ export default function WordScreen() {
                                     {/* Flag Badge */}
                                     <View className="w-12 h-10 rounded-xl overflow-hidden border-2 border-white mr-4">
                                         <Image
-                                            source={lang.flag}
+                                            source={FLAG_IMAGES[lang.language_name]}
                                             style={{ width: '100%', height: '100%' }}
                                             resizeMode="cover"
                                         />
@@ -199,7 +205,7 @@ export default function WordScreen() {
                             className="text-lg text-gray-600 text-center mb-6 leading-relaxed"
                             style={{ fontFamily: 'IBMPlexSans-Regular' }}
                         >
-                            You haven't starred any words 
+                            You haven't starred any words
                             in{' '}
                             {typeof selectedLanguage === 'object'
                                 ? selectedLanguage.name
@@ -208,7 +214,7 @@ export default function WordScreen() {
                             yet.
                         </Text>
                     }
-                   
+
                 </View>
 
 

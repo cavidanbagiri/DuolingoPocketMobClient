@@ -10,7 +10,6 @@ import { setAvailableLangToggle } from '../../store/word_store';
 
 
 import WordService from '../../services/WordService';
-import PosStatistics from "./PosStatistics";
 
 const FilterComponent = ({ filter, setFilter }) => {
 
