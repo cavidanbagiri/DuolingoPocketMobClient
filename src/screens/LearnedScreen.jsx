@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { Text, View, ScrollView, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useEffect, useState } from 'react'
@@ -6,6 +6,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import WordService from '../services/WordService.js'
 
 import { useNavigation } from '@react-navigation/native';
+
+
+import { setSelectedLanguage } from '../store/word_store';
 
 import Feather from '@expo/vector-icons/Feather';
 
@@ -17,6 +20,7 @@ import LanguageSelected from '../components/layouts/LanguageSelected.jsx';
 
 import VocabCard from '../components/cards/VocabCard';
 import FilterComponent from '../components/wordscreen/FilterComponent.jsx';
+import WordList from '../components/layouts/WordList.jsx';
 
 export default function LearnedScreen() {
 
@@ -26,7 +30,7 @@ export default function LearnedScreen() {
 
   const { is_auth } = useSelector((state) => state.authSlice);
 
-  const { words, words_pending, selectedLanguage, available_lang_toggle,statistics } = useSelector((state) => state.wordSlice);
+  const { words, words_pending, selectedLanguage, available_lang_toggle,statistics, loading } = useSelector((state) => state.wordSlice);
 
   const [filter, setFilter] = useState('all');
 
@@ -127,11 +131,7 @@ export default function LearnedScreen() {
       )}
       {/* Words List */}
       {selectedLanguage && !words_pending && words?.length > 0 && (
-        <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 8 }}>
-          {words.map((word, index) => (
-            <VocabCard word={word} key={index} />
-          ))}
-        </ScrollView>
+        <WordList filter={'learned'} screen={'LearnedScreen'} />
       )}
     </SafeAreaView>
   )

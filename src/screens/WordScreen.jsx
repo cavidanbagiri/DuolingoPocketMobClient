@@ -21,6 +21,7 @@ import FilterComponent from '../components/wordscreen/FilterComponent.jsx';
 import Feather from '@expo/vector-icons/Feather';
 import LanguageSelected from '../components/layouts/LanguageSelected.jsx';
 import EmptyStarredComponent from '../components/home/EmptyStarredComponent.jsx';
+import WordList from '../components/layouts/WordList.jsx';
 
 // WordsScreen.jsx
 export default function WordScreen() {
@@ -102,20 +103,7 @@ export default function WordScreen() {
 
             {/* Words List */}
             {selectedLanguage ? (
-                <FlatList
-                    className='bg-white mt-1'
-                    data={words}
-                    renderItem={({ item }) => <VocabCard word={item} />}
-                    keyExtractor={(item) => item.id.toString()}
-                    refreshing={loading}
-                    onRefresh={() => {
-                        dispatch(setSelectedLanguage(selectedLanguage));
-                        dispatch(WordService.handleLanguageSelect({
-                            filter,
-                            langCode: selectedLanguage
-                        }))
-                    }}
-                />
+                <WordList filter={filter} screen={'WordScreen'} />
             )
                 : (
                     <View className="flex-1 justify-center items-center px-6 py-8">
