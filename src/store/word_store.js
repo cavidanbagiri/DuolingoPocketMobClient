@@ -10,7 +10,7 @@ axios.defaults.withCredentials = true;
 const initialState = {
     words: [],
     wordsData: [], // New: stores the complete language-wise data
-    availableLanguages: [], // New: stores available language codes
+    // availableLanguages: [], // New: stores available language codes
     selectedLanguage: null, // New: currently selected language
     words_pending: false,
     is_words_error: false,
@@ -57,7 +57,6 @@ export const wordSlice = createSlice({
         },
         
         setAvailableLangToggle: (state, action) => {
-            console.log('payload for available lang is ', action.payload)
             state.available_lang_toggle = action.payload;
         }
 
@@ -79,16 +78,16 @@ export const wordSlice = createSlice({
 
 
 
-        builder.addCase(WordService.fetchAvailableLanguages.pending, (state, action) => {
-            state.loading = true;
-        });
-        builder.addCase(WordService.fetchAvailableLanguages.fulfilled, (state, action) => {
-            state.loading = false;
-            state.availableLanguages = action.payload;
-        });
-        builder.addCase(WordService.fetchAvailableLanguages.rejected, (state, action) => {
-            state.loading = false;
-        });
+        // builder.addCase(WordService.fetchAvailableLanguages.pending, (state, action) => {
+        //     state.loading = true;
+        // });
+        // builder.addCase(WordService.fetchAvailableLanguages.fulfilled, (state, action) => {
+        //     state.loading = false;
+        //     state.availableLanguages = action.payload;
+        // });
+        // builder.addCase(WordService.fetchAvailableLanguages.rejected, (state, action) => {
+        //     state.loading = false;
+        // });
 
 
 

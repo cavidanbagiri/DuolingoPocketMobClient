@@ -45,24 +45,24 @@ class WordService {
     // )
 
 
-    static fetchAvailableLanguages = createAsyncThunk(
-        '/user/languages',
-        async () => {
-            try {
-                const response = await $api.get('/words/user/languages');
-                return response.data;
-            } catch (error) {
-                // Extract error details
-                const errorData = error.response?.data || { message: error.message };
-                const statusCode = error.response?.status || 500;
-                // Pass custom error payload
-                return thunkAPI.rejectWithValue({
-                    payload: errorData,
-                    status: statusCode,
-                });
-            }
-        }
-    )
+    // static fetchAvailableLanguages = createAsyncThunk(
+    //     '/user/languages',
+    //     async () => {
+    //         try {
+    //             const response = await $api.get('/words/user/languages');
+    //             return response.data;
+    //         } catch (error) {
+    //             // Extract error details
+    //             const errorData = error.response?.data || { message: error.message };
+    //             const statusCode = error.response?.status || 500;
+    //             // Pass custom error payload
+    //             return thunkAPI.rejectWithValue({
+    //                 payload: errorData,
+    //                 status: statusCode,
+    //             });
+    //         }
+    //     }
+    // )
 
     static handleLanguageSelect = createAsyncThunk(
         '/words/:langCode',

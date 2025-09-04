@@ -21,7 +21,7 @@ export default function LanguageSelected({ screen }) {
 
     const dispatch = useDispatch();
 
-    const { words, loading, selectedLanguage, availableLanguages, available_lang_toggle, statistics } = useSelector((state) => state.wordSlice);
+    const { selectedLanguage, statistics } = useSelector((state) => state.wordSlice);
 
     const [filter, setFilter] = useState('all');
 
@@ -40,8 +40,6 @@ export default function LanguageSelected({ screen }) {
             {/* Language List */}
             <View className="space-y-3 ">
                 {/*  Inside of the return of available languages, return with an index */}
-                {/* {availableLanguages.map((lang) => { */}
-                {/* {availableLanguages.map((lang, index) => { */}
                 {statistics.map((lang, index) => {
                     const isSelected = selectedLanguage === lang.language_code;
 

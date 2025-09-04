@@ -11,7 +11,7 @@ import { setAvailableLangToggle } from '../../store/word_store';
 
 import WordService from '../../services/WordService';
 
-const FilterComponent = ({ filter, setFilter }) => {
+const FilterComponent = ({ filter, setFilter, screen }) => {
 
   const dispatch = useDispatch();
 
@@ -20,6 +20,7 @@ const FilterComponent = ({ filter, setFilter }) => {
   const { selectedLanguage, available_lang_toggle } = useSelector((state) => state.wordSlice);
 
   const toggleFilter = () => {
+    console.log('toggle filter is working ', filter)
     const newFilter = filter === 'all' ? 'starred' : 'all';
     setFilter(newFilter);
   };
@@ -59,34 +60,67 @@ const FilterComponent = ({ filter, setFilter }) => {
       <View className="flex-row items-center justify-between">
 
         {/* Filter Toggle: Starred vs All */}
+        {
+          screen === 'WordScreen' &&
+          <TouchableOpacity
+            onPress={toggleFilter}
+            activeOpacity={0.7}
+            className="flex-row items-center space-x-2 bg-gray-100 px-4 py-2.5 rounded-full"
+
+          >
+            <Ionicons
+              name={filter === 'starred' ? 'star' : 'star-outline'}
+              size={20}
+              color={filter === 'starred' ? '#facc15' : '#6b7280'}
+            />
+            <Text
+              className={`font-semibold ${filter === 'starred' ? 'text-amber-700' : 'text-gray-700'
+                }`}
+              style={{ fontFamily: 'IBMPlexSans-SemiBold' }}
+            >
+              {filter === 'starred' ? 'Starred' : 'All Words'}
+            </Text>
+          </TouchableOpacity>
+        }
+
+        {/* Toggle Language Button */}
         <TouchableOpacity
-          onPress={toggleFilter}
+          onPress={() => {
+            dispatch(setAvailableLangToggle(!available_lang_toggle));
+          }}
           activeOpacity={0.7}
           className="flex-row items-center space-x-2 bg-gray-100 px-4 py-2.5 rounded-full"
 
         >
           <Ionicons
-            name={filter === 'starred' ? 'star' : 'star-outline'}
+            name={available_lang_toggle ? 'checkmark-circle' : 'checkmark-circle-outline'}
             size={20}
-            color={filter === 'starred' ? '#facc15' : '#6b7280'}
+            color={available_lang_toggle ? '#facc15' : '#6b7280'}
           />
           <Text
-            className={`font-semibold ${filter === 'starred' ? 'text-amber-700' : 'text-gray-700'
+            className={`font-semibold ${available_lang_toggle ? 'text-amber-700' : 'text-gray-700'
               }`}
             style={{ fontFamily: 'IBMPlexSans-SemiBold' }}
           >
-            {filter === 'starred' ? 'Starred' : 'All Words'}
+            {available_lang_toggle ? 'Available' : 'All'}
           </Text>
         </TouchableOpacity>
 
         {/* Refresh Button */}
         <TouchableOpacity
           onPress={() => {
-            setFilter('all');
+            let new_filter;
+            if (screen === 'LearnedScreen') {
+              new_filter = 'learned';
+            }
+            else if (screen === 'WordScreen') {
+              new_filter = 'all';
+            }
+            setFilter(new_filter);
             setSearchQuery('');
             dispatch(
               WordService.handleLanguageSelect({
-                filter,
+                filter:new_filter,
                 langCode: selectedLanguage,
               })
             );
@@ -97,28 +131,6 @@ const FilterComponent = ({ filter, setFilter }) => {
         >
           <Feather name="refresh-cw" size={18} color="#4b5563" />
         </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => {
-              dispatch(setAvailableLangToggle(!available_lang_toggle));
-            }}
-            activeOpacity={0.7}
-            className="flex-row items-center space-x-2 bg-gray-100 px-4 py-2.5 rounded-full"
-
-          >
-            <Ionicons
-              name={available_lang_toggle ? 'checkmark-circle' : 'checkmark-circle-outline'}
-              size={20}
-              color={available_lang_toggle ? '#facc15' : '#6b7280'}
-            />
-            <Text
-              className={`font-semibold ${available_lang_toggle ? 'text-amber-700' : 'text-gray-700'
-                }`}
-              style={{ fontFamily: 'IBMPlexSans-SemiBold' }}
-            >
-              {available_lang_toggle ? 'Available' : 'All'}
-            </Text>
-          </TouchableOpacity>
 
 
       </View>

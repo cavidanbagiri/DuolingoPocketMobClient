@@ -1,11 +1,10 @@
 Problems
 
 1 - Need to also adding some statistics for learned screen. if the one language select, show only words.
-2 - Show how many words you learned
-3 - Add filter section to learned words screen - Working
-4 - Make Learned screnn as flatlist nor as scrollview as wordscreen
+2 - Set not starred words in seperate component
+3 - Make Learned screnn as flatlist nor as scrollview as wordscreen
 
 
 
 Today Solved: 
-2, 3
+2,3

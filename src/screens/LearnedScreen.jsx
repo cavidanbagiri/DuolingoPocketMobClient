@@ -1,7 +1,7 @@
 import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import WordService from '../services/WordService.js'
 
@@ -12,7 +12,6 @@ import Feather from '@expo/vector-icons/Feather';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
 
-import { setSelectedLanguage } from '../store/word_store';
 
 import LanguageSelected from '../components/layouts/LanguageSelected.jsx';
 
@@ -23,11 +22,14 @@ export default function LearnedScreen() {
 
   const dispatch = useDispatch();
 
+  const navigation = useNavigation();
+
   const { is_auth } = useSelector((state) => state.authSlice);
 
-  const { words, words_pending, selectedLanguage, statistics } = useSelector((state) => state.wordSlice);
+  const { words, words_pending, selectedLanguage, available_lang_toggle,statistics } = useSelector((state) => state.wordSlice);
 
-  const navigation = useNavigation();
+  const [filter, setFilter] = useState('all');
+
 
   useFocusEffect(
     useCallback(() => {
@@ -52,8 +54,19 @@ export default function LearnedScreen() {
   return (
 
     <SafeAreaView className="flex-1 bg-gray-50">
+      {/* Filter Component */}
+      {
+        selectedLanguage && 
+        <FilterComponent
+            filter={filter}
+            setFilter={setFilter}
+            screen={'LearnedScreen'}
+        />
+      }
       {/* Language Selector */}
-      <LanguageSelected screen={'LearnedScreen'} />
+      {available_lang_toggle && (
+        <LanguageSelected screen={'LearnedScreen'} />
+      )}
       {/* Loading State */}
       {selectedLanguage && words_pending && (
         <View className="flex-1 justify-center items-center">

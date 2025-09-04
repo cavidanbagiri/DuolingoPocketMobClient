@@ -20,6 +20,7 @@ import FilterComponent from '../components/wordscreen/FilterComponent.jsx';
 
 import Feather from '@expo/vector-icons/Feather';
 import LanguageSelected from '../components/layouts/LanguageSelected.jsx';
+import EmptyStarredComponent from '../components/home/EmptyStarredComponent.jsx';
 
 // WordsScreen.jsx
 export default function WordScreen() {
@@ -79,6 +80,7 @@ export default function WordScreen() {
                 <FilterComponent
                     filter={filter}
                     setFilter={setFilter}
+                    screen={'WordScreen'}
                 />
             }
 
@@ -94,35 +96,7 @@ export default function WordScreen() {
             {/* Check if starred is empty */}
             {
                 filter === 'starred' && words?.length === 0 &&
-                <View className="flex-1 justify-center items-center px-6 py-8">
-                    {/* Icon */}
-                    <View className="w-16 h-16 bg-yellow-100 rounded-full justify-center items-center mb-5">
-                        <Feather name="star" size={32} color="#eab308" />
-                    </View>
-                    {/* Message */}
-                    <Text
-                        className="text-2xl font-bold text-gray-800 text-center mb-2"
-                        style={{ fontFamily: 'Poppins-SemiBold' }}
-                    >
-                        Not Yet, But Soon!
-                    </Text>
-                    {
-                        selectedLanguage &&
-                        <Text
-                            className="text-lg text-gray-600 text-center mb-6 leading-relaxed"
-                            style={{ fontFamily: 'IBMPlexSans-Regular' }}
-                        >
-                            You haven't starred any words
-                            in{' '}
-                            {typeof selectedLanguage === 'object'
-                                ? selectedLanguage.name
-                                : selectedLanguage || 'this language'
-                            }{' '}
-                            yet.
-                        </Text>
-                    }
-
-                </View>
+                <EmptyStarredComponent selectedLanguage={selectedLanguage} />
             }
 
 
