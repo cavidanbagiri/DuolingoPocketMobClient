@@ -25,7 +25,7 @@ export function WordList({screen}) {
         <FlatList
             className='bg-white mt-1'
             data={words}
-            renderItem={({ item }) => <VocabCard word={item} />}
+            renderItem={({ item }) => <VocabCard word={item} language={selectedLanguage} />}
             keyExtractor={(item) => item.id.toString()}
             refreshing={loading}
             onRefresh={() => {

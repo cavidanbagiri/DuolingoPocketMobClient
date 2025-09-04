@@ -40,7 +40,7 @@ export default function LanguageSelected({ screen }) {
             {/* Language List */}
             <View className="space-y-3 ">
                 {/*  Inside of the return of available languages, return with an index */}
-                {statistics.map((lang, index) => {
+                {statistics?.map((lang, index) => {
                     const isSelected = selectedLanguage === lang.language_code;
 
                     return (
