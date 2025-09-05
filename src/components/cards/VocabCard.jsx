@@ -5,10 +5,12 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import Tts from 'react-native-tts';
 import { useDispatch } from 'react-redux';
+
+
 import { Audio } from 'expo-av';
-// import { Audio } from 'expo-audio';
+
+
 import { generateSpeech } from '../../api/audio';
 
 import WordService from '../../services/WordService';
@@ -97,8 +99,7 @@ const playSound = async (wordText) => {
   }
 };
 
-
-// Cleanup: Unload sound when component unmounts
+    // Cleanup function stays the same
   useEffect(() => {
     return () => {
       if (soundRef.current) {
