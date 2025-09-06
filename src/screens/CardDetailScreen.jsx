@@ -1,7 +1,5 @@
 
-
-
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -15,12 +13,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { clearDetail, setDetail } from '../store/word_store'; // <-- make sure setDetail exists
 import WordService from '../services/WordService';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { generateSpeech } from '../api/audio';
-import * as FileSystem from 'expo-file-system';
 
-import AntDesign from '@expo/vector-icons/AntDesign';
 
-import { Audio } from 'expo-av';
+import VoiceButtonComponent from '../components/cards/VoiceButtonComponent';
 
 export default function CardDetailScreen({ route }) {
   const dispatch = useDispatch();
@@ -30,12 +25,6 @@ export default function CardDetailScreen({ route }) {
 
   const detail = useSelector((state) => state.wordSlice.detail);
   const loading = useSelector((state) => state.wordSlice.loading);
-
-  
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  // Ref to hold our Sound object
-  const soundRef = useRef(new Audio.Sound());
 
   useEffect(() => {
     dispatch(WordService.getDetailWord(word.id));
@@ -64,68 +53,6 @@ export default function CardDetailScreen({ route }) {
 
 
 
-const playSound = async (wordText) => {
-  if (isPlaying) return;
-  setIsPlaying(true);
-
-  try {
-    const status = await soundRef.current.getStatusAsync();
-    if (status.isLoaded) {
-      await soundRef.current.stopAsync();
-      await soundRef.current.unloadAsync();
-    }
-
-    // 1. Call the API directly, NOT through Redux
-    const audioBlob = await generateSpeech({
-      text: wordText,
-      language: selectedLanguage,
-    });
-    console.log('payload is ', audioBlob);
-    
-
-    // ... (rest of your code to save the blob and play it remains the same) ...
-    const fileName = `${wordText}_${Date.now()}.mp3`;
-    const localUri = `${FileSystem.cacheDirectory}${fileName}`;
-
-    const reader = new FileReader();
-    const base64 = await new Promise((resolve, reject) => {
-      reader.onload = () => resolve(reader.result.split(',')[1]);
-      reader.onerror = reject;
-      reader.readAsDataURL(audioBlob);
-    });
-
-    await FileSystem.writeAsStringAsync(localUri, base64, {
-      encoding: FileSystem.EncodingType.Base64,
-    });
-
-    await soundRef.current.loadAsync({ uri: localUri });
-    await soundRef.current.playAsync();
-
-    soundRef.current.setOnPlaybackStatusUpdate((status) => {
-      if (status.didJustFinish) {
-        setIsPlaying(false);
-      }
-    });
-
-  } catch (error) {
-    console.error('Failed to play sound', error);
-    Alert.alert("Error", "Could not play audio. Please try again.");
-    setIsPlaying(false);
-  }
-};
-
-    // Cleanup function stays the same
-  useEffect(() => {
-    return () => {
-      if (soundRef.current) {
-        soundRef.current.unloadAsync();
-      }
-    };
-  }, []);
-
-
-
-
   if (loading || !detail || !Array.isArray(detail.meanings)) {
     return (
       <SafeAreaView style={styles.center}>
@@ -146,8 +73,8 @@ const playSound = async (wordText) => {
           <TouchableOpacity
             onPress={() => toggleStatus('is_starred')}
             className={`flex-1 flex-row items-center justify-center p-4 rounded-2xl border-2 ${detail?.is_starred
-                ? 'border-yellow-400 bg-yellow-50'
-                : 'border-gray-200 bg-white'
+              ? 'border-yellow-400 bg-yellow-50'
+              : 'border-gray-200 bg-white'
               }`}
             style={{ elevation: 1 }}
           >
@@ -168,8 +95,8 @@ const playSound = async (wordText) => {
           <TouchableOpacity
             onPress={() => toggleStatus('is_learned')}
             className={`flex-1 flex-row items-center justify-center p-4 rounded-2xl border-2 ${detail?.is_learned
-                ? 'border-green-400 bg-green-50'
-                : 'border-gray-200 bg-white'
+              ? 'border-green-400 bg-green-50'
+              : 'border-gray-200 bg-white'
               }`}
             style={{ elevation: 1 }}
           >
@@ -191,12 +118,6 @@ const playSound = async (wordText) => {
 
         {/* Word Header */}
         <View className="bg-white p-6 rounded-2xl mb-6 shadow-sm border border-gray-100">
-          {/* <Text
-            className="text-4xl font-bold text-gray-800 mb-2 tracking-tight"
-            style={{ fontFamily: 'Poppins-Bold' }}
-          >
-            {detail?.text}
-          </Text> */}
 
           <View className='flex-row items-center justify-between'>
             <Text
@@ -207,7 +128,7 @@ const playSound = async (wordText) => {
             </Text>
 
 
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={(e) => {
                 e.stopPropagation();
                 playSound(word.text);
@@ -221,7 +142,9 @@ const playSound = async (wordText) => {
                 size={24}
                 color={isPlaying ? '#d1d5db' : '#9ca3af'} // Change color when playing
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+
+            <VoiceButtonComponent text={word?.text} language={selectedLanguage} />
 
 
           </View>
@@ -320,7 +243,7 @@ const playSound = async (wordText) => {
                 💬 {m.example}
               </Text>
 
-              
+
 
               {/* Sentences */}
               {m.sentences.length > 0 && (
@@ -341,13 +264,13 @@ const playSound = async (wordText) => {
                       </Text>
                       {s.translations.map((t, i) => (
 
-                          <Text
-                            key={i}
-                            className="text-sm text-gray-500 ml-1"
-                            style={{ fontFamily: 'IBMPlexSans-Regular' }}
-                          >
-                            ↳ {t.language_code.toUpperCase()}: {t.translated_text}
-                          </Text>
+                        <Text
+                          key={i}
+                          className="text-sm text-gray-500 ml-1"
+                          style={{ fontFamily: 'IBMPlexSans-Regular' }}
+                        >
+                          ↳ {t.language_code.toUpperCase()}: {t.translated_text}
+                        </Text>
 
                       ))}
                     </View>
@@ -380,9 +303,9 @@ const playSound = async (wordText) => {
                 </Text>
                 {s.translations.map((t, i) => (
 
-                <View
-                  key={i}
-                >
+                  <View
+                    key={i}
+                  >
                     <Text
                       className="text-sm text-gray-500 ml-1"
                       style={{ fontFamily: 'IBMPlexSans-Regular' }}
@@ -390,22 +313,9 @@ const playSound = async (wordText) => {
                       ↳ {t.language_code.toUpperCase()}: {t.translated_text}
                     </Text>
 
-                    <TouchableOpacity
-                              onPress={(e) => {
-                                e.stopPropagation();
-                                playSound(s.text);
-                              }}
-                              className="p-2"
-                              accessibilityLabel="Play pronunciation"
-                              disabled={isPlaying} // Disable button while playing
-                            >
-                              <AntDesign 
-                                name={'sound'}
-                                size={24}
-                                color={isPlaying ? '#d1d5db' : '#9ca3af'} // Change color when playing
-                              />
-                            </TouchableOpacity>
-                    
+
+                    <VoiceButtonComponent text={s.text} language={selectedLanguage} />
+
                   </View>
 
 

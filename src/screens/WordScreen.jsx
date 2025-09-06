@@ -1,7 +1,7 @@
 
 import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, FlatList, Image } from 'react-native';
 
-import React, { Component, use, useEffect, useState } from 'react'
+import React, {  useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useDispatch, useSelector } from 'react-redux';

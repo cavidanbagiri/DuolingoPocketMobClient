@@ -2,21 +2,14 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import * as FileSystem from 'expo-file-system';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 
-
-import { Audio } from 'expo-av';
-
-
-import { generateSpeech } from '../../api/audio';
-
 import WordService from '../../services/WordService';
 
 import { Feather } from '@expo/vector-icons';
-import AntDesign from '@expo/vector-icons/AntDesign';
+import VoiceButtonComponent from './VoiceButtonComponent';
 
 
 export default function VocabCard({ word, language }) {
@@ -27,10 +20,7 @@ export default function VocabCard({ word, language }) {
 
   const [isStarred, setIsStarred] = useState(false);
   const [isLearned, setIsLearned] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
 
-  // Ref to hold our Sound object
-  const soundRef = useRef(new Audio.Sound());
 
   const handleToggle = async (actionType) => {
     try {
@@ -47,66 +37,6 @@ export default function VocabCard({ word, language }) {
     }
   };
 
-
-
-
-const playSound = async (wordText) => {
-  if (isPlaying) return;
-  setIsPlaying(true);
-
-  try {
-    const status = await soundRef.current.getStatusAsync();
-    if (status.isLoaded) {
-      await soundRef.current.stopAsync();
-      await soundRef.current.unloadAsync();
-    }
-
-    // 1. Call the API directly, NOT through Redux
-    const audioBlob = await generateSpeech({
-      text: wordText,
-      language: language,
-    });
-
-
-    // ... (rest of your code to save the blob and play it remains the same) ...
-    const fileName = `${wordText}_${Date.now()}.mp3`;
-    const localUri = `${FileSystem.cacheDirectory}${fileName}`;
-
-    const reader = new FileReader();
-    const base64 = await new Promise((resolve, reject) => {
-      reader.onload = () => resolve(reader.result.split(',')[1]);
-      reader.onerror = reject;
-      reader.readAsDataURL(audioBlob);
-    });
-
-    await FileSystem.writeAsStringAsync(localUri, base64, {
-      encoding: FileSystem.EncodingType.Base64,
-    });
-
-    await soundRef.current.loadAsync({ uri: localUri });
-    await soundRef.current.playAsync();
-
-    soundRef.current.setOnPlaybackStatusUpdate((status) => {
-      if (status.didJustFinish) {
-        setIsPlaying(false);
-      }
-    });
-
-  } catch (error) {
-    console.error('Failed to play sound', error);
-    Alert.alert("Error", "Could not play audio. Please try again.");
-    setIsPlaying(false);
-  }
-};
-
-    // Cleanup function stays the same
-  useEffect(() => {
-    return () => {
-      if (soundRef.current) {
-        soundRef.current.unloadAsync();
-      }
-    };
-  }, []);
 
 
   useEffect(() => {
@@ -210,21 +140,8 @@ const playSound = async (wordText) => {
             />
           </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={(e) => {
-            e.stopPropagation();
-            playSound(word.text);
-          }}
-          className="p-2"
-          accessibilityLabel="Play pronunciation"
-          disabled={isPlaying} // Disable button while playing
-        >
-          <AntDesign 
-            name={'sound'}
-            size={24}
-            color={isPlaying ? '#d1d5db' : '#9ca3af'} // Change color when playing
-          />
-        </TouchableOpacity>
+
+          <VoiceButtonComponent text={word.text} language={language} />
 
         </View>
       </View>
