@@ -135,9 +135,9 @@ const styles = StyleSheet.create({
 fab: {
     position: 'absolute', // Add this
     left: '50%', // Center horizontally
-    top: -30, // Position from top (adjust this value)
+    top: -20, // Position from top (adjust this value)
     marginLeft: -30, // Half of width to truly center (60/2 = 30)
-    backgroundColor: '#6366F1',
+    backgroundColor: '#2563EB',
     width: 60,
     height: 60,
     borderRadius: 30,

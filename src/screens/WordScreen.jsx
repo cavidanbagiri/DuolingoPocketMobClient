@@ -58,7 +58,7 @@ export default function WordScreen() {
 
 
     useEffect(() => {
-        if (statistics.length === 1) {
+        if (statistics?.length === 1) {
             const lang_code = statistics[0]['language_code'];
             dispatch(setSelectedLanguage(lang_code));
             dispatch(
