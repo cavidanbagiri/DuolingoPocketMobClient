@@ -13,13 +13,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { clearDetail, setDetail } from '../store/word_store'; // <-- make sure setDetail exists
 import WordService from '../services/WordService';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native';
+import { setCurrentWord } from '../store/ai_store';
 
 
 import VoiceButtonComponent from '../components/cards/VoiceButtonComponent';
 
 export default function CardDetailScreen({ route }) {
+
+  const navigation = useNavigation();
+
   const dispatch = useDispatch();
   const { word } = route.params;
+
 
   const { selectedLanguage } = useSelector((state) => state.wordSlice);
 
@@ -114,6 +120,20 @@ export default function CardDetailScreen({ route }) {
 
             </Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => {
+              dispatch(setCurrentWord(word))
+              navigation.navigate('AIScreen')
+            }}
+            className="p-2"
+            accessibilityLabel="Open AI Language Tutor"
+          >
+            <Text>
+              Click for ai
+            </Text>
+          </TouchableOpacity>
+
         </View>
 
         {/* Word Header */}

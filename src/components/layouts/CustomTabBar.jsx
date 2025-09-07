@@ -4,10 +4,11 @@ import { View, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-n
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-const CustomTabBar = ({ state, descriptors, navigation }) => {
+const CustomTabBar = ({ state, descriptors, navigation, word }) => {
   const { width } = useWindowDimensions();
-  const numTabs = 5; // We're faking 5 tabs
+  const numTabs = 5; 
   const tabWidth = width / numTabs;
+
 
   // Helper to render a tab
   const renderTab = (route, index) => {

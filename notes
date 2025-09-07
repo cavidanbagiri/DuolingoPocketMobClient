@@ -10,3 +10,30 @@ Today Solved:
 
 Deepseek
 
+I have a problem with props.
+
+CustomTabBar.jsx
+
+const CustomTabBar = ({ state, descriptors, navigation, word }) => {
+  const { width } = useWindowDimensions();
+  const numTabs = 5; 
+  const tabWidth = width / numTabs;
+
+
+  // Helper to render a tab
+  const renderTab = (route, index) => {
+    const { options } = descriptors[route.key];
+    const label =
+      options.tabBarLabel !== undefined
+        ? options.tabBarLabel
+        : options.title !== undefined
+        ? options.title
+        : route.name;
+
+    const isFocused = state.index === index;
+
+    const IconComponent = () => options.tabBarIcon?.({ color: isFocused ? '#3b82f6' : '#71717a', size: 26 }) || null;
+
+    return (
+        ....)
+
