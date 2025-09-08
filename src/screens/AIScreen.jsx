@@ -15,11 +15,13 @@ import {
   RefreshControl,
   SafeAreaView,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import * as SecureStore from 'expo-secure-store';
 import { Ionicons } from '@expo/vector-icons';
 import LANGUAGES from '../constants/Languages';
 import AIService from '../services/AIService';
+import { clearAIResponse } from '../store/ai_store';
 
 export default function AIScreen() {
   const dispatch = useDispatch();
@@ -27,6 +29,7 @@ export default function AIScreen() {
   const [nativeLangCode, setNativeLangCode] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
+  const [previousWordId, setPreviousWordId] = useState(null);
 
 
 
@@ -46,6 +49,30 @@ const generatePayload = useCallback(() => {
     return payload;
   }, [currentWord, nativeLangCode, dispatch]);
 
+
+
+  // Reset everything when a new word is selected
+  useFocusEffect(
+    useCallback(() => {
+      console.log('the current word is ', currentWord);
+      if (currentWord && currentWord.id !== previousWordId) {
+        console.log('New word detected:', currentWord.text);
+        
+        // Update previous word tracking
+        setPreviousWordId(currentWord.id);
+        
+        // Reset UI state
+        setActiveTab('overview');
+        setRefreshing(false);
+        
+        // Clear previous AI response from Redux
+        dispatch(clearAIResponse());
+        
+        // Generate new AI content
+        generatePayload();
+      }
+    }, [currentWord, previousWordId, dispatch])
+  );
 
 
   // Load native language

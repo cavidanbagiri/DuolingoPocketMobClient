@@ -22,6 +22,7 @@ const aiSlice = createSlice({
     clearAIResponse: (state) => {
       state.aiResponse = null;
       state.error = null;
+      state.isLoading = false; // Reset loading state
     },
   },
   extraReducers: (builder) => {
