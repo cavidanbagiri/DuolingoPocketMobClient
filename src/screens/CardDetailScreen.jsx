@@ -100,7 +100,7 @@ export default function CardDetailScreen({ route }) {
 
           <TouchableOpacity
             onPress={() => toggleStatus('is_learned')}
-            className={`flex-1 flex-row items-center justify-center p-4 rounded-2xl border-2 ${detail?.is_learned
+            className={`flex-1 flex-row items-center justify-center p-4 rounded-2xl border-2 mx-1 ${detail?.is_learned
               ? 'border-green-400 bg-green-50'
               : 'border-gray-200 bg-white'
               }`}
@@ -126,10 +126,15 @@ export default function CardDetailScreen({ route }) {
               dispatch(setCurrentWord(word))
               navigation.navigate('AIScreen')
             }}
-            className="p-2"
+            className="flex-1 flex-row items-center justify-center p-4 rounded-2xl border-2 border-blue-700 bg-white"
             accessibilityLabel="Open AI Language Tutor"
           >
-            <Text>
+            <Ionicons
+              name={'sparkles'}
+              size={20}
+              color={'#1D4ED8'}
+            />
+            <Text className='ml-2 font-semibold text-blue-700'>
               Click for ai
             </Text>
           </TouchableOpacity>
