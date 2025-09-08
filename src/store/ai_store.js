@@ -2,6 +2,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { generateAIWordThunk } from '../services/AIService';
 
+const MAX_CACHE_SIZE = 50;
+
 const initialState = {
   currentWord: null,
   aiResponse: null,
@@ -45,11 +47,26 @@ const aiSlice = createSlice({
         state.aiResponse = action.payload;
         state.error = null;
 
+        // if (state.currentWord?.id) {
+        //   state.cache[state.currentWord.id] = action.payload;
+        // }
+
         if (state.currentWord?.id) {
-          console.log('.............................yes have id', state.currentWord.id);
+          // LRU Cache implementation
+          const cacheKeys = Object.keys(state.cache);
+          
+          // Remove oldest item if cache is full
+          if (cacheKeys.length >= MAX_CACHE_SIZE) {
+            // Simple approach: remove the first (oldest) key
+            const oldestKey = cacheKeys[0];
+            delete state.cache[oldestKey];
+          }
+          
+          // Add new item to cache
           state.cache[state.currentWord.id] = action.payload;
-          console.log('.............................state cache', state.cache);
         }
+
+
       })
       .addCase(generateAIWordThunk.rejected, (state, action) => {
         state.isLoading = false;
