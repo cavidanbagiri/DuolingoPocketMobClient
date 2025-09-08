@@ -1,8 +1,4 @@
 
-
-
-
-
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
@@ -14,6 +10,7 @@ import {
   Share,
   RefreshControl,
   SafeAreaView,
+  TextInput,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,6 +18,7 @@ import * as SecureStore from 'expo-secure-store';
 import { Ionicons } from '@expo/vector-icons';
 import LANGUAGES from '../constants/Languages';
 import AIService from '../services/AIService';
+import AIScreenChat from '../components/ai/ChatScreen';
 import { clearAIResponse, setAIResponse } from '../store/ai_store';
 
 export default function AIScreen() {
@@ -28,41 +26,46 @@ export default function AIScreen() {
 
   const dispatch = useDispatch();
   const { currentWord, aiResponse, isLoading, error, cache } = useSelector((state) => state.aiSlice);
-  const [nativeLangCode, setNativeLangCode] = useState(null);
+  const [nativeLang, setNativeLang] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [previousWordId, setPreviousWordId] = useState(null);
 
+
+  // For user text ai component
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
   // Memoized function to generate and send payload
   const generatePayload = useCallback(() => {
-    if (!currentWord || !nativeLangCode) {
+    if (!currentWord || !nativeLang) {
       console.log('Cannot generate payload: missing word or native language');
       return null;
     }
 
-    const target_language = LANGUAGES.find(lang => lang.code === currentWord.language_code)?.code;
+    const target_language = LANGUAGES.find(lang => lang.code === currentWord.language_code)?.name;
 
     if (!target_language) {
       console.error('Target language not found for code:', currentWord.language_code);
       return null;
     }
 
+
     const payload = {
       text: currentWord.text,
       language: target_language,
-      native: nativeLangCode,
+      native: nativeLang,
     };
 
     dispatch(AIService.generateAIWord(payload));
     return payload;
-  }, [currentWord, nativeLangCode, dispatch]);
+  }, [currentWord, nativeLang, dispatch]);
 
   // Load native language
   useEffect(() => {
     const getNativeLang = async () => {
       try {
         const native = await SecureStore.getItemAsync('native');
-        setNativeLangCode(native);
+        setNativeLang(native);
       } catch (error) {
         console.error('Failed to load native language', error);
       }
@@ -74,8 +77,8 @@ export default function AIScreen() {
   // Reset everything when a new word is selected
   useFocusEffect(
     useCallback(() => {
-      if (currentWord && nativeLangCode) {
-        console.log('useFocusEffect triggered - Word:', currentWord.text, 'Native lang:', nativeLangCode);
+      if (currentWord && nativeLang) {
+        console.log('useFocusEffect triggered - Word:', currentWord.text, 'Native lang:', nativeLang);
 
         if (currentWord.id !== previousWordId) {
           console.log('Word changed to:', currentWord.text);
@@ -100,7 +103,7 @@ export default function AIScreen() {
       } else {
         console.log('Waiting for currentWord or nativeLangCode...');
       }
-    }, [currentWord, previousWordId, cache, dispatch, nativeLangCode, generatePayload])
+    }, [currentWord, previousWordId, cache, dispatch, nativeLang, generatePayload])
   );
 
 
@@ -259,43 +262,57 @@ export default function AIScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        {/* Header */}
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.wordText}>{aiResponse.word}</Text>
-            <Text style={styles.languageText}>
-              {aiResponse.target_language} → {aiResponse.native_language}
-            </Text>
-          </View>
-          <TouchableOpacity onPress={shareContent} style={styles.shareButton}>
-            <Ionicons name="share-outline" size={24} color="#6366F1" />
-          </TouchableOpacity>
-        </View>
+    <SafeAreaView style={styles.container}  edges={['top', 'bottom', 'left', 'right']}>
 
-        {/* Tab Navigation */}
-        <View style={styles.tabContainer}>
-          {['overview', 'examples', 'grammar', 'usage'].map((tab) => (
-            <TouchableOpacity
-              key={tab}
-              style={[styles.tab, activeTab === tab && styles.activeTab]}
-              onPress={() => setActiveTab(tab)}
-            >
-              <Text style={[styles.tabText, activeTab === tab && styles.activeTabText]}>
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+      {!isChatOpen ?
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+          {/* Header */}
+          <View style={styles.header}>
+            <View>
+              <Text style={styles.wordText}>{aiResponse.word}</Text>
+              <Text style={styles.languageText}>
+                {aiResponse.target_language} → {aiResponse.native_language}
               </Text>
+            </View>
+            <TouchableOpacity onPress={shareContent} style={styles.shareButton}>
+              <Ionicons name="share-outline" size={24} color="#6366F1" />
             </TouchableOpacity>
-          ))}
-        </View>
+          </View>
 
-        {/* Content */}
-        {renderTabContent()}
-      </ScrollView>
+          {/* Tab Navigation */}
+          <View style={styles.tabContainer}>
+            {['overview', 'examples', 'grammar', 'usage'].map((tab) => (
+              <TouchableOpacity
+                key={tab}
+                style={[styles.tab, activeTab === tab && styles.activeTab]}
+                onPress={() => setActiveTab(tab)}
+              >
+                <Text style={[styles.tabText, activeTab === tab && styles.activeTabText]}>
+                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Content */}
+          {renderTabContent()}
+        </ScrollView>
+        :
+        <AIScreenChat currentWord={currentWord} nativeLang={nativeLang} onClose={() => setIsChatOpen(false)} />
+      }
+      {!isChatOpen && (
+        <TouchableOpacity
+          onPress={() => setIsChatOpen(true)}
+          className="absolute bottom-6 right-6 w-16 h-16 bg-indigo-500 rounded-full items-center justify-center shadow-lg"
+        >
+          <Ionicons name="chatbubble-ellipses" size={24} color="white" />
+        </TouchableOpacity>
+      )}
+
     </SafeAreaView>
   );
 }

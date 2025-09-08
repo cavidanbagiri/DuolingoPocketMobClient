@@ -1,6 +1,6 @@
 
 import { createSlice } from '@reduxjs/toolkit';
-import { generateAIWordThunk } from '../services/AIService';
+import { generateAIWordThunk, generateAITextWithQuestionThunk } from '../services/AIService';
 
 const MAX_CACHE_SIZE = 50;
 
@@ -10,6 +10,12 @@ const initialState = {
   isLoading: false,
   error: null,
   cache: {},
+
+  conversation: {
+    messages: [], // Array of objects: { role: 'user' | 'assistant', content: string }
+    isChatLoading: false, // Separate loading state for chat
+  },
+
 };
 
 const aiSlice = createSlice({
@@ -35,6 +41,19 @@ const aiSlice = createSlice({
     clearCache: (state) => {
       state.cache = {};
     },
+    // 🔥 NEW: Add a message to the conversation
+    addChatMessage: (state, action) => {
+      state.conversation.messages.push(action.payload);
+    },
+    // 🔥 NEW: Set the chat-specific loading state
+    setChatLoading: (state, action) => {
+      state.conversation.isChatLoading = action.payload;
+    },
+    // 🔥 NEW: Clear the conversation (optional)
+    clearConversation: (state) => {
+      state.conversation.messages = [];
+      state.conversation.isChatLoading = false;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -46,10 +65,6 @@ const aiSlice = createSlice({
         state.isLoading = false;
         state.aiResponse = action.payload;
         state.error = null;
-
-        // if (state.currentWord?.id) {
-        //   state.cache[state.currentWord.id] = action.payload;
-        // }
 
         if (state.currentWord?.id) {
           // LRU Cache implementation
@@ -65,13 +80,32 @@ const aiSlice = createSlice({
           // Add new item to cache
           state.cache[state.currentWord.id] = action.payload;
         }
-
-
       })
-      .addCase(generateAIWordThunk.rejected, (state, action) => {
-        state.isLoading = false;
+      // AI Chat Answers - UPDATED
+      .addCase(generateAITextWithQuestionThunk.pending, (state, action) => {
+        state.conversation.isChatLoading = true; // Use chat-specific loading
+        state.error = null;
+      })
+      .addCase(generateAITextWithQuestionThunk.fulfilled, (state, action) => {
+        state.conversation.isChatLoading = false;
+        // 🔥 Don't just set chat_response, add the AI's response to messages
+        // The user's message should already be added optimistically (see Step 2)
+        state.conversation.messages.push({
+          role: 'assistant',
+          content: action.payload.reply // Assuming your backend returns { reply: "..." }
+        });
+        state.error = null;
+      })
+      .addCase(generateAITextWithQuestionThunk.rejected, (state, action) => {
+        state.conversation.isChatLoading = false;
         state.error = action.payload;
+        // Optional: Add an error message from the assistant
+        state.conversation.messages.push({
+          role: 'assistant',
+          content: "Sorry, I encountered an error. Please try again."
+        });
       });
+
   },
 });
 
@@ -80,5 +114,9 @@ export const {
   clearCurrentWord, 
   clearAIResponse, 
   setAIResponse, 
-  clearCache  } = aiSlice.actions;
+  clearCache,
+  addChatMessage,       
+  setChatLoading,      
+  clearConversation  
+} = aiSlice.actions;
 export default aiSlice.reducer;
