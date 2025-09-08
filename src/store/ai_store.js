@@ -1,7 +1,6 @@
 
 import { createSlice } from '@reduxjs/toolkit';
-// import AIService from '../services/AIService';
-import { generateAIWord } from '../services/AIService';
+import { generateAIWordThunk } from '../services/AIService';
 
 const initialState = {
   currentWord: null,
@@ -27,16 +26,16 @@ const aiSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(generateAIWord.pending, (state, action) => {
+      .addCase(generateAIWordThunk.pending, (state, action) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(generateAIWord.fulfilled, (state, action) => {
+      .addCase(generateAIWordThunk.fulfilled, (state, action) => {
         state.isLoading = false;
         state.aiResponse = action.payload;
         state.error = null;
       })
-      .addCase(generateAIWord.rejected, (state, action) => {
+      .addCase(generateAIWordThunk.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       });
