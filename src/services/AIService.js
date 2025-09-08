@@ -43,5 +43,7 @@ class AIService {
 export default AIService;
 
 // Export the thunk directly for use in slices
-export const { generateAIWordThunk } = AIService;
+// export const { generateAIWordThunk } = AIService;
+
+export const generateAIWordThunk = AIService.generateAIWordThunk; // ✅
 
