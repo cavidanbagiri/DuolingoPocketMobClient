@@ -21,59 +21,41 @@ import * as SecureStore from 'expo-secure-store';
 import { Ionicons } from '@expo/vector-icons';
 import LANGUAGES from '../constants/Languages';
 import AIService from '../services/AIService';
-import { clearAIResponse } from '../store/ai_store';
+import { clearAIResponse, setAIResponse } from '../store/ai_store';
 
 export default function AIScreen() {
+
+
   const dispatch = useDispatch();
-  const { currentWord, aiResponse, isLoading, error } = useSelector((state) => state.aiSlice);
+  const { currentWord, aiResponse, isLoading, error, cache } = useSelector((state) => state.aiSlice);
   const [nativeLangCode, setNativeLangCode] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [previousWordId, setPreviousWordId] = useState(null);
 
-
-
-const generatePayload = useCallback(() => {
-    if (!currentWord || !nativeLangCode) return null;
+  // Memoized function to generate and send payload
+  const generatePayload = useCallback(() => {
+    if (!currentWord || !nativeLangCode) {
+      console.log('Cannot generate payload: missing word or native language');
+      return null;
+    }
 
     const target_language = LANGUAGES.find(lang => lang.code === currentWord.language_code)?.code;
-    if (!target_language) return null;
+
+    if (!target_language) {
+      console.error('Target language not found for code:', currentWord.language_code);
+      return null;
+    }
 
     const payload = {
       text: currentWord.text,
       language: target_language,
       native: nativeLangCode,
     };
-    
-    dispatch(AIService.generateAIWord(payload)); // Dispatch the thunk directly
+
+    dispatch(AIService.generateAIWord(payload));
     return payload;
   }, [currentWord, nativeLangCode, dispatch]);
-
-
-
-  // Reset everything when a new word is selected
-  useFocusEffect(
-    useCallback(() => {
-      console.log('the current word is ', currentWord);
-      if (currentWord && currentWord.id !== previousWordId) {
-        console.log('New word detected:', currentWord.text);
-        
-        // Update previous word tracking
-        setPreviousWordId(currentWord.id);
-        
-        // Reset UI state
-        setActiveTab('overview');
-        setRefreshing(false);
-        
-        // Clear previous AI response from Redux
-        dispatch(clearAIResponse());
-        
-        // Generate new AI content
-        generatePayload();
-      }
-    }, [currentWord, previousWordId, dispatch])
-  );
-
 
   // Load native language
   useEffect(() => {
@@ -88,18 +70,51 @@ const generatePayload = useCallback(() => {
     getNativeLang();
   }, []);
 
-  // Trigger API call when both values are ready
-  useEffect(() => {
-    if (currentWord && nativeLangCode) {
-      generatePayload();
-    }
-  }, [currentWord, nativeLangCode, generatePayload]);
+
+  // Reset everything when a new word is selected
+  useFocusEffect(
+    useCallback(() => {
+      if (currentWord && nativeLangCode) {
+        console.log('useFocusEffect triggered - Word:', currentWord.text, 'Native lang:', nativeLangCode);
+
+        if (currentWord.id !== previousWordId) {
+          console.log('Word changed to:', currentWord.text);
+
+          setPreviousWordId(currentWord.id);
+          setActiveTab('overview');
+          setRefreshing(false);
+
+          // Check if we have cached data for this word
+          const cachedData = cache[currentWord.id];
+          if (cachedData) {
+            dispatch(setAIResponse(cachedData)); // Use cached data
+            return; // Skip API call
+          }
+
+          // No cache found, make API call
+          dispatch(clearAIResponse());
+          generatePayload();
+        } else {
+          console.log('Same word, no action needed');
+        }
+      } else {
+        console.log('Waiting for currentWord or nativeLangCode...');
+      }
+    }, [currentWord, previousWordId, cache, dispatch, nativeLangCode, generatePayload])
+  );
+
 
   const onRefresh = useCallback(() => {
+    console.log('Manual refresh triggered');
     setRefreshing(true);
+
+    // Clear cache for this word and force new API call
+    dispatch(clearAIResponse());
     generatePayload();
+
     setTimeout(() => setRefreshing(false), 1000);
-  }, [generatePayload]);
+  }, [currentWord, generatePayload, dispatch]);
+
 
   const shareContent = async () => {
     try {
@@ -139,7 +154,7 @@ const generatePayload = useCallback(() => {
                 <Text style={styles.tipText}>{tip}</Text>
               </View>
             ))}
-            
+
             <Text style={[styles.sectionTitle, { marginTop: 24 }]}>Common Phrases</Text>
             {aiResponse.common_phrases.map((phrase, index) => (
               <View key={index} style={styles.phraseCard}>
@@ -159,7 +174,7 @@ const generatePayload = useCallback(() => {
                 <Text style={styles.contextText}>{context}</Text>
               </View>
             ))}
-            
+
             {aiResponse.additional_insights && (
               <>
                 <Text style={[styles.sectionTitle, { marginTop: 24 }]}>Additional Insights</Text>
@@ -211,6 +226,7 @@ const generatePayload = useCallback(() => {
         );
     }
   };
+
 
   if (isLoading && !aiResponse) {
     return (
