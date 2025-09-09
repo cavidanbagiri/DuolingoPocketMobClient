@@ -6,8 +6,6 @@ import {
     ScrollView,
     KeyboardAvoidingView,
     Platform,
-    SafeAreaView,
-    Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,7 +23,7 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
     const [message, setMessage] = useState('');
 
     // 🔥 UPDATED: Get conversation state from Redux
-    const { conversation, error } = useSelector((state) => state.aiSlice);
+    const { conversation } = useSelector((state) => state.aiSlice);
     const { messages, isChatLoading } = conversation;
 
     // Example prompts
@@ -76,13 +74,37 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
         >
 
             <View style={{ paddingTop: insets.top, flex: 1, backgroundColor: '#F8FAFC' }}>
+                {/* 🔝 Absolute Positioned Close Button */}
+                <TouchableOpacity
+                    onPress={onClose}
+                    style={{
+                        position: 'absolute',
+                        top: insets.top + 8, // Below status bar, with a little gap
+                        right: 16,
+                        zIndex: 10, // Ensure it's above content
+                        width: 40,
+                        height: 40,
+                        borderRadius: 20,
+                        backgroundColor: '#ffffff',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        shadowColor: '#000',
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 4,
+                        elevation: 3,
+                    }}
+                    accessibilityLabel="Close AI assistant"
+                    activeOpacity={0.7}
+                >
+                <Ionicons name="close" size={24} color="#4B5563" />
+                </TouchableOpacity>
                 <ScrollView
                     ref={scrollViewRef}
                     style={{ flex: 1 }}
                     contentContainerStyle={{ padding: 16 }}
                     onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
                 >
-
                     {/* Show empty state only if no messages */}
                     {messages.length === 0 ? (
                         <View style={{ alignItems: 'center', paddingTop: 40 }}>
@@ -152,7 +174,7 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
                                     }}
                                 >
                                     <Text style={{
-                                        color: msg.role === 'user' ? 'white' : '#111827',
+                                        color: msg.role === 'user' ? 'white' : '#111827', fontSize: 16,
                                     }}>
                                         {msg.content}
                                     </Text>

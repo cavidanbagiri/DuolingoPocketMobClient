@@ -19,7 +19,7 @@ import { Ionicons } from '@expo/vector-icons';
 import LANGUAGES from '../constants/Languages';
 import AIService from '../services/AIService';
 import AIScreenChat from '../components/ai/ChatScreen';
-import { clearAIResponse, setAIResponse } from '../store/ai_store';
+import { clearAIResponse, setAIResponse, clearConversation } from '../store/ai_store';
 
 export default function AIScreen() {
 
@@ -117,6 +117,15 @@ export default function AIScreen() {
 
     setTimeout(() => setRefreshing(false), 1000);
   }, [currentWord, generatePayload, dispatch]);
+
+
+
+  //  Clear the conversation when currentWord changes
+  useEffect(() => {
+    if (currentWord) {
+      dispatch(clearConversation());
+    }
+  }, [currentWord, dispatch]);
 
 
   const shareContent = async () => {
