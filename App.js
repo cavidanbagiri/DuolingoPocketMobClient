@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { useFonts } from 'expo-font';
 
@@ -50,9 +51,11 @@ export default function App() {
 
   return (
     <Provider store={store}>
+      <SafeAreaProvider>
         <NavigationContainer>
           <MainStack />
         </NavigationContainer>
+      </SafeAreaProvider>
       </Provider>
     
   );
