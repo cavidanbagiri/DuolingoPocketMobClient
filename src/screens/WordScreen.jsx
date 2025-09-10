@@ -16,7 +16,7 @@ import { useCallback } from 'react';
 import WordService from '../services/WordService.js';
 
 import VocabCard from '../components/cards/VocabCard';
-import FilterComponent from '../components/wordscreen/FilterComponent.jsx';
+import FilterComponent from '../components/layouts/FilterComponent.jsx';
 
 import Feather from '@expo/vector-icons/Feather';
 import LanguageSelected from '../components/layouts/LanguageSelected.jsx';

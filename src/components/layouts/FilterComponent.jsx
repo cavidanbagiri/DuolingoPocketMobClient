@@ -3,8 +3,11 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Make sure this is installed
+import { Ionicons } from '@expo/vector-icons'; 
 import Feather from '@expo/vector-icons/Feather';
+import { useNavigation } from '@react-navigation/native';
+import * as Haptics from 'expo-haptics';
+
 
 import { setAvailableLangToggle } from '../../store/word_store';
 
@@ -12,6 +15,8 @@ import { setAvailableLangToggle } from '../../store/word_store';
 import WordService from '../../services/WordService';
 
 const FilterComponent = ({ filter, setFilter, screen }) => {
+
+  const navigation = useNavigation();
 
   const dispatch = useDispatch();
 
@@ -34,27 +39,33 @@ const FilterComponent = ({ filter, setFilter, screen }) => {
 
     <View className="px-5 pb-4 pt-2 bg-white border-b border-gray-100">
 
-      {/* 🔍 Search Bar */}
-      <View className="flex-row items-center bg-gray-100 rounded-xl px-4 py-3 mb-3">
+      <TouchableOpacity
+        onPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          navigation.navigate('SearchScreen');
+        }}
+        className="flex-row items-center bg-gray-100 rounded-xl px-4 py-3 mb-3"
+        activeOpacity={0.7}
+        accessibilityLabel="Search words"
+        accessibilityHint="Opens search screen to find vocabulary"
+      >
         <Ionicons name="search" size={18} color="#6b7280" />
-
-        <TextInput
-          placeholder="Search words..."
-          placeholderTextColor="#6b7280"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          className="flex-1 ml-2 text-base text-gray-800"
+        
+        <Text
+          className="ml-3 text-gray-500 text-base"
           style={{ fontFamily: 'IBMPlexSans-Regular' }}
-          autoCapitalize="none"
-          returnKeyType="search"
-        />
+        >
+          Search words...
+        </Text>
 
-        {searchQuery.length > 0 && (
-          <TouchableOpacity onPress={() => setSearchQuery('')}>
-            <Ionicons name="close-circle" size={20} color="#9ca3af" />
-          </TouchableOpacity>
-        )}
-      </View>
+        {/* Optional: Chevron icon for affordance */}
+        <Ionicons
+          name="chevron-forward"
+          size={18}
+          color="#9ca3af"
+          className="ml-auto"
+        />
+      </TouchableOpacity>
 
       {/* Filter & Actions Row */}
       <View className="flex-row items-center justify-between">

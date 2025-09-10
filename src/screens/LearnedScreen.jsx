@@ -18,7 +18,7 @@ import { useCallback } from 'react';
 import LanguageSelected from '../components/layouts/LanguageSelected.jsx';
 
 import VocabCard from '../components/cards/VocabCard';
-import FilterComponent from '../components/wordscreen/FilterComponent.jsx';
+import FilterComponent from '../components/layouts/FilterComponent.jsx';
 import WordList from '../components/layouts/WordList.jsx';
 import EmptyWordsComponents from '../components/learnedscreen/EmptyWordsComponents.jsx';
 

@@ -27,6 +27,7 @@ class WordService {
                         only_learned: learned
                     }
                 });
+                console.log('coming response is ', response.data);
                 return response.data;
             } catch (error) {
                 // Extract error details
@@ -141,6 +142,37 @@ class WordService {
             }
         }
     )
+
+
+    static getSearchResults = createAsyncThunk(
+        '/words/search-test',  // This should match your backend route
+        async (data, thunkAPI) => {
+            try {
+                // Get current language from Redux state or elsewhere
+                // const state = thunkAPI.getState();
+                // const currentLanguage = state.language.current; // Adjust this path based on your state structure
+                const currentLanguage = 'all'; // Adjust this path based on your state structure
+                console.log('service is ............................................................ ', data);
+                const response = await $api.get(`/words/search-test`, {
+                    params: {
+                        native_language: data.native_language, // Add language parameter
+                        target_language: data.target_language, // Add language parameter
+                        query: data.query,
+                    }
+                });
+                console.log('response is ............................................................ ', response.data);
+                return response.data;
+            } catch (error) {
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
+                
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
+        }
+    );
 
 
 

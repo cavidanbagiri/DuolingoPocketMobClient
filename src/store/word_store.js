@@ -25,6 +25,10 @@ const initialState = {
 
     available_lang_toggle: true,
 
+    searchResults: null,
+    isLoading: false,
+    error: null
+
 
 };
 
@@ -76,22 +80,6 @@ export const wordSlice = createSlice({
             state.loading = false;
         });
 
-
-
-        // builder.addCase(WordService.fetchAvailableLanguages.pending, (state, action) => {
-        //     state.loading = true;
-        // });
-        // builder.addCase(WordService.fetchAvailableLanguages.fulfilled, (state, action) => {
-        //     state.loading = false;
-        //     state.availableLanguages = action.payload;
-        // });
-        // builder.addCase(WordService.fetchAvailableLanguages.rejected, (state, action) => {
-        //     state.loading = false;
-        // });
-
-
-
-
         builder.addCase(WordService.handleLanguageSelect.pending, (state, action) => {
             state.loading = true;
         });
@@ -102,81 +90,6 @@ export const wordSlice = createSlice({
         builder.addCase(WordService.handleLanguageSelect.rejected, (state, action) => {
             state.loading = false;
         });
-
-
-
-
-        // -------------------------------------------------------------------------------- For fetching words Old codes
-
-        // WordService fetchWords           -- This is old code and work
-        // builder.addCase(WordService.fetchWords.pending, (state, action) => {
-        //     state.words_pending = true;
-        // })
-        // builder.addCase(WordService.fetchWords.fulfilled, (state, action) => {
-        //     // console.log('coming words is .....', action.payload.payload);
-        //     state.words_pending = false;
-        //     if (action.payload.payload?.length === 0) {
-        //         console.log('enter if')
-        //         state.words = [];
-        //         return;
-        //     }
-        //     else{
-        //         console.log('enter elkse')
-        //         state.words = action.payload?.payload
-        //     }
-        //     console.log('words is ', state.words)
-        //     state.is_words_success = true;
-        // });
-        // builder.addCase(WordService.fetchWords.rejected, (state, action) => {
-        //     state.words_pending = false;
-        //     state.is_words_error = true;
-        // });
-
-        // builder.addCase(WordService.fetchWords.pending, (state, action) => {
-        //     state.words_pending = true;
-        // })
-
-        // builder.addCase(WordService.fetchWords.fulfilled, (state, action) => {
-        //     state.words_pending = false;
-            
-        //     const payload = action.payload?.payload;
-            
-        //     if (!payload || payload.length === 0) {
-        //         state.words = [];
-        //         state.availableLanguages = [];
-        //         state.selectedLanguage = null;
-        //         return;
-        //     }
-            
-        //     // Store the complete response with languages
-        //     state.wordsData = payload;
-        //     console.log('words data is ', payload)
-            
-        //     // Extract available languages
-        //     state.availableLanguages = payload.map(langData => langData.lang);
-            
-        //     // If only one language, auto-select it
-        //     if (payload.length === 1) {
-        //         state.selectedLanguage = payload[0].lang;
-        //         state.words = payload[0].words; // Show words for the single language
-        //     } else {
-        //         state.selectedLanguage = null; // User needs to choose
-        //         state.words = []; // No words shown until language is selected
-        //     }
-            
-        //     state.is_words_success = true;
-        // });
-
-        // builder.addCase(WordService.fetchWords.rejected, (state, action) => {
-        //     state.words_pending = false;
-        //     state.is_words_error = true;
-        // });
-
-        // -------------------------------------------------------------------------------- 
-
-
-
-
 
 
         // WordService setStatus
@@ -217,6 +130,21 @@ export const wordSlice = createSlice({
         });
         builder.addCase(WordService.getPosStatistics.rejected, (state, action) => {
             state.loading = false;
+        })
+
+
+        // Search Words 
+        builder.addCase(WordService.getSearchResults.pending, (state) => {
+            state.isLoading = true;
+            state.error = null;
+        })
+        builder.addCase(WordService.getSearchResults.fulfilled, (state, action) => {
+            state.isLoading = false;
+            state.searchResults = action.payload;
+        })
+        builder.addCase(WordService.getSearchResults.rejected, (state, action) => {
+            state.isLoading = false;
+            state.error = action.payload;
         });
 
 

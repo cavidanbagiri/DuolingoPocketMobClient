@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import TabNavigator from './TabNavigator';
 import CardDetailScreen from '../../screens/CardDetailScreen';
 import AIScreen from '../../screens/AIScreen';
+import SearchScreen from '../../screens/SearchScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +23,11 @@ export default function MainStack() {
         name="AIScreen"
         component={AIScreen}
         options={{ title: 'Word Detail' }}
+      />
+      <Stack.Screen
+        name="SearchScreen"
+        component={SearchScreen}
+        options={{ title: 'Search' }}
       />
     </Stack.Navigator>
   );
