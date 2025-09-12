@@ -127,42 +127,69 @@ export default function SearchScreen({ navigation }) {
 
             {/* 🌐 Language Filter Section */}
             <View style={styles.filterContainer}>
+
+                {/* Label */}
                 <Text style={styles.filterLabel}>Filter by language:</Text>
+
+                {/* Horizontal Scrollable Pills */}
                 <ScrollView 
                     horizontal 
                     showsHorizontalScrollIndicator={false}
-                    style={styles.filterScroll}
-                    contentContainerStyle={styles.filterScrollContent}
+                    contentContainerStyle={styles.pillScrollContent}
+                    keyboardDismissMode="on-drag"
                 >
-                    {/* 'All Languages' Option */}
+                    
+                    {/* 'All Languages' Pill */}
                     <TouchableOpacity
                     style={[
-                        styles.filterPill,
-                        targetLanguage === 'all' && styles.filterPillActive
+                        styles.pill,
+                        targetLanguage === 'all' && styles.pillActive
                     ]}
-                    onPress={() => setTargetLanguage('all')}
+                    onPress={() => {
+                        setTargetLanguage('all')
+                        const data = {
+                            native_language: LANGUAGES.find(lang => lang.name === nativeLang)?.code,
+                            target_language: 'all',
+                            query: debouncedQuery,
+                        }
+                        dispatch(WordService.getSearchResults(data));
+                    }}
+                    activeOpacity={0.7}
+                    accessibilityLabel="Show all languages"
+                    accessibilityState={{ selected: targetLanguage === 'all' }}
                     >
                     <Text style={[
-                        styles.filterPillText,
-                        targetLanguage === 'all' && styles.filterPillTextActive
+                        styles.pillText,
+                        targetLanguage === 'all' && styles.pillTextActive
                     ]}>
                         All Languages
                     </Text>
                     </TouchableOpacity>
 
-                    {/* Individual Language Options */}
+                    {/* Individual Language Pills */}
                     {LANGUAGES.filter(lang => lang.name !== nativeLang).map((language) => (
                     <TouchableOpacity
                         key={language.code}
                         style={[
-                        styles.filterPill,
-                        targetLanguage === language.code && styles.filterPillActive
+                        styles.pill,
+                        targetLanguage === language.code && styles.pillActive
                         ]}
-                        onPress={() => setTargetLanguage(language.code)}
+                        onPress={() => {
+                            setTargetLanguage(language.code);
+                            const data = {
+                                native_language: LANGUAGES.find(lang => lang.name === nativeLang)?.code,
+                                target_language: language.code,
+                                query: debouncedQuery,
+                            }
+                            dispatch(WordService.getSearchResults(data));
+                        }}
+                        activeOpacity={0.7}
+                        accessibilityLabel={`Show words in ${language.name}`}
+                        accessibilityState={{ selected: targetLanguage === language.code }}
                     >
                         <Text style={[
-                        styles.filterPillText,
-                        targetLanguage === language.code && styles.filterPillTextActive
+                        styles.pillText,
+                        targetLanguage === language.code && styles.pillTextActive
                         ]}>
                         {language.flag} {language.name}
                         </Text>
@@ -224,27 +251,41 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     gap: 8,
   },
-  searchContainer: {
+
+searchContainer: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'center',        // This centers children vertically
     backgroundColor: '#F3F4F6',
     borderRadius: 12,
     paddingHorizontal: 12,
-    height: 40, // 🔒 Fixed height
-    gap: 4,
+    height: 40,                  // ≈ 20px text + 10px top/bottom space
+    gap: 8,
   },
-  searchInput: {
+
+searchInput: {
     flex: 1,
     fontSize: 16,
     color: '#111827',
     fontFamily: 'IBMPlexSans-Regular',
-    paddingVertical: 0,
-    marginVertical: 0,
+
+    // 🔽 Critical for vertical centering
+    textAlignVertical: 'center',   // Forces text & placeholder to center
+    includeFontPadding: false,     // Removes extra top/bottom space (Android)
+    
+    // 🔽 Prevent any internal spacing
+    paddingVertical: 0,            // Remove built-in padding
+    paddingHorizontal: 0,          // Optional: let parent handle side padding
+    margin: 0,                     // Reset margin
+
+    // 🔽 Line height = font size → tight fit
     lineHeight: 20,
-    height: '100%',
-    textAlignVertical: 'center',
-    includeFontPadding: false, // Android clean-up
+
+    // 🔽 Prevent wrapping or growth
+    numberOfLines: 1,
+    maxHeight: 20,
+    overflow: 'hidden',
+    // backgroundColor: 'rgba(255,0,0,0.1)', // Light red tint
   },
   clearButton: {
     padding: 6, // Make sure icon has tap space
@@ -333,42 +374,50 @@ const styles = StyleSheet.create({
     fontFamily: 'IBMPlexSans-Italic',
   },
   filterContainer: {
+    marginTop: 16,
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    paddingVertical: 8,
   },
   filterLabel: {
     fontSize: 14,
     fontWeight: '500',
     color: '#374151',
-    marginBottom: 8,
+    marginBottom: 12,
+    fontFamily: 'IBMPlexSans-Medium',
+    marginLeft: 4,
   },
-  filterScroll: {
-    maxHeight: 40,
+  pillScrollContent: {
+    paddingHorizontal: 4,
+    gap: 12, // Consistent spacing between pills
   },
-  filterScrollContent: {
-    gap: 8,
-  },
-  filterPill: {
+  pill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
+    borderColor: '#E5E7EB',
+    borderWidth: 1,
+    borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#f3f4f6',
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
+    minWidth: 100,
+    justifyContent: 'center',
   },
-  filterPillActive: {
-    backgroundColor: '#7c3aed',
-    borderColor: '#7c3aed',
+  pillActive: {
+    backgroundColor: '#6366F1',
+    borderColor: '#6366F1',
+    shadowColor: '#6366F1',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  filterPillText: {
+  pillText: {
     fontSize: 14,
-    fontWeight: '500',
-    color: '#374151',
+    color: '#4B5563',
+    fontFamily: 'IBMPlexSans-Regular',
   },
-  filterPillTextActive: {
-    color: '#fff',
+  pillTextActive: {
+    color: '#FFFFFF',
+    fontFamily: 'IBMPlexSans-SemiBold',
   },
 });
