@@ -67,11 +67,8 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
     }, [messages]);
 
     return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-            style={{ flex: 1 }}
-        >
+
+        <View style={{ flex: 1 }}>
 
             <View style={{ paddingTop: insets.top, flex: 1, backgroundColor: '#F8FAFC' }}>
                 {/* 🔝 Absolute Positioned Close Button */}
@@ -79,8 +76,8 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
                     onPress={onClose}
                     style={{
                         position: 'absolute',
-                        top: insets.top + 8, // Below status bar, with a little gap
                         right: 16,
+                        top: 10,
                         zIndex: 10, // Ensure it's above content
                         width: 40,
                         height: 40,
@@ -102,12 +99,12 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
                 <ScrollView
                     ref={scrollViewRef}
                     style={{ flex: 1 }}
-                    contentContainerStyle={{ padding: 16 }}
+                    contentContainerStyle={{ paddingHorizontal: 16 }}
                     onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
                 >
                     {/* Show empty state only if no messages */}
                     {messages.length === 0 ? (
-                        <View style={{ alignItems: 'center', paddingTop: 40 }}>
+                        <View style={{ alignItems: 'center', paddingTop: 10 }}>
                             <View style={{
                                 width: 72, height: 72,
                                 backgroundColor: '#ede9fe',
@@ -239,8 +236,7 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
                 </View>
             </View>
 
-        </KeyboardAvoidingView>
-
+        </View>
 
 
     );

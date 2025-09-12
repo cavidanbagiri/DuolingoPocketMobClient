@@ -2,6 +2,7 @@
 Problems
 2 - Design profile Screen
 3 - Create Translate Screen
+4 - Select Language can be as seperate component in SearchScreen
 
 Today Will Solve: 
 P-2
@@ -15,3 +16,40 @@ Next Ideas:
 
 
 Deepseek
+
+
+
+AIScreen.jsx
+const Tab = createMaterialTopTabNavigator();
+
+export default function AIScreen() {
+
+  const insets = useSafeAreaInsets();
+
+
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        tabBarStyle: {
+          marginTop: insets.top,
+          backgroundColor: '#ffffff',
+        },
+        sceneContainerStyle: {
+          backgroundColor: '#ffffff',
+        }
+      }}
+    >
+      <Tab.Screen 
+        name="AI Chat" 
+        component={AIComponent} 
+      />
+      <Tab.Screen 
+        name="Translate" 
+        component={TranslateComponent} 
+      />
+    </Tab.Navigator>
+
+
+  );
+}
+
