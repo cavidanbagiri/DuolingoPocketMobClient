@@ -3,12 +3,15 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import React from 'react'
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native';
+
 
 const RenderWordComponent = ({ item }) => {
+    const navigation = useNavigation();
   return (
      <TouchableOpacity
             style={styles.wordItem}
-            onPress={() => console.log('Open word:', item.text)}
+            onPress={() => navigation.navigate('CardDetail', { word: item })}
             activeOpacity={0.7}
         >
             {/* Word */}

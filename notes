@@ -1,9 +1,12 @@
 
 Problems
-1 - Create Translate Screen
+1 - Show target language in Search Screen also can be add some other features
+2 - Design profile Screen
+3 - After Clicking HomeScreen, Progress Bar, redirect to WordScreen
+4 - Show Progress Bar in home Screen, how much percent learning
 
 Next Ideas:
-
+1 - Create Translate Screen
 
 Today Will Solve: 
 P-1
@@ -12,106 +15,4 @@ Future
 
 
 Deepseek
-I wrote, this is my code screen and word service. now l wanna write the code for backend with fastapi. can you help me please?
 
-Frontend
-SearchScreen.jsx
-export default function SearchScreen({ navigation }) {
-
-    const insets = useSafeAreaInsets(); // ← Get safe area values
-
-    const dispatch = useDispatch();
-
-    const [query, setQuery] = useState('');
-
-    // Mock data for demo
-    const allWords = [
-        { id: 1, text: 'hello', translation_to_native: 'привет', language_code: 'en' },
-        { id: 2, text: 'goodbye', translation_to_native: 'до свидания', language_code: 'en' },
-        { id: 3, text: 'apple', translation_to_native: 'яблоко', language_code: 'en' },
-    ];
-
-    const results = query
-        ? allWords.filter(
-            (word) =>
-                word.text.includes(query.toLowerCase()) ||
-                word.translation_to_native.includes(query)
-        )
-        : [];
-
-    useEffect(() => {
-        dispatch(WordService.getSearchResults({ query }));
-    }, [query]);
-
-
-    return (
-        <View style={{ flex: 1, backgroundColor: '#fff' }}>
-
-            {/* Search Bar with Top Safe Area Padding */}
-            <View
-                style={[
-                    styles.searchBar,
-                    { paddingTop: insets.top + 10, paddingBottom: insets.top + 10 }
-                ]}
-            >
-                <Ionicons name="search" size={20} color="#6b7280" />
-                <TextInput
-                    value={query}
-                    onChangeText={setQuery}
-                />
-                {query ? (
-                    <TouchableOpacity onPress={() => setQuery('')}>
-                        <Ionicons name="close" size={20} color="#9ca3af" />
-                    </TouchableOpacity>
-                ) : null}
-            </View>
-
-            {/* Results List */}
-            <FlatList
-                data={results}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
-                    <TouchableOpacity
-                        style={styles.wordItem}
-                        onPress={() => navigation.goBack()} // or navigate to detail
-                    >
-                        <Text style={styles.wordText}>{item.text}</Text>
-                        <Text style={styles.translation}>{item.translation_to_native}</Text>
-                    </TouchableOpacity>
-                )}
-                ListEmptyComponent={
-                    <Text style={styles.empty}>
-                        {query ? 'No matching words found' : 'Start typing to search'}
-                    </Text>
-                }
-                showsVerticalScrollIndicator={false}
-            />
-        </View>
-    );
-}
-
-WordService.js
-class WordService {
-
-      static getSearchResults = createAsyncThunk(
-        '/words/get_search_results',
-        async (data, thunkAPI) => {
-            try {
-                const response = await $api.get(`/words/search`, {
-                    params: data
-                });
-                return response.data;
-            } catch (error) {
-                // Extract error details
-                const errorData = error.response?.data || { message: error.message };
-                const statusCode = error.response?.status || 500;
-                // Pass custom error payload
-                return thunkAPI.rejectWithValue({
-                    payload: errorData,
-                    status: statusCode,
-                });
-            }
-        }
-    );
-    ...
-}

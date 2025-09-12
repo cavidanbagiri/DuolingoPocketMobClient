@@ -151,8 +151,7 @@ class WordService {
                 // Get current language from Redux state or elsewhere
                 // const state = thunkAPI.getState();
                 // const currentLanguage = state.language.current; // Adjust this path based on your state structure
-                const currentLanguage = 'all'; // Adjust this path based on your state structure
-                console.log('service is ............................................................ ', data);
+                // const currentLanguage = 'all'; // Adjust this path based on your state structure
                 const response = await $api.get(`/words/search-test`, {
                     params: {
                         native_language: data.native_language, // Add language parameter
@@ -160,7 +159,6 @@ class WordService {
                         query: data.query,
                     }
                 });
-                console.log('response is ............................................................ ', response.data);
                 return response.data;
             } catch (error) {
                 const errorData = error.response?.data || { message: error.message };

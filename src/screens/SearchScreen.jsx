@@ -8,6 +8,7 @@ import {
     TouchableOpacity,
     StyleSheet,
     ActivityIndicator,
+    ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -29,6 +30,7 @@ export default function SearchScreen({ navigation }) {
     const { selectedLanguage } = useSelector((state) => state.wordSlice);
     
     const [nativeLang, setNativeLang] = useState(null);
+    const [targetLanguage, setTargetLanguage] = useState(selectedLanguage);
     const [query, setQuery] = useState('');
     const [debouncedQuery, setDebouncedQuery] = useState('');
 
@@ -47,7 +49,7 @@ export default function SearchScreen({ navigation }) {
         if (debouncedQuery.trim().length > 0) {
             const data = {
                 native_language: LANGUAGES.find(lang => lang.name === nativeLang)?.code,
-                target_language: selectedLanguage,
+                target_language: targetLanguage,
                 query: debouncedQuery,
             }
             dispatch(WordService.getSearchResults(data));
@@ -66,6 +68,12 @@ export default function SearchScreen({ navigation }) {
     
         getNativeLang();
       }, []);
+
+      useEffect(() => {
+        if (selectedLanguage) {
+          setTargetLanguage(selectedLanguage);
+        }
+      }, [selectedLanguage]);
     
 
     const renderWordItem = ({ item }) => (
@@ -117,16 +125,62 @@ export default function SearchScreen({ navigation }) {
                 </TouchableOpacity>
             </View>
 
+            {/* 🌐 Language Filter Section */}
+            <View style={styles.filterContainer}>
+                <Text style={styles.filterLabel}>Filter by language:</Text>
+                <ScrollView 
+                    horizontal 
+                    showsHorizontalScrollIndicator={false}
+                    style={styles.filterScroll}
+                    contentContainerStyle={styles.filterScrollContent}
+                >
+                    {/* 'All Languages' Option */}
+                    <TouchableOpacity
+                    style={[
+                        styles.filterPill,
+                        targetLanguage === 'all' && styles.filterPillActive
+                    ]}
+                    onPress={() => setTargetLanguage('all')}
+                    >
+                    <Text style={[
+                        styles.filterPillText,
+                        targetLanguage === 'all' && styles.filterPillTextActive
+                    ]}>
+                        All Languages
+                    </Text>
+                    </TouchableOpacity>
+
+                    {/* Individual Language Options */}
+                    {LANGUAGES.filter(lang => lang.name !== nativeLang).map((language) => (
+                    <TouchableOpacity
+                        key={language.code}
+                        style={[
+                        styles.filterPill,
+                        targetLanguage === language.code && styles.filterPillActive
+                        ]}
+                        onPress={() => setTargetLanguage(language.code)}
+                    >
+                        <Text style={[
+                        styles.filterPillText,
+                        targetLanguage === language.code && styles.filterPillTextActive
+                        ]}>
+                        {language.flag} {language.name}
+                        </Text>
+                    </TouchableOpacity>
+                    ))}
+                </ScrollView>
+            </View>
+
             {/* 🔍 Results */}
             {isLoading ? (
                 <View style={styles.centered}>
-                <ActivityIndicator size="large" color="#6366F1" />
-                <Text style={styles.loadingText}>Searching...</Text>
+                    <ActivityIndicator size="large" color="#6366F1" />
+                    <Text style={styles.loadingText}>Searching...</Text>
                 </View>
             ) : error ? (
                 <View style={styles.centered}>
-                <Ionicons name="alert-circle" size={28} color="#ef4444" />
-                <Text style={styles.errorText}>{error.message}</Text>
+                    <Ionicons name="alert-circle" size={28} color="#ef4444" />
+                    <Text style={styles.errorText}>{error.message}</Text>
                 </View>
             ) : (
                 <FlatList
@@ -277,5 +331,44 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontStyle: 'italic',
     fontFamily: 'IBMPlexSans-Italic',
+  },
+  filterContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
+  filterLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#374151',
+    marginBottom: 8,
+  },
+  filterScroll: {
+    maxHeight: 40,
+  },
+  filterScrollContent: {
+    gap: 8,
+  },
+  filterPill: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#f3f4f6',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  filterPillActive: {
+    backgroundColor: '#7c3aed',
+    borderColor: '#7c3aed',
+  },
+  filterPillText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#374151',
+  },
+  filterPillTextActive: {
+    color: '#fff',
   },
 });
