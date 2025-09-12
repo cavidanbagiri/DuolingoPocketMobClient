@@ -7,6 +7,7 @@ import TabNavigator from './TabNavigator';
 import CardDetailScreen from '../../screens/CardDetailScreen';
 import AIScreen from '../../screens/AIScreen';
 import SearchScreen from '../../screens/SearchScreen';
+import WordScreen from '../../screens/WordScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,7 +23,7 @@ export default function MainStack() {
       <Stack.Screen 
         name="AIScreen"
         component={AIScreen}
-        options={{ title: 'Word Detail' }}
+        options={{ title: 'AI Chat' }}
       />
       <Stack.Screen
         name="SearchScreen"

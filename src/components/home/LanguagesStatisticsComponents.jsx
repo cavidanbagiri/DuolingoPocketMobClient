@@ -1,16 +1,17 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 
 import { useDispatch, useSelector } from 'react-redux';
 
-// import LinearGradient from 'react-native-linear-gradient';
 import { LinearGradient } from 'expo-linear-gradient';
 
+import { useNavigation } from '@react-navigation/native';
 
 import WordService from '../../services/WordService';
 
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
+import { setSelectedLanguage } from '../../store/word_store';
 
 const getLanguageGradient = (langCode) => {
   const gradients = {
@@ -27,6 +28,7 @@ const getLanguageGradient = (langCode) => {
 
 export default function LanguagesStatisticsComponents() {
 
+  const navigation = useNavigation();
   const dispatch = useDispatch();
 
   const { is_auth } = useSelector((state) => state.authSlice);
@@ -42,7 +44,7 @@ export default function LanguagesStatisticsComponents() {
 
   return (
 
-    <View className="flex-1 bg-gray-50 py-6 rounded-2xl mt-5">
+    <View  className="flex-1 bg-gray-50 py-6 rounded-2xl mt-5">
 
       {/* Screen Title */}
       <Text
@@ -63,8 +65,16 @@ export default function LanguagesStatisticsComponents() {
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
         {statistics && statistics.length > 0 ? (
           statistics?.map((item, index) => (
-            <View
+            <Pressable
               key={index}
+              onPress={() => {
+                // Navigate to the Word tab and pass parameters
+                navigation.navigate('Tabs', { 
+                  screen: 'Word',
+                  // params: { selectedLanguage: item.language_code }
+                });
+                dispatch(setSelectedLanguage(item.language_code))
+              }}
               className="rounded-3xl overflow-hidden mt-5 shadow-lg bg-white border border-gray-100"
             >
               {/* Gradient Header */}
@@ -139,7 +149,7 @@ export default function LanguagesStatisticsComponents() {
                     className="text-xs text-gray-600"
                     style={{ fontFamily: 'IBMPlexSans-Regular' }}
                   >
-                    {Math.round((item.learned_words / item.total_words) * 100)}%
+                    {((item.learned_words / item.total_words) * 100).toFixed(2)}%
                   </Text>
                 </View>
                 <View className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -151,7 +161,7 @@ export default function LanguagesStatisticsComponents() {
                   />
                 </View>
               </View>
-            </View>
+            </Pressable>
           ))
         ) : (
           <View className="flex-1 justify-center items-center py-10">
@@ -164,78 +174,7 @@ export default function LanguagesStatisticsComponents() {
           </View>
         )}
       </ScrollView>
-    </View>
-
-
-    // <View style={styles.container}>
-    //   <Text style={styles.title}>Languages Statistics</Text>
-
-    //   <ScrollView style={styles.boxContainer}>
-
-    //     {
-    //       statistics &&
-    //       statistics.map((item, index) => (
-    //         <View className='rounded-xl overflow-hidden mt-5'
-    //         key={index}>
-
-    //         <LinearGradient
-    //           colors={['#22c55e', '#BBF7D0']} // green-500 to green-300
-    //           start={{ x: 0, y: 0 }}
-    //           end={{ x: 1, y: 1 }}
-    //           className='flex flex-col justify-between h-48 p-5 rounded-lg shadow-lg'
-    //         >
-    //           {/* Language Header */}
-    //           <View className='flex-row items-center ' >
-    //             <Text className='text-4xl font-bold text-white'>
-    //               {item.language_name}
-    //             </Text>
-    //             <Text className='text-3xl font-bold text-black opacity-80' style={{fontFamily: 'Poppins-SemiBold'}}>
-    //               {item?.language_code?.toUpperCase()}
-    //             </Text>
-    //           </View>
-
-    //           <View className='flex-row items-center ' >
-    //             <Text className='text-lg text-black opacity-80 font-normal' style={{fontFamily: 'IBMPlexSans-Regular'}}>
-    //               🚀 You've learned {item.learned_words} words! Just {item.total_words - item.learned_words} to go!
-    //             </Text>
-    //           </View>
-
-    //           {/* Stats Row */}
-    //           <View className='flex-row justify-between '>
-    //             <View className='flex flex-row bg-white/20 p-2 rounded-lg backdrop-blur'>
-    //               <Text className='text-black text-lg font-semibold text-center'>
-    //                 Total
-    //               </Text>
-    //               <Text className='text-black text-xl font-bold text-center ml-1'>
-    //                 {item.total_words}
-    //               </Text>
-    //             </View>
-
-    //             <View className='flex flex-row bg-white/20 p-2 rounded-lg backdrop-blur'>
-    //               <Text className=' text-black text-lg font-semibold text-center'>
-    //                 Learned 
-    //               </Text>
-    //               <Text className='text-black text-xl font-bold text-center ml-1'>
-    //                 {item.learned_words}
-    //               </Text>
-    //             </View>
-
-    //             <View className='flex flex-row bg-white/20 p-2 rounded-lg backdrop-blur'>
-    //               <Text className='text-black text-lg font-semibold text-center'>
-    //                 ⭐ Starred
-    //               </Text>
-    //               <Text className='text-black text-xl font-bold text-center ml-1'>
-    //                 {item.starred_words}
-    //               </Text>
-    //             </View>
-    //           </View>
-    //         </LinearGradient>
-    //         </View>
-    //       ))
-    //     }
-
-    //   </ScrollView>
-    // </View>
+    </View >
 
 
   );
