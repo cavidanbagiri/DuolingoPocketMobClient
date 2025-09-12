@@ -1,5 +1,5 @@
 // SearchScreen.jsx
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
     View,
     Text,
@@ -44,17 +44,26 @@ export default function SearchScreen({ navigation }) {
         return () => clearTimeout(timer);
     }, [query]);
 
-    // Trigger search when debounced query changes
-    useEffect(() => {
+    const handleSearch = useCallback(() => {
+
+        
+         const controller = new AbortController();
+
         if (debouncedQuery.trim().length > 0) {
             const data = {
                 native_language: LANGUAGES.find(lang => lang.name === nativeLang)?.code,
                 target_language: targetLanguage,
                 query: debouncedQuery,
-            }
-            dispatch(WordService.getSearchResults(data));
+            };
+            dispatch(WordService.getSearchResults(data, { signal: controller.signal }));
         }
-    }, [debouncedQuery, dispatch]);
+        return () => controller.abort();
+    }, [debouncedQuery, nativeLang, targetLanguage, dispatch]);
+
+    // Use in useEffect
+    useEffect(() => {
+        handleSearch();
+    }, [handleSearch]);
 
     useEffect(() => {
         const getNativeLang = async () => {
@@ -76,9 +85,12 @@ export default function SearchScreen({ navigation }) {
       }, [selectedLanguage]);
     
 
-    const renderWordItem = ({ item }) => (
+    const renderWordItem = useCallback(({ item }) => (
         <RenderWordComponent item={item} />
-    );
+    ), []);
+
+    // Add keyExtractor optimization
+    const keyExtractor = useCallback((item) => item.id.toString(), []);
 
 
     return (
@@ -212,7 +224,7 @@ export default function SearchScreen({ navigation }) {
             ) : (
                 <FlatList
                 data={searchResults?.results || []}
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={keyExtractor}
                 renderItem={renderWordItem}
                 ListEmptyComponent={
                     <View style={styles.centered}>
