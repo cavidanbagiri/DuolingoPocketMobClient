@@ -3,9 +3,10 @@ Problems
 2 - Design profile Screen
 3 - Create Translate Screen
 4 - Select Language can be as seperate component in SearchScreen
+1 - Add default lang native and selected lang
 
 Today Will Solve: 
-P-2
+P-2, 1
 
 
 Next Ideas:
@@ -16,18 +17,3 @@ Next Ideas:
 
 
 Deepseek
-
-
-You are super. Now lets start to write a code for translating component. please act like senior ui/ux designer. 
-
-I wanna create a component for translating. I wanna make it look like this.
-
-1 - Top of the screen should be two dropdown for searching the language. ['en'->['es']] For example.
-2 - TextInput for typing the text to translate.
-3 - Sound icons, which will play the text, when you click on it.
-4 - Favorite icon, which will add the words to favorites.
-5 - Cancel icon, which will close the component.
-6 - In Header section, favorite icon for going to the favorites screen.
-
-
-This is my mind, which form do you think, you can create this component.

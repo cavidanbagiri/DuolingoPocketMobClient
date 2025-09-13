@@ -1,15 +1,17 @@
 
 
-
-
 import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons'; // Example icons
-import { useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import TranslateService from '../../services/TranslateService';
 import TRANSLATE_LANGUAGES_LIST from '../../constants/TranslateLanguagesList';
+import LANGUAGES from '../../constants/Languages';
 import LanguagePickerModal from './LanguagePickerModal';
+import debounce from 'lodash.debounce';
+
+import * as SecureStore from 'expo-secure-store';
 
 export default function TranslateComponent({ onClose }) { // Receive close function
 
@@ -18,41 +20,85 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
     const dispatch = useDispatch();
 
     const { translatedText, loading, error } = useSelector((state) => state.translateSlice);
+    const { selectedLanguage } = useSelector((state) => state.wordSlice);
 
     // State will be managed here
-    const [fromLang, setFromLang] = useState('en');
-    const [toLang, setToLang] = useState('tr');
+    const [fromLang, setFromLang] = useState(null);
+    const [toLang, setToLang] = useState(null);
     const [inputText, setInputText] = useState('');
     const [isFavorite, setIsFavorite] = useState(false);
     const [showLangModal, setShowLangModal] = useState(null);
 
-    // Functions will be defined here
+    
     const handleSwapLanguages = () => {
-        // const from = toLang;
-        // const to = fromLang;
-        const text = translatedText.translation;
-        setFromLang(toLang);
-        setToLang(fromLang);
-        setInputText(translatedText.translation);
-        dispatch(TranslateService.translateText({
-            text: text,
-            from_lang: toLang,
-            to_lang: fromLang,
-        })).unwrap();
+        const currentFromLang = fromLang;
+        const currentToLang = toLang;
+        const currentTranslation = translatedText?.translation || '';
+
+        // Update state immediately (no timeout needed)
+        setFromLang(currentToLang);
+        setToLang(currentFromLang);
+        
+        if (currentTranslation) {
+            setInputText(currentTranslation);
+        }
     };
+
+    // Then use useEffect to handle the translation when languages change
+    useEffect(() => {
+        if (inputText && fromLang && toLang) {
+            const timer = setTimeout(() => {
+                dispatch(TranslateService.translateText({
+                    text: inputText,
+                    from_lang: fromLang,
+                    to_lang: toLang,
+                })).unwrap();
+            }, 350);
+            
+            return () => clearTimeout(timer);
+        }
+    }, [fromLang, toLang, dispatch, inputText]); // ← Add inputText to dependencies
+
 
     const handleSaveToFavorites = () => {
         setIsFavorite(!isFavorite);
     };
+    
+    const handleTextChange = useCallback(
+        debounce((text) => {
+            if (text && fromLang && toLang) {
+                dispatch(TranslateService.translateText({
+                    text: text,
+                    from_lang: fromLang,
+                    to_lang: toLang,
+                })).unwrap();
+            }
+        }, 300),
+        [fromLang, toLang, dispatch]
+    );
 
-    const handleTextChange = (text) => {
-        setInputText(text);
-        dispatch(TranslateService.translateText({
-            text: text,
-            from_lang: fromLang,
-            to_lang: toLang,
-        })).unwrap();
-    };
+    useEffect(() => {
+        const getNativeLang = async () => {
+            try {
+                const native = await SecureStore.getItemAsync('native');
+                const lang_code = LANGUAGES.find(lang => lang.name === native)?.code;
+                
+                // Only set fromLang if it hasn't been set yet
+                if (lang_code && !fromLang) {
+                    setFromLang(lang_code);
+                }
+            } catch (error) {
+                console.error('Failed to load native language', error);
+            }
+        };
+        getNativeLang();
+    }, []);
+
+    useEffect(() => {
+        if (selectedLanguage) {
+            setToLang(selectedLanguage);
+        }
+    }, []);
 
     return (
         <View className="flex-1 bg-gray-50">
@@ -132,7 +178,10 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
                             multiline
                             placeholder="Type text to translate..."
                             value={inputText}
-                            onChangeText={handleTextChange}
+                            onChangeText={(text) => {
+                                setInputText(text);
+                                handleTextChange(text);
+                            }}
                             autoFocus
                         />
                         <View className="flex-row items-center justify-between mt-3">
