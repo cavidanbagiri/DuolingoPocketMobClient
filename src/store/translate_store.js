@@ -18,7 +18,9 @@ export const translateSlice = createSlice({
     name: 'translate',
     initialState,
     reducers: {
-       
+       clearTranslatedText: (state) => {
+            state.translatedText = '';
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(TranslateService.translateText.pending, (state, action) => {
@@ -35,5 +37,7 @@ export const translateSlice = createSlice({
         });
     },
 });
+
+export const { clearTranslatedText } = translateSlice.actions;
 
 export default translateSlice.reducer;

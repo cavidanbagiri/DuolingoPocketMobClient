@@ -176,7 +176,7 @@ export default function LanguagePickerModal({
               placeholder="Search languages..."
               placeholderTextColor="#9CA3AF"
               style={styles.searchInput}
-              autoFocus
+            //   autoFocus
               returnKeyType="search"
             />
             {searchQuery ? (

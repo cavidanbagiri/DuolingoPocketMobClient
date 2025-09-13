@@ -10,8 +10,10 @@ import TRANSLATE_LANGUAGES_LIST from '../../constants/TranslateLanguagesList';
 import LANGUAGES from '../../constants/Languages';
 import LanguagePickerModal from './LanguagePickerModal';
 import debounce from 'lodash.debounce';
+import VoiceButtonComponent from '../cards/VoiceButtonComponent';
 
 import * as SecureStore from 'expo-secure-store';
+import { clearTranslatedText } from '../../store/translate_store';
 
 export default function TranslateComponent({ onClose }) { // Receive close function
 
@@ -171,10 +173,19 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
             {/* --- INPUT/OUTPUT CARD --- */}
             <View className="flex-1 px-5 py-6">
                 <View className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <TouchableOpacity 
+                        className='flex-row justify-end p-2'
+                            onPress={() => {
+                                dispatch(clearTranslatedText());
+                                setInputText('');
+                            }}
+                        >
+                        <Ionicons name="close" size={24} color="#9CA3AF" />
+                    </TouchableOpacity>
                     {/* Input Section */}
-                    <View className="p-4 border-b border-gray-100">
+                    <View className="px-4 pb-4 border-b border-gray-100">
                         <TextInput
-                            className="text-gray-900 text-lg min-h-[100px]"
+                            className="text-gray-900 text-lg min-h-[100px] "
                             multiline
                             placeholder="Type text to translate..."
                             value={inputText}
@@ -183,12 +194,26 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
                                 handleTextChange(text);
                             }}
                             autoFocus
+                            textAlignVertical="top"
                         />
-                        <View className="flex-row items-center justify-between mt-3">
+                        <View className="flex-row items-center justify-between mt-3 "> 
                             <Text className="text-xs text-gray-500">{inputText.length}/500</Text>
-                            <TouchableOpacity>
-                                <Ionicons name="mic-outline" size={20} color="#9CA3AF" />
-                            </TouchableOpacity>
+                            <View className='flex-row items-center'>
+                                <VoiceButtonComponent text={inputText} language={fromLang} />
+                                <TouchableOpacity className='ml-2'>
+                                    <Ionicons name="sparkles-outline" size={20} color="#4B5563" />
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    className={`ml-4`}
+                                    onPress={handleSaveToFavorites}
+                                >
+                                    <Ionicons
+                                        name={isFavorite ? "heart" : "heart-outline"}
+                                        size={20}
+                                        color={isFavorite ? "#EF4444" : "#4B5563"}
+                                    />
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </View>
 
@@ -201,9 +226,7 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
                                     <TouchableOpacity>
                                         <Text className="text-sm text-blue-600">Copy</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity>
-                                        <Ionicons name="volume-medium-outline" size={20} color="#4B5563" />
-                                    </TouchableOpacity>
+                                    <VoiceButtonComponent text={translatedText.translation} language={toLang} />
                                 </View>
                             </>
                         ) : (

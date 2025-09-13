@@ -119,8 +119,8 @@ export default function VocabCard({ word, language }) {
           >
             <Ionicons
               name={isStarred ? 'star' : 'star-outline'}
-              size={24}
-              color={isStarred ? '#facc15' : '#9ca3af'}
+              size={20}
+              color={isStarred ? '#facc15' : '#4B5563'}
             />
           </TouchableOpacity>
 
@@ -135,8 +135,8 @@ export default function VocabCard({ word, language }) {
           >
             <Ionicons
               name={isLearned ? 'checkmark-circle' : 'checkmark-circle-outline'}
-              size={24}
-              color={isLearned ? '#4ade80' : '#9ca3af'}
+              size={20}
+              color={isLearned ? '#4ade80' : '#4B5563'}
             />
           </TouchableOpacity>
 

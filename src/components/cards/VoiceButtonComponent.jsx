@@ -5,6 +5,7 @@ import * as FileSystem from 'expo-file-system';
 import { Audio } from 'expo-av';
 
 import AntDesign from '@expo/vector-icons/AntDesign';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -36,9 +37,11 @@ export default function VoiceButtonComponent({ text, language }) {
           text: wordText,
           language: language,
         });
-    
-    
-        // ... (rest of your code to save the blob and play it remains the same) ...
+
+        if (!audioBlob) {
+            setIsPlaying(false);
+            return;
+        }
         const fileName = `${wordText}_${Date.now()}.mp3`;
         const localUri = `${FileSystem.cacheDirectory}${fileName}`;
     
@@ -90,10 +93,10 @@ export default function VoiceButtonComponent({ text, language }) {
             accessibilityLabel="Play pronunciation"
             disabled={isPlaying} // Disable button while playing
         >
-            <AntDesign
-                name={'sound'}
-                size={24}
-                color={isPlaying ? '#d1d5db' : '#9ca3af'} // Change color when playing
+            <Ionicons
+                name={'volume-medium-outline'}
+                size={22}
+                color={isPlaying ? '#d1d5db' : '#4B5563'} // Change color when playing
             />
         </TouchableOpacity>
 
