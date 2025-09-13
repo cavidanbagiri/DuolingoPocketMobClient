@@ -8,6 +8,7 @@ import CardDetailScreen from '../../screens/CardDetailScreen';
 import AIScreen from '../../screens/AIScreen';
 import SearchScreen from '../../screens/SearchScreen';
 import WordScreen from '../../screens/WordScreen';
+import FavoritesScreen from '../../screens/FavoritesScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,6 +29,11 @@ export default function MainStack() {
       <Stack.Screen
         name="SearchScreen"
         component={SearchScreen}
+        options={{ title: 'Search' }}
+      />
+      <Stack.Screen
+        name="Favorites"
+        component={FavoritesScreen}
         options={{ title: 'Search' }}
       />
     </Stack.Navigator>

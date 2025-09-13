@@ -18,38 +18,16 @@ Next Ideas:
 Deepseek
 
 
+You are super. Now lets start to write a code for translating component. please act like senior ui/ux designer. 
 
-AIScreen.jsx
-const Tab = createMaterialTopTabNavigator();
+I wanna create a component for translating. I wanna make it look like this.
 
-export default function AIScreen() {
-
-  const insets = useSafeAreaInsets();
-
-
-  return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarStyle: {
-          marginTop: insets.top,
-          backgroundColor: '#ffffff',
-        },
-        sceneContainerStyle: {
-          backgroundColor: '#ffffff',
-        }
-      }}
-    >
-      <Tab.Screen 
-        name="AI Chat" 
-        component={AIComponent} 
-      />
-      <Tab.Screen 
-        name="Translate" 
-        component={TranslateComponent} 
-      />
-    </Tab.Navigator>
+1 - Top of the screen should be two dropdown for searching the language. ['en'->['es']] For example.
+2 - TextInput for typing the text to translate.
+3 - Sound icons, which will play the text, when you click on it.
+4 - Favorite icon, which will add the words to favorites.
+5 - Cancel icon, which will close the component.
+6 - In Header section, favorite icon for going to the favorites screen.
 
 
-  );
-}
-
+This is my mind, which form do you think, you can create this component.
