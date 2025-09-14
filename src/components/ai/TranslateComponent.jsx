@@ -204,6 +204,13 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
                         <View className="flex-row items-center justify-between mt-3 ">
                             <Text className="text-xs text-gray-500">{inputText.length}/500</Text>
                             <View className='flex-row items-center'>
+                                <TouchableOpacity className='mr-2'
+                                        onPress={async () => {
+                                            await Clipboard.setStringAsync(inputText);
+                                        }}
+                                    >
+                                        <Ionicons name="clipboard-outline" size={18} color="#4B5563" /> 
+                                </TouchableOpacity>
                                 <VoiceButtonComponent text={inputText} language={fromLang} />
                                 <TouchableOpacity
                                     className='ml-2'
