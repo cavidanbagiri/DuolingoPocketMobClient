@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useState, useEffect, useRef } from 'react';
 import AIService from '../../services/AIService';
 import LANGUAGES from '../../constants/Languages';
+import TRANSLATE_LANGUAGES_LIST from '../../constants/TranslateLanguagesList';
 import { addChatMessage, setChatLoading, clearConversation } from '../../store/ai_store';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -48,11 +49,16 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
             content: message.trim()
         }));
 
+        let target_language = LANGUAGES.find(lang => lang.code === currentWord.language_code)?.name;
+        if (!target_language) {
+            target_language = TRANSLATE_LANGUAGES_LIST[currentWord.language_code];
+        }
+
         dispatch(AIService.generateAITextWithQuestion({
             word: currentWord.text,
             message: message,
             native: nativeLang,
-            language: LANGUAGES.find(lang => lang.code === currentWord.language_code)?.name,
+            language: target_language,
         })).unwrap();
 
         setMessage('');

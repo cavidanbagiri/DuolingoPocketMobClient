@@ -1,12 +1,11 @@
 
 Problems
-2 - Design profile Screen
-3 - Create Translate Screen
-4 - Select Language can be as seperate component in SearchScreen
-1 - Add default lang native and selected lang
+1 - Design profile Screen
+2 - Create Favotite Screen
+3 - *** Critic Problem: AIScreen.jsx, after translate the word, ai screen can generate some information about the word. But can ask any question. Error found. Unpriocessable Content :)
 
 Today Will Solve: 
-P-2, 1
+P-3
 
 
 Next Ideas:
@@ -17,3 +16,4 @@ Next Ideas:
 
 
 Deepseek
+

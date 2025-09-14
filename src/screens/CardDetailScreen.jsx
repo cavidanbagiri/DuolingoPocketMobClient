@@ -152,25 +152,7 @@ export default function CardDetailScreen({ route }) {
               {detail?.text}
             </Text>
 
-
-            {/* <TouchableOpacity
-              onPress={(e) => {
-                e.stopPropagation();
-                playSound(word.text);
-              }}
-              className="p-2"
-              accessibilityLabel="Play pronunciation"
-              disabled={isPlaying} // Disable button while playing
-            >
-              <AntDesign 
-                name={'sound'}
-                size={24}
-                color={isPlaying ? '#d1d5db' : '#9ca3af'} // Change color when playing
-              />
-            </TouchableOpacity> */}
-
             <VoiceButtonComponent text={word?.text} language={selectedLanguage} />
-
 
           </View>
 

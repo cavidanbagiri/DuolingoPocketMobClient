@@ -11,6 +11,7 @@ import LANGUAGES from '../../constants/Languages';
 import LanguagePickerModal from './LanguagePickerModal';
 import debounce from 'lodash.debounce';
 import VoiceButtonComponent from '../cards/VoiceButtonComponent';
+import { setCurrentWord } from '../../store/ai_store';
 
 import * as SecureStore from 'expo-secure-store';
 import { clearTranslatedText } from '../../store/translate_store';
@@ -25,6 +26,7 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
     const { selectedLanguage } = useSelector((state) => state.wordSlice);
 
     // State will be managed here
+    const [nativeLang, setNativeLang] = useState(null);
     const [fromLang, setFromLang] = useState(null);
     const [toLang, setToLang] = useState(null);
     const [inputText, setInputText] = useState('');
@@ -84,6 +86,7 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
             try {
                 const native = await SecureStore.getItemAsync('native');
                 const lang_code = LANGUAGES.find(lang => lang.name === native)?.code;
+                setNativeLang(native);
                 
                 // Only set fromLang if it hasn't been set yet
                 if (lang_code && !fromLang) {
@@ -200,7 +203,30 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
                             <Text className="text-xs text-gray-500">{inputText.length}/500</Text>
                             <View className='flex-row items-center'>
                                 <VoiceButtonComponent text={inputText} language={fromLang} />
-                                <TouchableOpacity className='ml-2'>
+                                <TouchableOpacity 
+                                className='ml-2'
+                                onPress={() => {
+                                    if (toLang){
+                                        const payload = {
+                                            text: translatedText.translation,
+                                            language_code: toLang,
+                                            native: nativeLang,
+                                            // native: LANGUAGES.find(lang => lang.code === toLang)?.name,
+                                        }
+                                        console.log('payload is ', payload);
+                                        dispatch(setCurrentWord(payload))
+                                        // Method 1: Using jumpTo (if using material top tabs)
+                                        navigation.jumpTo('AI Chat');
+                                        
+                                        // Method 2: Using navigate with params
+                                        navigation.navigate('AI Chat', { 
+                                            // You can pass data to the AI tab if needed
+                                            initialQuery: inputText 
+                                        });
+                                        
+                                    }
+                                }}
+                                >
                                     <Ionicons name="sparkles-outline" size={20} color="#4B5563" />
                                 </TouchableOpacity>
                                 <TouchableOpacity

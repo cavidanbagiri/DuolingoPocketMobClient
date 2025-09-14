@@ -10,6 +10,7 @@ import AIService from '../../services/AIService';
 import LANGUAGES from '../../constants/Languages';
 import AIScreenChat from '../../components/ai/ChatScreen';
 import { clearAIResponse, setAIResponse, clearConversation } from '../../store/ai_store';
+import TRANSLATE_LANGUAGES_LIST from '../../constants/TranslateLanguagesList';
 
 export default function AIComponent() {
 
@@ -32,7 +33,13 @@ export default function AIComponent() {
           return null;
         }
     
-        const target_language = LANGUAGES.find(lang => lang.code === currentWord.language_code)?.name;
+        let target_language = LANGUAGES.find(lang => lang.code === currentWord.language_code)?.name;
+
+        if (!target_language) {
+          target_language = TRANSLATE_LANGUAGES_LIST[currentWord.language_code];
+        }
+        console.log('current word is ', currentWord);
+        console.log('target language is ', target_language);
     
         if (!target_language) {
           console.error('Target language not found for code:', currentWord.language_code);
@@ -51,6 +58,18 @@ export default function AIComponent() {
       }, [currentWord, nativeLang, dispatch]);
     
       // Load native language
+      // useEffect(() => {
+      //   const getNativeLang = async () => {
+      //     try {
+      //       const native = await SecureStore.getItemAsync('native');
+      //       setNativeLang(native);
+      //     } catch (error) {
+      //       console.error('Failed to load native language', error);
+      //     }
+      //   };
+      //   getNativeLang();
+      // }, []);
+
       useEffect(() => {
         const getNativeLang = async () => {
           try {
@@ -61,7 +80,7 @@ export default function AIComponent() {
           }
         };
         getNativeLang();
-      }, []);
+      }, [currentWord]);
     
     
       // Reset everything when a new word is selected
