@@ -10,6 +10,8 @@ import TRANSLATE_LANGUAGES_LIST from '../../constants/TranslateLanguagesList';
 import LANGUAGES from '../../constants/Languages';
 import LanguagePickerModal from './LanguagePickerModal';
 import debounce from 'lodash.debounce';
+import * as Clipboard from 'expo-clipboard';
+
 import VoiceButtonComponent from '../cards/VoiceButtonComponent';
 import { setCurrentWord } from '../../store/ai_store';
 
@@ -33,7 +35,7 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
     const [isFavorite, setIsFavorite] = useState(false);
     const [showLangModal, setShowLangModal] = useState(null);
 
-    
+
     const handleSwapLanguages = () => {
         const currentFromLang = fromLang;
         const currentToLang = toLang;
@@ -42,7 +44,7 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
         // Update state immediately (no timeout needed)
         setFromLang(currentToLang);
         setToLang(currentFromLang);
-        
+
         if (currentTranslation) {
             setInputText(currentTranslation);
         }
@@ -58,7 +60,7 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
                     to_lang: toLang,
                 })).unwrap();
             }, 350);
-            
+
             return () => clearTimeout(timer);
         }
     }, [fromLang, toLang, dispatch, inputText]); // ← Add inputText to dependencies
@@ -67,7 +69,7 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
     const handleSaveToFavorites = () => {
         setIsFavorite(!isFavorite);
     };
-    
+
     const handleTextChange = useCallback(
         debounce((text) => {
             if (text && fromLang && toLang) {
@@ -87,7 +89,7 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
                 const native = await SecureStore.getItemAsync('native');
                 const lang_code = LANGUAGES.find(lang => lang.name === native)?.code;
                 setNativeLang(native);
-                
+
                 // Only set fromLang if it hasn't been set yet
                 if (lang_code && !fromLang) {
                     setFromLang(lang_code);
@@ -128,7 +130,7 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
                     accessibilityLabel={`Translate from ${TRANSLATE_LANGUAGES_LIST[fromLang]}`}
                 >
                     <Text className="font-semibold text-gray-800 truncate">
-                    {TRANSLATE_LANGUAGES_LIST[fromLang]}
+                        {TRANSLATE_LANGUAGES_LIST[fromLang]}
                     </Text>
                 </TouchableOpacity>
                 <LanguagePickerModal
@@ -167,7 +169,7 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
                     accessibilityLabel={`Translate to ${TRANSLATE_LANGUAGES_LIST[toLang]}`}
                 >
                     <Text className="font-semibold text-indigo-800 truncate">
-                    {TRANSLATE_LANGUAGES_LIST[toLang]}
+                        {TRANSLATE_LANGUAGES_LIST[toLang]}
                     </Text>
                 </TouchableOpacity>
 
@@ -176,13 +178,13 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
             {/* --- INPUT/OUTPUT CARD --- */}
             <View className="flex-1 px-5 py-6">
                 <View className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         className='flex-row justify-end p-2'
-                            onPress={() => {
-                                dispatch(clearTranslatedText());
-                                setInputText('');
-                            }}
-                        >
+                        onPress={() => {
+                            dispatch(clearTranslatedText());
+                            setInputText('');
+                        }}
+                    >
                         <Ionicons name="close" size={24} color="#9CA3AF" />
                     </TouchableOpacity>
                     {/* Input Section */}
@@ -199,33 +201,26 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
                             autoFocus
                             textAlignVertical="top"
                         />
-                        <View className="flex-row items-center justify-between mt-3 "> 
+                        <View className="flex-row items-center justify-between mt-3 ">
                             <Text className="text-xs text-gray-500">{inputText.length}/500</Text>
                             <View className='flex-row items-center'>
                                 <VoiceButtonComponent text={inputText} language={fromLang} />
-                                <TouchableOpacity 
-                                className='ml-2'
-                                onPress={() => {
-                                    if (toLang){
-                                        const payload = {
-                                            text: translatedText.translation,
-                                            language_code: toLang,
-                                            native: nativeLang,
-                                            // native: LANGUAGES.find(lang => lang.code === toLang)?.name,
+                                <TouchableOpacity
+                                    className='ml-2'
+                                    onPress={() => {
+                                        if (toLang) {
+                                            const payload = {
+                                                text: inputText,
+                                                language_code: fromLang,
+                                                native: nativeLang,
+                                            }
+                                            dispatch(setCurrentWord(payload))
+                                            navigation.jumpTo('AI Chat');
+                                            navigation.navigate('AI Chat', {
+                                                initialQuery: inputText
+                                            });
                                         }
-                                        console.log('payload is ', payload);
-                                        dispatch(setCurrentWord(payload))
-                                        // Method 1: Using jumpTo (if using material top tabs)
-                                        navigation.jumpTo('AI Chat');
-                                        
-                                        // Method 2: Using navigate with params
-                                        navigation.navigate('AI Chat', { 
-                                            // You can pass data to the AI tab if needed
-                                            initialQuery: inputText 
-                                        });
-                                        
-                                    }
-                                }}
+                                    }}
                                 >
                                     <Ionicons name="sparkles-outline" size={20} color="#4B5563" />
                                 </TouchableOpacity>
@@ -249,10 +244,36 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
                             <>
                                 <Text className="text-lg text-gray-900">{translatedText.translation}</Text>
                                 <View className="flex-row items-center justify-between mt-3">
-                                    <TouchableOpacity>
+                                    <TouchableOpacity
+                                        onPress={async () => {
+                                            await Clipboard.setStringAsync(translatedText.translation);
+                                        }}
+                                    >
                                         <Text className="text-sm text-blue-600">Copy</Text>
                                     </TouchableOpacity>
-                                    <VoiceButtonComponent text={translatedText.translation} language={toLang} />
+                                    <View className='flex-row items-center'>
+                                        <VoiceButtonComponent text={translatedText.translation} language={toLang} />
+                                        <TouchableOpacity
+                                            className='ml-2'
+                                            onPress={() => {
+                                                if (toLang) {
+                                                    const payload = {
+                                                        text: translatedText.translation,
+                                                        language_code: toLang,
+                                                        native: nativeLang,
+                                                    }
+                                                    dispatch(setCurrentWord(payload))
+                                                    navigation.jumpTo('AI Chat');
+                                                    navigation.navigate('AI Chat', {
+                                                        initialQuery: inputText
+                                                    });
+                                                }
+                                            }}
+                                        >
+                                            <Ionicons name="sparkles-outline" size={20} color="#4B5563" />
+                                        </TouchableOpacity>
+
+                                    </View>
                                 </View>
                             </>
                         ) : (
@@ -277,7 +298,7 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
 
                 <TouchableOpacity
                     className="flex-1 bg-indigo-600 py-4 rounded-full items-center"
-                    onPress={() =>{
+                    onPress={() => {
                         dispatch(TranslateService.translateText({
                             text: inputText,
                             from_lang: fromLang,
@@ -292,12 +313,3 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
         </View>
     );
 }
-
-// Helper object for language names
-const LANGUAGE_NAMES = {
-    en: 'English',
-    es: 'Spanish',
-    ru: 'Russian',
-    tr: 'Turkish',
-    // ... add all your supported languages
-};
