@@ -17,6 +17,7 @@ import { setCurrentWord } from '../../store/ai_store';
 
 import * as SecureStore from 'expo-secure-store';
 import { clearTranslatedText } from '../../store/translate_store';
+import FavoritesService from '../../services/FavoritesService';
 
 export default function TranslateComponent({ onClose }) { // Receive close function
 
@@ -67,6 +68,13 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
 
 
     const handleSaveToFavorites = () => {
+        const payload = {
+            from_lang: TRANSLATE_LANGUAGES_LIST[fromLang],
+            to_lang: TRANSLATE_LANGUAGES_LIST[toLang],
+            original_text: inputText,
+            translated_text: translatedText.translation,
+        }
+        dispatch(FavoritesService.addFavorites(payload)).unwrap();
         setIsFavorite(!isFavorite);
     };
 
@@ -197,6 +205,7 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
                             onChangeText={(text) => {
                                 setInputText(text);
                                 handleTextChange(text);
+                                setIsFavorite(false);
                             }}
                             autoFocus
                             textAlignVertical="top"
