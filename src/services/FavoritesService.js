@@ -27,6 +27,49 @@ class FavoritesService {
                 });
             }
         });
-    }
+
+
+    static createNewCategory = createAsyncThunk(
+        '/words/favorites/categories',
+        async (categoryData, thunkAPI) => {
+            try {
+                const response = await $api.post('/words/favorites/categories', categoryData);
+                return response.data;
+            } catch (error) {
+                // Extract error details
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
+
+                // Pass custom error payload
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
+        });
+
+
+    static getUserCategories = createAsyncThunk(
+        'favorites/getUserCategories',
+        async (_, thunkAPI) => {
+            try {
+                const response = await $api.get('/words/favorites/categories');
+                return response.data;
+            } catch (error) {
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
+
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
+        }
+    );
+
+
+}
+
+
 
 export default FavoritesService;

@@ -4,6 +4,7 @@ import authSlice from './auth_store.js'
 import wordSlice from './word_store.js'
 import aiSlice from './ai_store.js'
 import translateSlice from './translate_store.js'
+import favoritesSlice from './favorites_store.js'
 
 const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ const store = configureStore({
     wordSlice: wordSlice,
     aiSlice: aiSlice,
     translateSlice: translateSlice,
+    favoritesSlice: favoritesSlice,
   },
 })
 

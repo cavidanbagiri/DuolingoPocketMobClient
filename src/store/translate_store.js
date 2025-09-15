@@ -4,6 +4,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 import TranslateService from '../services/TranslateService.js';
+import FavoritesService from '../services/FavoritesService.js';
 import { clearStorage, getFromStorage, saveToStorage } from '../utils/storage';
 
 axios.defaults.withCredentials = true;
@@ -11,7 +12,8 @@ axios.defaults.withCredentials = true;
 const initialState = {
     translatedText: '',
     loading: false,
-    error: null
+    error: null,
+
 };
 
 export const translateSlice = createSlice({
@@ -23,6 +25,8 @@ export const translateSlice = createSlice({
         },
     },
     extraReducers: (builder) => {
+
+        // Text Translation
         builder.addCase(TranslateService.translateText.pending, (state, action) => {
             state.loading = true;
         });
@@ -34,7 +38,7 @@ export const translateSlice = createSlice({
         builder.addCase(TranslateService.translateText.rejected, (state, action) => {
             state.loading = false;
             state.error = action.payload;
-        });
+        });        
     },
 });
 
