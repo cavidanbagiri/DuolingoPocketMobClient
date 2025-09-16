@@ -1,22 +1,19 @@
 
 Problems
 1 - Design profile Screen
-2 - Last time, CategoryWords we already created, but 'const { words, loading, error } = useSelector((state) => state.favorites);' this line is waiting. Also need to create a backend for this.
+2 - Check after adding new categories, the notification coming or not
+3 - Add 3 dot button for working with favorites words. [Deleting, adding to another category, unfavorites from the list]
 
 
 Today Will Solve: 
-P-3
+P-2
 
 
 Next Ideas:
-1 - Create Translate Screen
-
+1 - Return from yandex Cloud to Alibaba cloud
 
 
 
 
 Deepseek
 
-here we wrought CategoriesWords. Can you create this screen for me pls? Before sleeping l wanna solve this problem, then sleep))
-
-onPress={() => navigation.navigate('CategoryWords', { categoryId: item.id, categoryName: item.name })}
