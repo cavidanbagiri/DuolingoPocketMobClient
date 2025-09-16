@@ -31,15 +31,6 @@ export default function FavoritesScreen({ navigation }) {
         }
     }, [showAddModal, dispatch]);
 
-    // Render loading state
-    // if (loading && categories.length === 0) {
-    //     return (
-    //         <View className="flex-1 justify-center items-center bg-gray-50">
-    //             <ActivityIndicator size="large" color="#6366F1" />
-    //             <Text className="text-gray-500 mt-4">Loading categories...</Text>
-    //         </View>
-    //     );
-    // }
 
 
   const handleCreateCategory = async () => {
@@ -75,38 +66,6 @@ export default function FavoritesScreen({ navigation }) {
         }
     }, [error, dispatch]);
 
-
-  // Sample data structure - categories with word counts
-  const sampleCategories = [
-    {
-      id: 1,
-      name: 'Default Category',
-      word_count: 12,
-      color: '#6366F1',
-      icon: 'bookmark'
-    },
-    {
-      id: 2,
-      name: 'Russian Verbs',
-      word_count: 8,
-      color: '#10B981',
-      icon: 'play'
-    },
-    {
-      id: 3,
-      name: 'Spanish Nouns',
-      word_count: 15,
-      color: '#F59E0B',
-      icon: 'cube'
-    },
-    {
-      id: 4,
-      name: 'French Phrases',
-      word_count: 5,
-      color: '#EF4444',
-      icon: 'chatbubbles'
-    }
-  ];
 
   const renderCategory = ({ item }) => (
     <TouchableOpacity

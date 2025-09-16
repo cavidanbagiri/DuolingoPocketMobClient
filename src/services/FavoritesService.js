@@ -54,11 +54,31 @@ class FavoritesService {
         async (_, thunkAPI) => {
             try {
                 const response = await $api.get('/words/favorites/categories');
+                console.log('coming response is ', response.data);
                 return response.data;
             } catch (error) {
                 const errorData = error.response?.data || { message: error.message };
                 const statusCode = error.response?.status || 500;
 
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
+        }
+    );
+
+    // services/FavoritesService.js
+    static getCategoryWords = createAsyncThunk(
+        'favorites/getCategoryWords',
+        async (categoryId, thunkAPI) => {
+            try {
+                const response = await $api.get(`/words/favorites/categories/${categoryId}/words`);
+                return response.data;
+            } catch (error) {
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
+                
                 return thunkAPI.rejectWithValue({
                     payload: errorData,
                     status: statusCode,

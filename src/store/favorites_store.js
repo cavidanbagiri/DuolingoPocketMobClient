@@ -7,7 +7,8 @@ const favoritesSlice = createSlice({
     initialState: {
         categories: [],
         loading: false,
-        error: null
+        error: null,
+
     },
     reducers: {
         clearError: (state) => {
@@ -23,6 +24,7 @@ const favoritesSlice = createSlice({
             })
             .addCase(FavoritesService.getUserCategories.fulfilled, (state, action) => {
                 state.loading = false;
+                console.log('coming action is ', action.payload);
                 state.categories = action.payload; // Replace with fetched categories
             })
             .addCase(FavoritesService.getUserCategories.rejected, (state, action) => {

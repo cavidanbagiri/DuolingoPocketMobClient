@@ -7,8 +7,8 @@ import TabNavigator from './TabNavigator';
 import CardDetailScreen from '../../screens/CardDetailScreen';
 import AIScreen from '../../screens/AIScreen';
 import SearchScreen from '../../screens/SearchScreen';
-import WordScreen from '../../screens/WordScreen';
 import FavoritesScreen from '../../screens/FavoritesScreen';
+import CategoryWords from '../../screens/CategoryWords';
 
 const Stack = createNativeStackNavigator();
 
@@ -35,6 +35,14 @@ export default function MainStack() {
         name="Favorites"
         component={FavoritesScreen}
         options={{ title: 'Search' }}
+      />
+      <Stack.Screen
+        name="CategoryWords"
+        component={CategoryWords}
+        options={({ route }) => ({ 
+          title: route.params.categoryName,
+          headerShown: false // We're using custom header
+        })}
       />
     </Stack.Navigator>
   );
