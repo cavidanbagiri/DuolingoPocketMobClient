@@ -3,7 +3,9 @@ Problems
 1 - Design profile Screen
 2 - Check after adding new categories, the notification coming or not
 3 - Add 3 dot button for working with favorites words. [Deleting, adding to another category, unfavorites from the list]
-
+4 - After deleting the words, the category size is always the same. this is a problem for us
+5 - Need to add adding_time for each word whihc is important for backend
+6 - After deleting the word, need to shoiw beautiful message
 
 Today Will Solve: 
 P-2

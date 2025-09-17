@@ -84,6 +84,24 @@ class FavoritesService {
         }
     );
 
+    static deleteFavoriteWord = createAsyncThunk(
+        'favorites/deleteFavoriteWord',
+        async (wordId, thunkAPI) => {
+            try {
+                const response = await $api.delete(`/words/favorites/words/${wordId}`);
+                return response.data;
+            } catch (error) {
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
+                
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
+        }
+    );
+
 
 }
 

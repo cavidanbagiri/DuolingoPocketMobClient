@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, ActivityIndicator, Alert } from 'react-native';
 import { Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -61,27 +61,21 @@ const BulkOperationsModal = ({ visible, onClose, selectedWord }) => (
     </Modal>
 );
 
-
-
 export default function CategoryWordsScreen({ navigation, route }) {
-
-
-    const [selectedWordId, setSelectedWordId] = useState(null); // Track which word's menu is open
-
-    const [showBulkModal, setShowBulkModal] = useState(false);
-    const { categoryId, categoryName } = route.params;
-
-    const [showWordActionMenu, setShowWordActionMenu] = useState(false);
 
     const insets = useSafeAreaInsets();
     const dispatch = useDispatch();
-
+    
     const { words, loading, error } = useSelector((state) => state.categoryWordsSlice);
 
+    const [selectedWordId, setSelectedWordId] = useState(null);
+    const [showBulkModal, setShowBulkModal] = useState(false);
+    const { categoryId, categoryName } = route.params;
+    const [deleteLoading, setDeleteLoading] = useState(false);
 
 
     const WordActionMenu = ({ word, onClose }) => (
-        <View className="absolute top-10 right-0 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+        <View className="bg-white rounded-lg shadow-lg border border-gray-200 ">
             <TouchableOpacity
                 className="flex-row items-center px-4 py-3 border-b border-gray-100"
                 onPress={() => {
@@ -94,7 +88,7 @@ export default function CategoryWordsScreen({ navigation, route }) {
                 <Text className="ml-3 text-gray-700">Move to other category</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
+            {/* <TouchableOpacity
                 className="flex-row items-center px-4 py-3"
                 onPress={() => {
                     console.log('Delete button clicked for:', word.original_text);
@@ -103,15 +97,32 @@ export default function CategoryWordsScreen({ navigation, route }) {
             >
                 <Ionicons name="trash-outline" size={20} color="#EF4444" />
                 <Text className="ml-3 text-red-600">Remove from favorites</Text>
+            </TouchableOpacity> */}
+             <TouchableOpacity
+                className="flex-row items-center px-4 py-3"
+                onPress={() => {
+                    handleDeleteWord(word);
+                    onClose();
+                }}
+                disabled={deleteLoading}
+            >
+                {deleteLoading ? (
+                    <ActivityIndicator size="small" color="#EF4444" />
+                ) : (
+                    <>
+                        <Ionicons name="trash-outline" size={20} color="#EF4444" />
+                        <Text className="ml-3 text-red-600">Remove from favorites</Text>
+                    </>
+                )}
             </TouchableOpacity>
         </View>
     );
 
-    const renderWordItem = ({ item }) => {
+    const renderWordItem = ({ item, index }) => {
         const isMenuOpen = selectedWordId === item.id;
-
+        
         return (
-            <View className="bg-white p-4 rounded-lg mb-2 shadow-sm border border-gray-100">
+            <View className="bg-white p-4 rounded-lg mb-2 shadow-sm border border-gray-100 relative" style={{ zIndex: isMenuOpen ? 100 : 1 }}>
                 <View className="flex-row justify-between items-start">
                     <View className="flex-1">
                         <Text className="text-gray-900 font-medium text-base">{item.original_text}</Text>
@@ -123,12 +134,12 @@ export default function CategoryWordsScreen({ navigation, route }) {
                             {item.from_lang}→{item.to_lang}
                         </Text>
 
-                        {/* 3-dot Menu Button for EACH WORD */}
                         <TouchableOpacity
                             onPress={() => {
                                 setSelectedWordId(isMenuOpen ? null : item.id);
                             }}
-                            className="p-1"
+                            className="p-1 z-10"
+                            disabled={deleteLoading}
                         >
                             <Ionicons name="ellipsis-vertical" size={16} color="#9CA3AF" />
                         </TouchableOpacity>
@@ -137,19 +148,48 @@ export default function CategoryWordsScreen({ navigation, route }) {
 
                 {/* Show menu only for this specific word */}
                 {isMenuOpen && (
-                    <WordActionMenu
-                        word={item}
-                        onClose={() => setSelectedWordId(null)}
-                    />
+                    <View className="absolute top-full right-0 z-50 mt-1">
+                        <WordActionMenu 
+                            word={item} 
+                            onClose={() => setSelectedWordId(null)}
+                        />
+                    </View>
                 )}
             </View>
         );
     };
 
+    const handleDeleteWord = async (word) => {
+        // Show confirmation alert
+        console.log('this function is work')
+        Alert.alert(
+            "Remove from Favorites",
+            `Are you sure you want to remove "${word.original_text}"?`,
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                { 
+                    text: "Remove", 
+                    style: "destructive",
+                    onPress: async () => {
+                        setDeleteLoading(true);
+                        try {
+                            await dispatch(FavoritesService.deleteFavoriteWord(word.id)).unwrap();
+                            // Show success message
+                            Alert.alert("Success", "Word removed from favorites");
+                        } catch (error) {
+                            Alert.alert("Error", "Failed to remove word");
+                        } finally {
+                            setDeleteLoading(false);
+                        }
+                    }
+                }
+            ]
+        );
+    };
 
-    useEffect(() => {
-        dispatch(FavoritesService.getCategoryWords(categoryId));
-    }, [dispatch, categoryId]);
 
     useEffect(() => {
         dispatch(FavoritesService.getCategoryWords(categoryId));
@@ -173,14 +213,6 @@ export default function CategoryWordsScreen({ navigation, route }) {
                     </View>
                 </View>
             </View>
-
-
-            {showWordActionMenu && (
-                <TouchableOpacity
-                    className="absolute inset-0 z-40"
-                    onPress={() => setShowWordActionMenu(false)}
-                />
-            )}
 
             {/* Content */}
             <FlatList
@@ -216,12 +248,12 @@ export default function CategoryWordsScreen({ navigation, route }) {
 
             {/* FAB */}
             <TouchableOpacity
-                className="absolute bottom-6 right-6 w-14 h-14 bg-indigo-600 rounded-full items-center justify-center shadow-lg"
+                className="absolute bottom-6 right-6 w-14 h-14 bg-indigo-600 rounded-full items-center justify-center shadow-lg z-50"
                 onPress={() => navigation.navigate('Translate')}
             >
                 <Ionicons name="add" size={24} color="#FFFFFF" />
             </TouchableOpacity>
+
         </View>
     );
 }
-
