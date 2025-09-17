@@ -40,11 +40,7 @@ const categoryWordsSlice = createSlice({
         })
 
         // Delete a word from a category
-        // .addCase(FavoritesService.deleteFavoriteWord.pending, (state) => {
-        //     state.loading = true;
-        // })
         .addCase(FavoritesService.deleteFavoriteWord.pending, (state, action) => {
-            console.log('action is ......................................', action);
             const wordId = action.meta.arg; // The word ID being deleted
             state.words = state.words.filter(word => word.id !== wordId);
             state.loading = true;
@@ -57,7 +53,24 @@ const categoryWordsSlice = createSlice({
         .addCase(FavoritesService.deleteFavoriteWord.rejected, (state, action) => {
             state.loading = false;
             state.error = action.payload?.payload?.detail || 'Failed to delete word';
+        })
+
+        // Move a word to a category
+        // Move Word to Category
+        .addCase(FavoritesService.moveWordToCategory.pending, (state) => {
+            state.loading = true;
+        })
+        .addCase(FavoritesService.moveWordToCategory.fulfilled, (state, action) => {
+            state.loading = false;
+            // Remove the moved word from current list
+            state.words = state.words.filter(word => word.id !== action.payload.word_id);
+        })
+        .addCase(FavoritesService.moveWordToCategory.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload?.payload?.detail || 'Failed to move word';
         });
+
+
   }
 });
 

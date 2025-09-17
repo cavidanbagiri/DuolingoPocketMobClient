@@ -65,6 +65,27 @@ class FavoritesService {
         }
     );
 
+    static moveWordToCategory = createAsyncThunk(
+    'favorites/moveWordToCategory',
+        async ({ wordId, targetCategoryId }, thunkAPI) => {
+            try {
+                const response = await $api.put(`/words/favorites/words/${wordId}/move`, {
+                    target_category_id: targetCategoryId
+                });
+                return response.data;
+            } catch (error) {
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
+                
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
+        }
+    );
+
+
     // services/FavoritesService.js
     static getCategoryWords = createAsyncThunk(
         'favorites/getCategoryWords',

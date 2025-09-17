@@ -10,56 +10,59 @@ import { clearCategoryWords } from '../store/category_words_store';
 
 
 
-const BulkOperationsModal = ({ visible, onClose, selectedWord }) => (
-    <Modal
-        visible={visible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={onClose}
-    >
-        <View className="flex-1 justify-center items-center bg-black/50">
-            <View className="bg-white rounded-2xl p-6 w-11/12 max-w-md">
-                <View className="flex-row items-center justify-between mb-4">
-                    <Text className="text-lg font-semibold text-gray-900">
-                        Move "{selectedWord?.original_text}"
-                    </Text>
-                    <TouchableOpacity onPress={onClose}>
-                        <Ionicons name="close" size={24} color="#6B7280" />
-                    </TouchableOpacity>
-                </View>
+// const BulkOperationsModal = ({ visible, onClose, selectedWord }) => (
+//     <Modal
+//         visible={visible}
+//         transparent={true}
+//         animationType="slide"
+//         onRequestClose={onClose}
+//     >
+//         <View className="flex-1 justify-center items-center bg-black/50">
+//             <View className="bg-white rounded-2xl p-6 w-11/12 max-w-md">
+//                 <View className="flex-row items-center justify-between mb-4">
+//                     <Text className="text-lg font-semibold text-gray-900">
+//                         Move "{selectedWord?.original_text}"
+//                     </Text>
+//                     <TouchableOpacity onPress={onClose}>
+//                         <Ionicons name="close" size={24} color="#6B7280" />
+//                     </TouchableOpacity>
+//                 </View>
 
-                <Text className="text-gray-600 mb-4">Select destination category:</Text>
+//                 <Text className="text-gray-600 mb-4">Select destination category:</Text>
 
-                <FlatList
-                    data={[
-                        { id: 1, name: 'Russian Verbs', icon: 'play', color: '#10B981' },
-                        { id: 2, name: 'Spanish Nouns', icon: 'cube', color: '#F59E0B' },
-                        { id: 3, name: 'French Phrases', icon: 'chatbubbles', color: '#EF4444' },
-                    ]}
-                    renderItem={({ item }) => (
-                        <TouchableOpacity
-                            className="flex-row items-center py-3 border-b border-gray-100"
-                            onPress={() => {
-                                console.log(`Moving word ${selectedWord?.id} to category ${item.id}`);
-                                onClose();
-                            }}
-                        >
-                            <View
-                                className="w-8 h-8 rounded-full items-center justify-center mr-3"
-                                style={{ backgroundColor: item.color + '20' }}
-                            >
-                                <Ionicons name={item.icon} size={16} color={item.color} />
-                            </View>
-                            <Text className="text-gray-900 flex-1">{item.name}</Text>
-                            <Ionicons name="chevron-forward" size={16} color="#9CA3AF" />
-                        </TouchableOpacity>
-                    )}
-                    keyExtractor={(item) => item.id.toString()}
-                />
-            </View>
-        </View>
-    </Modal>
-);
+//                 <FlatList
+//                     data={[
+//                         { id: 1, name: 'Russian Verbs', icon: 'play', color: '#10B981' },
+//                         { id: 2, name: 'Spanish Nouns', icon: 'cube', color: '#F59E0B' },
+//                         { id: 3, name: 'French Phrases', icon: 'chatbubbles', color: '#EF4444' },
+//                     ]}
+//                     renderItem={({ item }) => (
+//                         <TouchableOpacity
+//                             className="flex-row items-center py-3 border-b border-gray-100"
+//                             onPress={() => {
+//                                 console.log(`Moving word ${selectedWord?.id} to category ${item.id}`);
+//                                 onClose();
+//                             }}
+//                         >
+//                             <View
+//                                 className="w-8 h-8 rounded-full items-center justify-center mr-3"
+//                                 style={{ backgroundColor: item.color + '20' }}
+//                             >
+//                                 <Ionicons name={item.icon} size={16} color={item.color} />
+//                             </View>
+//                             <Text className="text-gray-900 flex-1">{item.name}</Text>
+//                             <Ionicons name="chevron-forward" size={16} color="#9CA3AF" />
+//                         </TouchableOpacity>
+//                     )}
+//                     keyExtractor={(item) => item.id.toString()}
+//                 />
+//             </View>
+//         </View>
+//     </Modal>
+// );
+
+
+
 
 export default function CategoryWordsScreen({ navigation, route }) {
 
@@ -67,16 +70,87 @@ export default function CategoryWordsScreen({ navigation, route }) {
     const dispatch = useDispatch();
     
     const { words, loading, error } = useSelector((state) => state.categoryWordsSlice);
+    const { categories } = useSelector((state) => state.favoritesSlice);
 
     const [selectedWordId, setSelectedWordId] = useState(null);
     const [showBulkModal, setShowBulkModal] = useState(false);
     const { categoryId, categoryName } = route.params;
     const [deleteLoading, setDeleteLoading] = useState(false);
+    const [moveLoading, setMoveLoading] = useState(false);
+
+
+     const BulkOperationsModal = ({ visible, onClose, selectedWord }) => {
+        if (!selectedWord) return null;
+
+        return (
+            <Modal
+                visible={visible}
+                transparent={true}
+                animationType="slide"
+                onRequestClose={onClose}
+            >
+                <View className="flex-1 justify-center items-center bg-black/50">
+                    <View className="bg-white rounded-2xl p-6 w-11/12 max-w-md">
+                        <View className="flex-row items-center justify-between mb-4">
+                            <Text className="text-lg font-semibold text-gray-900">
+                                Move "{selectedWord.original_text}"
+                            </Text>
+                            <TouchableOpacity onPress={onClose} disabled={moveLoading}>
+                                <Ionicons name="close" size={24} color="#6B7280" />
+                            </TouchableOpacity>
+                        </View>
+                        
+                        <Text className="text-gray-600 mb-4">Select destination category:</Text>
+
+                        {moveLoading ? (
+                            <View className="py-8 items-center">
+                                <ActivityIndicator size="large" color="#6366F1" />
+                                <Text className="text-gray-500 mt-4">Moving word...</Text>
+                            </View>
+                        ) : (
+                            <FlatList
+                                data={categories.filter(cat => cat.id !== route.params.categoryId)}
+                                renderItem={({ item }) => (
+                                    <TouchableOpacity
+                                        className="flex-row items-center py-4 border-b border-gray-100"
+                                        onPress={() => handleMoveWord(selectedWord.id, item.id)}
+                                        disabled={moveLoading}
+                                    >
+                                        <View 
+                                            className="w-10 h-10 rounded-full items-center justify-center mr-3"
+                                            style={{ backgroundColor: item.color + '20' }}
+                                        >
+                                            <Ionicons name={item.icon} size={18} color={item.color} />
+                                        </View>
+                                        <View className="flex-1">
+                                            <Text className="text-gray-900 font-medium">{item.name}</Text>
+                                            <Text className="text-gray-500 text-sm">
+                                                {item.word_count} words
+                                            </Text>
+                                        </View>
+                                        <Ionicons name="chevron-forward" size={16} color="#9CA3AF" />
+                                    </TouchableOpacity>
+                                )}
+                                keyExtractor={(item) => item.id.toString()}
+                                ItemSeparatorComponent={() => <View className="h-px bg-gray-100" />}
+                                ListEmptyComponent={
+                                    <View className="py-8 items-center">
+                                        <Ionicons name="folder-outline" size={32} color="#D1D5DB" />
+                                        <Text className="text-gray-400 mt-4">No other categories found</Text>
+                                    </View>
+                                }
+                            />
+                        )}
+                    </View>
+                </View>
+            </Modal>
+        );
+    };
 
 
     const WordActionMenu = ({ word, onClose }) => (
         <View className="bg-white rounded-lg shadow-lg border border-gray-200 ">
-            <TouchableOpacity
+            {/* <TouchableOpacity
                 className="flex-row items-center px-4 py-3 border-b border-gray-100"
                 onPress={() => {
                     console.log('Move button clicked for:', word.original_text);
@@ -86,18 +160,21 @@ export default function CategoryWordsScreen({ navigation, route }) {
             >
                 <Ionicons name="copy-outline" size={20} color="#4B5563" />
                 <Text className="ml-3 text-gray-700">Move to other category</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
-            {/* <TouchableOpacity
-                className="flex-row items-center px-4 py-3"
+            <TouchableOpacity
+                className="flex-row items-center px-4 py-3 border-b border-gray-100"
                 onPress={() => {
-                    console.log('Delete button clicked for:', word.original_text);
+                    setSelectedWordId(word.id);
+                    setShowBulkModal(true);
                     onClose();
                 }}
+                disabled={moveLoading}
             >
-                <Ionicons name="trash-outline" size={20} color="#EF4444" />
-                <Text className="ml-3 text-red-600">Remove from favorites</Text>
-            </TouchableOpacity> */}
+                <Ionicons name="copy-outline" size={20} color="#4B5563" />
+                <Text className="ml-3 text-gray-700">Move to other category</Text>
+            </TouchableOpacity>
+
              <TouchableOpacity
                 className="flex-row items-center px-4 py-3"
                 onPress={() => {
@@ -188,6 +265,23 @@ export default function CategoryWordsScreen({ navigation, route }) {
                 }
             ]
         );
+    };
+
+    const handleMoveWord = async (wordId, targetCategoryId) => {
+        setMoveLoading(true);
+        try {
+            await dispatch(FavoritesService.moveWordToCategory({
+                wordId,
+                targetCategoryId
+            })).unwrap();
+            
+            Alert.alert("Success", "Word moved to new category");
+            setShowBulkModal(false);
+        } catch (error) {
+            Alert.alert("Error", error || "Failed to move word");
+        } finally {
+            setMoveLoading(false);
+        }
     };
 
 
