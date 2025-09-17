@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
 import FavoritesService from '../services/FavoritesService';
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { clearCategoryWords } from '../store/category_words_store';
 
 
@@ -65,76 +65,91 @@ const BulkOperationsModal = ({ visible, onClose, selectedWord }) => (
 
 export default function CategoryWordsScreen({ navigation, route }) {
 
-    const [selectedWord, setSelectedWord] = useState(null);
-    const [showWordActionMenu, setShowWordActionMenu] = useState(false);
-    const [showBulkModal, setShowBulkModal] = useState(false);
 
+    const [selectedWordId, setSelectedWordId] = useState(null); // Track which word's menu is open
+
+    const [showBulkModal, setShowBulkModal] = useState(false);
     const { categoryId, categoryName } = route.params;
+
+    const [showWordActionMenu, setShowWordActionMenu] = useState(false);
+
     const insets = useSafeAreaInsets();
     const dispatch = useDispatch();
 
     const { words, loading, error } = useSelector((state) => state.categoryWordsSlice);
 
 
-const WordActionMenu = () => (
-    <View className="absolute top-12 right-4 bg-white rounded-lg shadow-lg border border-gray-200 z-50"> 
-      {/* z-50 ensures menu is above overlay */}
-      <TouchableOpacity
-        className="flex-row items-center px-4 py-3 border-b border-gray-100"
-        onPress={() => {
-          console.log('Move button clicked');
-          setShowBulkModal(true);
-          setShowWordActionMenu(false);
-        }}
-      >
-        <Ionicons name="copy-outline" size={20} color="#4B5563" />
-        <Text className="ml-3 text-gray-700">Move to other category</Text>
-      </TouchableOpacity>
 
-      <TouchableOpacity
-        className="flex-row items-center px-4 py-3"
-        onPress={() => {
-          console.log('Delete button clicked');
-          setShowWordActionMenu(false);
-        }}
-      >
-        <Ionicons name="trash-outline" size={20} color="#EF4444" />
-        <Text className="ml-3 text-red-600">Remove from favorites</Text>
-      </TouchableOpacity>
-    </View>
-  );    const renderWordItem = ({ item }) => (
-        <View className="bg-white p-4 rounded-lg mb-2 shadow-sm border border-gray-100">
-            <View className="flex-row justify-between items-start">
-                <View className="flex-1">
-                    <Text className="text-gray-900 font-medium text-base">{item.original_text}</Text>
-                    <Text className="text-gray-600 text-sm mt-1">{item.translated_text}</Text>
-                </View>
+    const WordActionMenu = ({ word, onClose }) => (
+        <View className="absolute top-10 right-0 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+            <TouchableOpacity
+                className="flex-row items-center px-4 py-3 border-b border-gray-100"
+                onPress={() => {
+                    console.log('Move button clicked for:', word.original_text);
+                    setShowBulkModal(true);
+                    onClose();
+                }}
+            >
+                <Ionicons name="copy-outline" size={20} color="#4B5563" />
+                <Text className="ml-3 text-gray-700">Move to other category</Text>
+            </TouchableOpacity>
 
-                <View className="flex-row items-center space-x-2">
-                    <Text className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">
-                        {item.from_lang}→{item.to_lang}
-                    </Text>
-
-                    {/* 3-dot Menu Button for EACH WORD */}
-                    <TouchableOpacity
-                        onPress={() => {
-                            setSelectedWord(item);
-                            setShowWordActionMenu(true);
-                        }}
-                        className="p-1"
-                    >
-                        <Ionicons name="ellipsis-vertical" size={16} color="#9CA3AF" />
-                    </TouchableOpacity>
-                </View>
-            </View>
-
-            {/* Show menu only for this specific word */}
-            {showWordActionMenu && selectedWord?.id === item.id && (
-                <WordActionMenu />
-            )}
+            <TouchableOpacity
+                className="flex-row items-center px-4 py-3"
+                onPress={() => {
+                    console.log('Delete button clicked for:', word.original_text);
+                    onClose();
+                }}
+            >
+                <Ionicons name="trash-outline" size={20} color="#EF4444" />
+                <Text className="ml-3 text-red-600">Remove from favorites</Text>
+            </TouchableOpacity>
         </View>
     );
 
+    const renderWordItem = ({ item }) => {
+        const isMenuOpen = selectedWordId === item.id;
+
+        return (
+            <View className="bg-white p-4 rounded-lg mb-2 shadow-sm border border-gray-100">
+                <View className="flex-row justify-between items-start">
+                    <View className="flex-1">
+                        <Text className="text-gray-900 font-medium text-base">{item.original_text}</Text>
+                        <Text className="text-gray-600 text-sm mt-1">{item.translated_text}</Text>
+                    </View>
+
+                    <View className="flex-row items-center space-x-2">
+                        <Text className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">
+                            {item.from_lang}→{item.to_lang}
+                        </Text>
+
+                        {/* 3-dot Menu Button for EACH WORD */}
+                        <TouchableOpacity
+                            onPress={() => {
+                                setSelectedWordId(isMenuOpen ? null : item.id);
+                            }}
+                            className="p-1"
+                        >
+                            <Ionicons name="ellipsis-vertical" size={16} color="#9CA3AF" />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                {/* Show menu only for this specific word */}
+                {isMenuOpen && (
+                    <WordActionMenu
+                        word={item}
+                        onClose={() => setSelectedWordId(null)}
+                    />
+                )}
+            </View>
+        );
+    };
+
+
+    useEffect(() => {
+        dispatch(FavoritesService.getCategoryWords(categoryId));
+    }, [dispatch, categoryId]);
 
     useEffect(() => {
         dispatch(FavoritesService.getCategoryWords(categoryId));
@@ -159,13 +174,13 @@ const WordActionMenu = () => (
                 </View>
             </View>
 
-           {/* Overlay - should be BELOW the menu in the code order */}
-      {showWordActionMenu && (
-        <TouchableOpacity 
-          className="absolute inset-0 z-40" 
-          onPress={() => setShowWordActionMenu(false)}
-        />
-      )}
+
+            {showWordActionMenu && (
+                <TouchableOpacity
+                    className="absolute inset-0 z-40"
+                    onPress={() => setShowWordActionMenu(false)}
+                />
+            )}
 
             {/* Content */}
             <FlatList
@@ -193,16 +208,10 @@ const WordActionMenu = () => (
                 }
             />
 
-             {/* Menu should be rendered AFTER overlay so it appears on top */}
-      {showWordActionMenu && selectedWord && (
-        <WordActionMenu />
-      )}
-
-            {/* Bulk Operations Modal (for moving words) */}
             <BulkOperationsModal
                 visible={showBulkModal}
                 onClose={() => setShowBulkModal(false)}
-                selectedWord={selectedWord}
+                selectedWord={words.find(word => word.id === selectedWordId)}
             />
 
             {/* FAB */}

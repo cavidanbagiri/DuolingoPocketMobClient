@@ -25,7 +25,6 @@ const categoryWordsSlice = createSlice({
       })
       .addCase(FavoritesService.getCategoryWords.fulfilled, (state, action) => {
         state.loading = false;
-        console.log('coming response is {}', action.payload);
         state.currentCategory = {
           id: action.payload.category_id,
           name: action.payload.category_name

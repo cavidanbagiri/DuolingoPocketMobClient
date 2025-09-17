@@ -10,10 +10,8 @@ class FavoritesService {
     static addFavorites = createAsyncThunk(
         '/words/add_favorites',
         async (data, thunkAPI) => {
-            console.log('coming data is ', data);
             try {
                 const response = await $api.post('/words/add_favorites', data);
-                console.log('coming  response is ', response.data);
                 return response.data;
             } catch (error) {
                 // Extract error details
@@ -54,7 +52,6 @@ class FavoritesService {
         async (_, thunkAPI) => {
             try {
                 const response = await $api.get('/words/favorites/categories');
-                console.log('coming response is ', response.data);
                 return response.data;
             } catch (error) {
                 const errorData = error.response?.data || { message: error.message };
