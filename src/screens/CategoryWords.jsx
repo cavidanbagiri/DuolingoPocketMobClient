@@ -7,6 +7,7 @@ import FavoritesService from '../services/FavoritesService';
 import { use, useEffect, useState } from 'react';
 import { clearCategoryWords } from '../store/category_words_store';
 import { updateCategoryCounts } from '../store/favorites_store';
+import { extractErrorMessage } from '../utils/errorHandler';
 
 
 
@@ -70,14 +71,16 @@ export default function CategoryWordsScreen({ navigation, route }) {
     const insets = useSafeAreaInsets();
     const dispatch = useDispatch();
     
-    const { words, loading, error } = useSelector((state) => state.categoryWordsSlice);
+    const { words, loading } = useSelector((state) => state.categoryWordsSlice);
     const { categories } = useSelector((state) => state.favoritesSlice);
+    const { error } = useSelector((state) => state.categoryWordsSlice);
 
     const [selectedWordId, setSelectedWordId] = useState(null);
     const [showBulkModal, setShowBulkModal] = useState(false);
     const { categoryId, categoryName } = route.params;
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [moveLoading, setMoveLoading] = useState(false);
+    const [showCategoryMenu, setShowCategoryMenu] = useState(false);
 
 
      const BulkOperationsModal = ({ visible, onClose, selectedWord }) => {
@@ -281,6 +284,53 @@ export default function CategoryWordsScreen({ navigation, route }) {
         }
     };
 
+    // Add Category Delete Menu to Header
+    const CategoryActionMenu = () => (
+        <View className="absolute top-12 right-4 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+            <TouchableOpacity
+                className="flex-row items-center px-4 py-3"
+                onPress={handleDeleteCategory}
+            >
+                <Ionicons name="trash-outline" size={20} color="#EF4444" />
+                <Text className="ml-3 text-red-600">Delete Category</Text>
+            </TouchableOpacity>
+        </View>
+    );
+
+    // Delete Category Handler
+    const handleDeleteCategory = async () => {
+        Alert.alert(
+            "Delete Category",
+            `Are you sure you want to delete "${categoryName}"? `,
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                { 
+                    text: "Delete", 
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            await dispatch(FavoritesService.deleteCategory(categoryId)).unwrap();
+                            
+                            Alert.alert(
+                                "Success", 
+                                `Category Successfully Deleted.`
+                            );
+                            
+                            // Navigate back to categories screen
+                            navigation.goBack();
+                        } catch (error) {
+                            const errorMessage = extractErrorMessage(error);
+                            Alert.alert("Error", errorMessage);
+                        }
+                    }
+                }
+            ]
+        );
+    };
+
 
     useEffect(() => {
         dispatch(FavoritesService.getCategoryWords(categoryId));
@@ -303,7 +353,22 @@ export default function CategoryWordsScreen({ navigation, route }) {
                         </Text>
                     </View>
                 </View>
+                {/* Category Main Actions Button */}
+                <TouchableOpacity 
+                    onPress={() => setShowCategoryMenu(!showCategoryMenu)}
+                    className="p-2"
+                >
+                    <Ionicons name="ellipsis-vertical" size={20} color="#6B7280" />
+                </TouchableOpacity>
             </View>
+            {/* Category Main Action Menu */}
+            {showCategoryMenu && <CategoryActionMenu />}
+            {showCategoryMenu && (
+                <TouchableOpacity 
+                    className="absolute inset-0 z-40"
+                    onPress={() => setShowCategoryMenu(false)}
+                />
+            )}
 
             {/* Content */}
             <FlatList

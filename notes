@@ -1,15 +1,11 @@
 
 Problems
 1 - Design profile Screen
-2 - Check after adding new categories, the notification coming or not
-3 - Add 3 dot button for working with favorites words. [Deleting, adding to another category, unfavorites from the list]
-4 - After deleting the words, the category size is always the same. this is a problem for us
-5 - Need to add adding_time for each word whihc is important for backend
-6 - After deleting the word, need to shoiw beautiful message
-7 - If the word is available in other categories, the message must be shown the messages to the user that the word is available in other categories
-8 - Need to add functionality for deleting the entire category
-9 - Add each page to the word screen or learned screen. learned screen orderby will be the date
-10 - 
+2 - Need to add adding_time for each word whihc is important for backend
+3 - After deleting the word, need to shoiw beautiful message
+4 - If the word is available in other categories, the message must be shown the messages to the user that the word is available in other categories
+5 - Add each page to the word screen or learned screen. learned screen orderby will be the date
+6 - After clicking 3 dots button, the model not opens directly. Need to fix it. This happened after adding modal to inside of the function
 
 Today Will Solve: 
 P-2
@@ -17,6 +13,7 @@ P-2
 
 Next Ideas:
 1 - Return from yandex Cloud to Alibaba cloud
+2 - Changing categories words size after adding or deleting, the size must be update the backend 
 
 
 

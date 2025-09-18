@@ -123,6 +123,24 @@ class FavoritesService {
         }
     );
 
+    static deleteCategory = createAsyncThunk(
+        'favorites/deleteCategory',
+        async (categoryId, thunkAPI) => {
+            try {
+                const response = await $api.delete(`/words/favorites/categories/delete/${categoryId}`);
+                return response.data;
+            } catch (error) {
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
+                
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
+        }
+    );
+
 
 }
 

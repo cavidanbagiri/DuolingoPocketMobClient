@@ -33,6 +33,7 @@ const favoritesSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+
             // Get User Categories
             .addCase(FavoritesService.getUserCategories.pending, (state) => {
                 state.loading = true;
@@ -61,7 +62,34 @@ const favoritesSlice = createSlice({
             .addCase(FavoritesService.createNewCategory.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload?.payload?.detail || 'Failed to create category';
+            })
+
+            // Delete Category
+            // Delete Category
+            .addCase(FavoritesService.deleteCategory.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(FavoritesService.deleteCategory.fulfilled, (state, action) => {
+                console.log('fullfilled word is .................', action.payload);
+                state.loading = false;
+                const { deleted_category_id, default_category_id, moved_words_count } = action.payload;
+                
+                // Remove the deleted category
+                state.categories = state.categories.filter(cat => cat.id !== deleted_category_id);
+                
+                // Update default category word count
+                state.categories = state.categories.map(cat => 
+                    cat.id === default_category_id 
+                    ? { ...cat, word_count: cat.word_count + moved_words_count }
+                    : cat
+                );
+            })
+            .addCase(FavoritesService.deleteCategory.rejected, (state, action) => {
+                console.log('error work1................ is ', action.payload);
+                state.loading = false;
+                state.error = action.payload?.payload?.detail || 'Failed to delete category';
             });
+
     }
 });
 
