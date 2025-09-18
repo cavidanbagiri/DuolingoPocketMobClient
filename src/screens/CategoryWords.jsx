@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import FavoritesService from '../services/FavoritesService';
 import { use, useEffect, useState } from 'react';
 import { clearCategoryWords } from '../store/category_words_store';
+import { updateCategoryCounts } from '../store/favorites_store';
 
 
 
@@ -113,7 +114,7 @@ export default function CategoryWordsScreen({ navigation, route }) {
                                 renderItem={({ item }) => (
                                     <TouchableOpacity
                                         className="flex-row items-center py-4 border-b border-gray-100"
-                                        onPress={() => handleMoveWord(selectedWord.id, item.id)}
+                                        onPress={async () => {handleMoveWord(selectedWord.id, item.id);}}
                                         disabled={moveLoading}
                                     >
                                         <View 
@@ -150,17 +151,7 @@ export default function CategoryWordsScreen({ navigation, route }) {
 
     const WordActionMenu = ({ word, onClose }) => (
         <View className="bg-white rounded-lg shadow-lg border border-gray-200 ">
-            {/* <TouchableOpacity
-                className="flex-row items-center px-4 py-3 border-b border-gray-100"
-                onPress={() => {
-                    console.log('Move button clicked for:', word.original_text);
-                    setShowBulkModal(true);
-                    onClose();
-                }}
-            >
-                <Ionicons name="copy-outline" size={20} color="#4B5563" />
-                <Text className="ml-3 text-gray-700">Move to other category</Text>
-            </TouchableOpacity> */}
+           
 
             <TouchableOpacity
                 className="flex-row items-center px-4 py-3 border-b border-gray-100"
@@ -270,11 +261,17 @@ export default function CategoryWordsScreen({ navigation, route }) {
     const handleMoveWord = async (wordId, targetCategoryId) => {
         setMoveLoading(true);
         try {
-            await dispatch(FavoritesService.moveWordToCategory({
+            const result = await dispatch(FavoritesService.moveWordToCategory({
                 wordId,
                 targetCategoryId
             })).unwrap();
             
+            // 2. Update category counts in favorites slice
+            dispatch(updateCategoryCounts({
+              oldCategoryId: result.old_category_id,
+              newCategoryId: result.new_category_id
+            }));
+
             Alert.alert("Success", "Word moved to new category");
             setShowBulkModal(false);
         } catch (error) {

@@ -13,7 +13,23 @@ const favoritesSlice = createSlice({
     reducers: {
         clearError: (state) => {
             state.error = null;
+        },
+
+        updateCategoryCounts: (state, action) => {
+       
+            const { oldCategoryId, newCategoryId } = action.payload;
+            state.categories = state.categories.map(cat => {
+                if (cat.id === oldCategoryId) {
+                    return { ...cat, word_count: Math.max(0, cat.word_count - 1) };
+                }
+                if (cat.id === newCategoryId) {
+                    return { ...cat, word_count: cat.word_count + 1 };
+                }
+                return cat;
+            });
+
         }
+
     },
     extraReducers: (builder) => {
         builder
@@ -49,5 +65,5 @@ const favoritesSlice = createSlice({
     }
 });
 
-export const { clearError } = favoritesSlice.actions;
+export const { clearError, updateCategoryCounts } = favoritesSlice.actions;
 export default favoritesSlice.reducer;
