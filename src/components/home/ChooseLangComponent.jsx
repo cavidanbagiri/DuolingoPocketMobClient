@@ -28,7 +28,6 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
 
   // Load native language from SecureStore
   useEffect(() => {
-    console.log('first use effect is working')
     const getNativeLang = async () => {
       try{
         const native = await SecureStore.getItemAsync('native');
@@ -57,7 +56,6 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
     );
 
     setFilteredLanguages(filtered);
-    console.log('filtered language is ', filteredLanguages)
   }, [isLoading, selectedLangCodes, nativeLangName]);
 
   // 🔁 Don't render grid until loading is done

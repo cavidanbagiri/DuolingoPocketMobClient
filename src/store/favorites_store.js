@@ -41,7 +41,6 @@ const favoritesSlice = createSlice({
             })
             .addCase(FavoritesService.getUserCategories.fulfilled, (state, action) => {
                 state.loading = false;
-                console.log('coming action is ', action.payload);
                 state.categories = action.payload; // Replace with fetched categories
             })
             .addCase(FavoritesService.getUserCategories.rejected, (state, action) => {
@@ -70,7 +69,6 @@ const favoritesSlice = createSlice({
                 state.loading = true;
             })
             .addCase(FavoritesService.deleteCategory.fulfilled, (state, action) => {
-                console.log('fullfilled word is .................', action.payload);
                 state.loading = false;
                 const { deleted_category_id, default_category_id, moved_words_count } = action.payload;
                 
@@ -85,7 +83,6 @@ const favoritesSlice = createSlice({
                 );
             })
             .addCase(FavoritesService.deleteCategory.rejected, (state, action) => {
-                console.log('error work1................ is ', action.payload);
                 state.loading = false;
                 state.error = action.payload?.payload?.detail || 'Failed to delete category';
             });

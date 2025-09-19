@@ -29,7 +29,6 @@ export default function AIComponent() {
       // Memoized function to generate and send payload
       const generatePayload = useCallback(() => {
         if (!currentWord || !nativeLang) {
-          console.log('Cannot generate payload: missing word or native language');
           return null;
         }
     
@@ -38,11 +37,8 @@ export default function AIComponent() {
         if (!target_language) {
           target_language = TRANSLATE_LANGUAGES_LIST[currentWord.language_code];
         }
-        console.log('current word is ', currentWord);
-        console.log('target language is ', target_language);
     
         if (!target_language) {
-          console.error('Target language not found for code:', currentWord.language_code);
           return null;
         }
     
@@ -87,11 +83,8 @@ export default function AIComponent() {
       useFocusEffect(
         useCallback(() => {
           if (currentWord && nativeLang) {
-            console.log('useFocusEffect triggered - Word:', currentWord.text, 'Native lang:', nativeLang);
     
             if (currentWord.id !== previousWordId) {
-              console.log('Word changed to:', currentWord.text);
-    
               setPreviousWordId(currentWord.id);
               setActiveTab('overview');
               setRefreshing(false);
@@ -107,17 +100,16 @@ export default function AIComponent() {
               dispatch(clearAIResponse());
               generatePayload();
             } else {
-              console.log('Same word, no action needed');
+              // console.log('Same word, no action needed');
             }
           } else {
-            console.log('Waiting for currentWord or nativeLangCode...');
+            // console.log('Waiting for currentWord or nativeLangCode...');
           }
         }, [currentWord, previousWordId, cache, dispatch, nativeLang, generatePayload])
       );
     
     
       const onRefresh = useCallback(() => {
-        console.log('Manual refresh triggered');
         setRefreshing(true);
     
         // Clear cache for this word and force new API call
