@@ -8,17 +8,11 @@ import { useEffect, useState, useRef } from 'react';
 import { clearCategoryWords } from '../store/category_words_store';
 import { updateCategoryCounts } from '../store/favorites_store';
 import { extractErrorMessage } from '../utils/errorHandler';
+import Notification from '../components/ai/Notification';
 
 const BulkOperationsModal = ({ visible, onClose, selectedWord, categories, categoryId, moveLoading, handleMoveWord }) => {
 
-    console.log('Modal rendered with selectedWord:', selectedWord);
-    console.log('Modal visible:', visible);
     
-    if (!selectedWord) {
-        console.log('No selected word, returning null');
-        return null;
-    }
-
     if (!selectedWord) return null;
 
     return (
@@ -105,6 +99,22 @@ export default function CategoryWordsScreen({ navigation, route }) {
     // Use ref to track the selected word for the modal
     const selectedWordRef = useRef(null);
 
+    // New Added
+    const [notification, setNotification] = useState({
+        visible: false,
+        message: '',
+        type: 'success', // 'success', 'error', 'info'
+    });
+
+    const showNotification = (message, type = 'success') => {
+        setNotification({ visible: true, message, type });
+    };
+
+    const hideNotification = () => {
+        setNotification({ ...notification, visible: false });
+    };
+
+
 
     const WordActionMenu = ({ word, onClose }) => (
         <View className="bg-white rounded-lg shadow-lg border border-gray-200 ">
@@ -189,47 +199,6 @@ export default function CategoryWordsScreen({ navigation, route }) {
         );
     };
 
-    // const renderWordItem = ({ item, index }) => {
-    //     const isMenuOpen = selectedWordId === item.id;
-
-    //     return (
-    //         <View className="bg-white p-4 rounded-lg mb-2 shadow-sm border border-gray-100 relative" style={{ zIndex: isMenuOpen ? 100 : 1 }}>
-    //             <View className="flex-row justify-between items-start">
-    //                 <View className="flex-1">
-    //                     <Text className="text-gray-900 font-medium text-base">{item.original_text}</Text>
-    //                     <Text className="text-gray-600 text-sm mt-1">{item.translated_text}</Text>
-    //                 </View>
-
-    //                 <View className="flex-row items-center space-x-2">
-    //                     <Text className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">
-    //                         {item.from_lang}→{item.to_lang}
-    //                     </Text>
-
-    //                     <TouchableOpacity
-    //                         onPress={() => {
-    //                             setSelectedWordId(isMenuOpen ? null : item.id);
-    //                         }}
-    //                         className="p-1 z-10"
-    //                         disabled={deleteLoading}
-    //                     >
-    //                         <Ionicons name="ellipsis-vertical" size={16} color="#9CA3AF" />
-    //                     </TouchableOpacity>
-    //                 </View>
-    //             </View>
-
-    //             {/* Show menu only for this specific word */}
-    //             {isMenuOpen && (
-    //                 <View className="absolute top-full right-0 z-50 mt-1">
-    //                     <WordActionMenu
-    //                         word={item}
-    //                         onClose={() => setSelectedWordId(null)}
-    //                     />
-    //                 </View>
-    //             )}
-    //         </View>
-    //     );
-    // };
-
     const handleDeleteWord = async (word) => {
         // Show confirmation alert
         console.log('this function is work')
@@ -249,9 +218,11 @@ export default function CategoryWordsScreen({ navigation, route }) {
                         try {
                             await dispatch(FavoritesService.deleteFavoriteWord(word.id)).unwrap();
                             // Show success message
-                            Alert.alert("Success", "Word removed from favorites");
+                            // Alert.alert("Success", "Word removed from favorites");
+                            showNotification('Word removed from favorites', 'success');
                         } catch (error) {
-                            Alert.alert("Error", "Failed to remove word");
+                            // Alert.alert("Error", "Failed to remove word");
+                            showNotification('Failed to remove word', 'error');
                         } finally {
                             setDeleteLoading(false);
                         }
@@ -275,10 +246,12 @@ export default function CategoryWordsScreen({ navigation, route }) {
                 newCategoryId: result.new_category_id
             }));
 
-            Alert.alert("Success", "Word moved to new category");
+            // Alert.alert("Success", "Word moved to new category");
+             showNotification('Word moved to new category', 'success');
             setShowBulkModal(false);
         } catch (error) {
-            Alert.alert("Error", error || "Failed to move word");
+            showNotification(error || 'Failed to move word', 'error');
+            // Alert.alert("Error", error || "Failed to move word");
         } finally {
             setMoveLoading(false);
         }
@@ -338,6 +311,14 @@ export default function CategoryWordsScreen({ navigation, route }) {
 
     return (
         <View className="flex-1 bg-gray-50" style={{ paddingTop: insets.top }}>
+
+            <Notification
+              visible={notification.visible}
+              message={notification.message}
+              type={notification.type}
+              onHide={hideNotification}
+            />
+
             {/* Header */}
             <View className="flex-row items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
                 <View className="flex-row items-center flex-1">
@@ -398,12 +379,10 @@ export default function CategoryWordsScreen({ navigation, route }) {
 
             <BulkOperationsModal
                 visible={showBulkModal}
-                // onClose={() => setShowBulkModal(false)}
                 onClose={() => {
                     setShowBulkModal(false);
                     selectedWordRef.current = null; // Clear the ref when modal closes
                 }}
-                // selectedWord={words.find(word => word.id === selectedWordId)}
                 selectedWord={selectedWordRef.current}
                 categories={categories}
                 categoryId={categoryId}
