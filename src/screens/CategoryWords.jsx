@@ -161,12 +161,24 @@ export default function CategoryWordsScreen({ navigation, route }) {
     const renderWordItem = ({ item, index }) => {
         const isMenuOpen = selectedWordId === item.id;
         
+        // Format the date nicely
+        const formatDate = (dateString) => {
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        };
+
         return (
             <View className="bg-white p-4 rounded-lg mb-2 shadow-sm border border-gray-100 relative" style={{ zIndex: isMenuOpen ? 100 : 1 }}>
                 <View className="flex-row justify-between items-start">
                     <View className="flex-1">
                         <Text className="text-gray-900 font-medium text-base">{item.original_text}</Text>
                         <Text className="text-gray-600 text-sm mt-1">{item.translated_text}</Text>
+                        {/* Added timestamp */}
+                        {item?.added_at && (
+                            <Text className="text-gray-400 text-xs mt-2">
+                                Added: {formatDate(item?.added_at)}
+                            </Text>
+                        )}
                     </View>
 
                     <View className="flex-row items-center space-x-2">
