@@ -25,7 +25,7 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
 
     const dispatch = useDispatch();
 
-    const { translatedText, loading, error } = useSelector((state) => state.translateSlice);
+    const { translatedText, loading, error, payload } = useSelector((state) => state.translateSlice);
     const { selectedLanguage } = useSelector((state) => state.wordSlice);
 
     // State will be managed here
@@ -65,6 +65,14 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
             return () => clearTimeout(timer);
         }
     }, [fromLang, toLang, dispatch, inputText]); // ← Add inputText to dependencies
+
+    useEffect(() => {
+        if (payload.text && payload.from_lang && payload.to_lang) {
+            setInputText(payload.text);
+            setFromLang(payload.from_lang);
+            setToLang(payload.to_lang);
+        }
+    }, [payload]);
 
 
     const handleSaveToFavorites = () => {

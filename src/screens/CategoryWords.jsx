@@ -12,6 +12,8 @@ import { setCurrentWord } from '../store/ai_store';
 import { useNavigation } from '@react-navigation/native';
 import Notification from '../components/ai/Notification';
 import TRANSLATE_LANGUAGES_LIST from '../constants/TranslateLanguagesList';
+import TranslateService from '../services/TranslateService';
+import { setPayload, clearPayload } from '../store/translate_store';
 
 const BulkOperationsModal = ({ visible, onClose, selectedWord, categories, categoryId, moveLoading, handleMoveWord }) => {
 
@@ -119,29 +121,7 @@ export default function CategoryWordsScreen({ navigation, route }) {
         setNotification({ ...notification, visible: false });
     };
 
-    const generateAIWord = async (item) => {
-        let to_language = ''
-                let native_language = '';
-
-                for (const [keys, value] of Object.entries(TRANSLATE_LANGUAGES_LIST)) {
-                if (value === item.to_lang) {
-                        to_language = keys;
-                    }
-                    if (value === item.from_lang) {
-                        native_language = keys;
-                    }
-                }
-
-                const payload = {
-                    text: item.translated_text,
-                    language_code: to_language,
-                    native: native_language,
-                }
-                dispatch(setCurrentWord(payload))
-                navigate.navigate('AIScreen', {
-                    initialQuery: item.translated_text
-                });
-    }
+   
 
     const WordActionMenu = ({ word, onClose }) => (
         <View className="bg-white rounded-lg shadow-lg border border-gray-200 ">
@@ -150,11 +130,24 @@ export default function CategoryWordsScreen({ navigation, route }) {
                 className="flex-row items-center px-4 py-3 border-b border-gray-100"
                 onPress={() => {
                     generateAIWord(word);
+                    onClose();
                 }}
                 disabled={moveLoading}
             >
                 <Ionicons name="sparkles-outline" size={20} color="#4B5563" />
                 <Text className="ml-3 text-gray-700">Generate AI</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+                className="flex-row items-center px-4 py-3 border-b border-gray-100"
+                onPress={() => {
+                    TranslateWord(word);
+                    onClose();
+                }}
+                disabled={moveLoading}
+            >
+                <Ionicons name="language-outline" size={20} color="#4B5563" />
+                <Text className="ml-3 text-gray-700">Go To Translate</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -351,6 +344,55 @@ export default function CategoryWordsScreen({ navigation, route }) {
             ]
         );
     };
+
+    const generateAIWord = async (item) => {
+        let to_language = ''
+                let native_language = '';
+
+                for (const [keys, value] of Object.entries(TRANSLATE_LANGUAGES_LIST)) {
+                if (value === item.to_lang) {
+                        to_language = keys;
+                    }
+                    if (value === item.from_lang) {
+                        native_language = keys;
+                    }
+                }
+
+                const payload = {
+                    text: item.translated_text,
+                    language_code: to_language,
+                    native: native_language,
+                }
+                dispatch(setCurrentWord(payload))
+                navigate.navigate('AIScreen', {
+                    initialQuery: item.translated_text
+                });
+    }
+
+    const TranslateWord = async (item) => {
+        let to_language = ''
+        let native_language = ''
+        for (const [keys, value] of Object.entries(TRANSLATE_LANGUAGES_LIST)) {
+        if (value === item.to_lang) {
+                to_language = keys;
+            }
+            if (value === item.from_lang) {
+                native_language = keys;
+            }
+        }
+        
+        const payload = {
+            text: item.original_text,
+            from_lang: native_language,
+            to_lang: to_language,
+        }
+        dispatch(setPayload(payload))
+        // dispatch(TranslateService.translateText(payload));
+        navigate.navigate('AIScreen', {
+            initialQuery: item.translated_text,
+            initialTab: 1
+        });
+    }
 
 
     useEffect(() => {

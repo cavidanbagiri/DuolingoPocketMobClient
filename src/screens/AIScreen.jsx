@@ -8,9 +8,12 @@ import { KeyboardAvoidingView, Platform, SafeAreaView } from 'react-native';
 
 const Tab = createMaterialTopTabNavigator();
 
-export default function AIScreen() {
+export default function AIScreen({route}) {
 
   const insets = useSafeAreaInsets();
+
+  const [initialTab] = useState(route.params?.initialTab || 0);
+  console.log('initial tab is ', initialTab)
 
 
   return (
@@ -24,6 +27,7 @@ export default function AIScreen() {
 
         {/* Customized Material Top Tabs */}
         <Tab.Navigator
+          initialRouteName = {initialTab === 1 ? 'Translate' : 'AI Chat'} // Set initial tab based on param
           screenOptions={{
             // 🔽 Tab Bar Style
             tabBarStyle: {

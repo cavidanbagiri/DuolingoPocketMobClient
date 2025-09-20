@@ -14,6 +14,12 @@ const initialState = {
     loading: false,
     error: null,
 
+    payload:{
+        text: '',
+        from_lang: '',
+        to_lang: '',
+    }
+
 };
 
 export const translateSlice = createSlice({
@@ -23,6 +29,17 @@ export const translateSlice = createSlice({
        clearTranslatedText: (state) => {
             state.translatedText = '';
         },
+        setPayload: (state, action) => {
+            state.payload = action.payload;
+        },
+        clearPayload: (state) => {
+            state.payload = {
+                text: '',
+                from_lang: '',
+                to_lang: '',
+            }
+        }
+
     },
     extraReducers: (builder) => {
 
@@ -42,6 +59,6 @@ export const translateSlice = createSlice({
     },
 });
 
-export const { clearTranslatedText } = translateSlice.actions;
+export const { clearTranslatedText, setPayload, clearPayload } = translateSlice.actions;
 
 export default translateSlice.reducer;
