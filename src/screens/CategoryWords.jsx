@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, FlatList, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, ActivityIndicator, Alert, Pressable } from 'react-native';
 import { Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -8,7 +8,10 @@ import { useEffect, useState, useRef } from 'react';
 import { clearCategoryWords } from '../store/category_words_store';
 import { updateCategoryCounts } from '../store/favorites_store';
 import { extractErrorMessage } from '../utils/errorHandler';
+import { setCurrentWord } from '../store/ai_store';
+import { useNavigation } from '@react-navigation/native';
 import Notification from '../components/ai/Notification';
+import TRANSLATE_LANGUAGES_LIST from '../constants/TranslateLanguagesList';
 
 const BulkOperationsModal = ({ visible, onClose, selectedWord, categories, categoryId, moveLoading, handleMoveWord }) => {
 
@@ -83,7 +86,9 @@ const BulkOperationsModal = ({ visible, onClose, selectedWord, categories, categ
 
 export default function CategoryWordsScreen({ navigation, route }) {
 
+    
     const insets = useSafeAreaInsets();
+    const navigate = useNavigation();
     const dispatch = useDispatch();
 
     const { words, loading } = useSelector((state) => state.categoryWordsSlice);
@@ -114,7 +119,29 @@ export default function CategoryWordsScreen({ navigation, route }) {
         setNotification({ ...notification, visible: false });
     };
 
+    const generateAIWord = async (item) => {
+        let to_language = ''
+                let native_language = '';
 
+                for (const [keys, value] of Object.entries(TRANSLATE_LANGUAGES_LIST)) {
+                if (value === item.to_lang) {
+                        to_language = keys;
+                    }
+                    if (value === item.from_lang) {
+                        native_language = keys;
+                    }
+                }
+
+                const payload = {
+                    text: item.translated_text,
+                    language_code: to_language,
+                    native: native_language,
+                }
+                dispatch(setCurrentWord(payload))
+                navigate.navigate('AIScreen', {
+                    initialQuery: item.translated_text
+                });
+    }
 
     const WordActionMenu = ({ word, onClose }) => (
         <View className="bg-white rounded-lg shadow-lg border border-gray-200 ">
@@ -168,7 +195,11 @@ export default function CategoryWordsScreen({ navigation, route }) {
         };
 
         return (
-            <View className="bg-white p-4 rounded-lg mb-2 shadow-sm border border-gray-100 relative" style={{ zIndex: isMenuOpen ? 100 : 1 }}>
+            <Pressable 
+            onPress={() => {
+                generateAIWord(item);
+            }}
+            className="bg-red-400 p-4 rounded-lg mb-2 shadow-sm border border-gray-100 relative" style={{ zIndex: isMenuOpen ? 100 : 1 }}>
                 <View className="flex-row justify-between items-start">
                     <View className="flex-1">
                         <Text className="text-gray-900 font-medium text-base">{item.original_text}</Text>
@@ -207,7 +238,7 @@ export default function CategoryWordsScreen({ navigation, route }) {
                         />
                     </View>
                 )}
-            </View>
+            </Pressable>
         );
     };
 

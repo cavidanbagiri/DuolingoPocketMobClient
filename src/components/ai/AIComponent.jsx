@@ -31,24 +31,24 @@ export default function AIComponent() {
         if (!currentWord || !nativeLang) {
           return null;
         }
-    
+        
         let target_language = LANGUAGES.find(lang => lang.code === currentWord.language_code)?.name;
-
+        
         if (!target_language) {
           target_language = TRANSLATE_LANGUAGES_LIST[currentWord.language_code];
         }
-    
+        
         if (!target_language) {
           return null;
         }
-    
-    
+        
+        
         const payload = {
           text: currentWord.text,
           language: target_language,
           native: nativeLang,
         };
-    
+        
         dispatch(AIService.generateAIWord(payload));
         return payload;
       }, [currentWord, nativeLang, dispatch]);
