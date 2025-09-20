@@ -141,6 +141,27 @@ class FavoritesService {
         }
     );
 
+    static searchFavorites = createAsyncThunk(
+        'favorites/searchFavorites',
+        async ({ query, categoryId = null }, thunkAPI) => {
+            try {
+                const params = { query };
+                if (categoryId) {
+                    params.category_id = categoryId;
+                }
+                
+                const response = await $api.get('words/favorites/search', { params });
+                return response.data;
+            } catch (error) {
+                const errorData = error.response?.data || { message: error.message };
+                return thunkAPI.rejectWithValue(errorData.detail || errorData);
+            }
+        }
+    );
+
+
+    
+
 
 }
 

@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, FlatList, ActivityIndicator, Alert, Pressable } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, ActivityIndicator, Alert, Pressable, TextInput } from 'react-native';
 import { Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -93,15 +93,44 @@ export default function CategoryWordsScreen({ navigation, route }) {
     const navigate = useNavigation();
     const dispatch = useDispatch();
 
+    const { categoryId, categoryName } = route.params;
+
     const { words, loading } = useSelector((state) => state.categoryWordsSlice);
-    const { categories } = useSelector((state) => state.favoritesSlice);
+    const { categories, searchResults, searchLoading, searchError } = useSelector((state) => state.favoritesSlice);
 
     const [selectedWordId, setSelectedWordId] = useState(null);
     const [showBulkModal, setShowBulkModal] = useState(false);
-    const { categoryId, categoryName } = route.params;
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [moveLoading, setMoveLoading] = useState(false);
     const [showCategoryMenu, setShowCategoryMenu] = useState(false);
+
+
+    ////////////////////////////// Search State
+    const [searchQuery, setSearchQuery] = useState('');
+    const [isSearching, setIsSearching] = useState(false);
+
+    // Local search within category
+    useEffect(() => {
+        if (searchQuery.trim().length > 0) {
+            setIsSearching(true);
+            const timer = setTimeout(() => {
+                dispatch(FavoritesService.searchFavorites({ 
+                    query: searchQuery, 
+                    categoryId: categoryId 
+                }));
+            }, 300);
+            return () => clearTimeout(timer);
+        } else {
+            setIsSearching(false);
+        }
+    }, [searchQuery, categoryId, dispatch]);
+
+    const displayedWords = searchQuery.length > 0 ? searchResults : words;
+
+
+
+
+
 
     // Use ref to track the selected word for the modal
     const selectedWordRef = useRef(null);
@@ -121,7 +150,7 @@ export default function CategoryWordsScreen({ navigation, route }) {
         setNotification({ ...notification, visible: false });
     };
 
-   
+
 
     const WordActionMenu = ({ word, onClose }) => (
         <View className="bg-white rounded-lg shadow-lg border border-gray-200 ">
@@ -195,7 +224,7 @@ export default function CategoryWordsScreen({ navigation, route }) {
         return (
             <Pressable 
             onPress={() => {
-                generateAIWord(item);
+                TranslateWord(item);
             }}
             className="bg-white p-4 rounded-lg mb-2 shadow-sm border border-gray-100 relative" style={{ zIndex: isMenuOpen ? 100 : 1 }}>
                 <View className="flex-row justify-between items-start">
@@ -409,9 +438,12 @@ export default function CategoryWordsScreen({ navigation, route }) {
               onHide={hideNotification}
             />
 
-            {/* Header */}
-            <View className="flex-row items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
-                <View className="flex-row items-center flex-1">
+           
+         
+
+            {/* Header with Search */}
+            <View className="px-4 py-3 bg-white border-b border-gray-200">
+                <View className="flex-row items-center justify-between mb-3">
                     <TouchableOpacity onPress={() => navigation.goBack()} className="mr-3">
                         <Ionicons name="arrow-back" size={24} color="#374151" />
                     </TouchableOpacity>
@@ -420,40 +452,57 @@ export default function CategoryWordsScreen({ navigation, route }) {
                             {categoryName}
                         </Text>
                         <Text className="text-gray-500 text-sm">
-                            {words.length} word{words.length !== 1 ? 's' : ''}
+                            {displayedWords.length} of {words.length} words
+                            {searchQuery.length > 0 && ` matching "${searchQuery}"`}
                         </Text>
                     </View>
+                    <TouchableOpacity onPress={() => setShowCategoryMenu(true)}>
+                        <Ionicons name="ellipsis-vertical" size={20} color="#6B7280" />
+                    </TouchableOpacity>
                 </View>
-                {/* Category Main Actions Button */}
-                <TouchableOpacity
-                    onPress={() => setShowCategoryMenu(!showCategoryMenu)}
-                    className="p-2"
-                >
-                    <Ionicons name="ellipsis-vertical" size={20} color="#6B7280" />
-                </TouchableOpacity>
+                
+                {/* Search Bar */}
+                <View className="flex-row items-center bg-gray-100 rounded-lg px-3 py-2">
+                    <Ionicons name="search" size={18} color="#6B7280" />
+                    <TextInput
+                        className="flex-1 ml-2 text-gray-900 text-base"
+                        placeholder={`Search in ${categoryName}...`}
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
+                        clearButtonMode="while-editing"
+                    />
+                    {(searchLoading || isSearching) && (
+                        <ActivityIndicator size="small" color="#6366F1" />
+                    )}
+                    {searchQuery.length > 0 && !searchLoading && (
+                        <TouchableOpacity onPress={() => setSearchQuery('')} className="ml-2">
+                            <Ionicons name="close-circle" size={18} color="#6B7280" />
+                        </TouchableOpacity>
+                    )}
+                </View>
             </View>
-            {/* Category Main Action Menu */}
-            {showCategoryMenu && <CategoryActionMenu />}
-            {showCategoryMenu && (
-                <TouchableOpacity
-                    className="absolute inset-0 z-40"
-                    onPress={() => setShowCategoryMenu(false)}
-                />
-            )}
 
             {/* Content */}
             <FlatList
-                data={words}
+                data={displayedWords}
                 renderItem={renderWordItem}
                 keyExtractor={(item) => item.id.toString()}
                 contentContainerClassName="p-4"
                 refreshing={loading}
                 onRefresh={() => dispatch(FavoritesService.getCategoryWords(categoryId))}
                 ListEmptyComponent={
-                    loading ? (
+                    searchLoading ? (
                         <View className="items-center justify-center py-20">
                             <ActivityIndicator size="large" color="#6366F1" />
-                            <Text className="text-gray-500 mt-4">Loading words...</Text>
+                            <Text className="text-gray-500 mt-4">Searching...</Text>
+                        </View>
+                    ) : searchQuery.length > 0 ? (
+                        <View className="items-center justify-center py-20">
+                            <Ionicons name="search-outline" size={48} color="#D1D5DB" />
+                            <Text className="text-gray-400 text-lg mt-4">No matching words</Text>
+                            <Text className="text-gray-400 text-center mt-2">
+                                Try different keywords in {categoryName}
+                            </Text>
                         </View>
                     ) : (
                         <View className="items-center justify-center py-20">

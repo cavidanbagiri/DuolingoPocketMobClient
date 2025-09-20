@@ -8,11 +8,17 @@ const favoritesSlice = createSlice({
         categories: [],
         loading: false,
         error: null,
-
+        searchResults: [],
+        searchLoading: false,
+        searchError: null,
     },
     reducers: {
         clearError: (state) => {
             state.error = null;
+        },
+        clearSearchResults: (state) => {
+            state.searchResults = [];
+            state.searchError = null;
         },
 
         updateCategoryCounts: (state, action) => {
@@ -64,7 +70,6 @@ const favoritesSlice = createSlice({
             })
 
             // Delete Category
-            // Delete Category
             .addCase(FavoritesService.deleteCategory.pending, (state) => {
                 state.loading = true;
             })
@@ -85,10 +90,24 @@ const favoritesSlice = createSlice({
             .addCase(FavoritesService.deleteCategory.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload?.payload?.detail || 'Failed to delete category';
+            })
+
+            // Search
+            .addCase(FavoritesService.searchFavorites.pending, (state) => {
+                state.searchLoading = true;
+                state.searchError = null;
+            })
+            .addCase(FavoritesService.searchFavorites.fulfilled, (state, action) => {
+                state.searchLoading = false;
+                state.searchResults = action.payload;
+            })
+            .addCase(FavoritesService.searchFavorites.rejected, (state, action) => {
+                state.searchLoading = false;
+                state.searchError = action.payload;
             });
 
     }
 });
 
-export const { clearError, updateCategoryCounts } = favoritesSlice.actions;
+export const { clearError, updateCategoryCounts, clearSearchResults } = favoritesSlice.actions;
 export default favoritesSlice.reducer;
