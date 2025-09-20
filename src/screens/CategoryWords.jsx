@@ -145,18 +145,23 @@ export default function CategoryWordsScreen({ navigation, route }) {
 
     const WordActionMenu = ({ word, onClose }) => (
         <View className="bg-white rounded-lg shadow-lg border border-gray-200 ">
+
+             <TouchableOpacity
+                className="flex-row items-center px-4 py-3 border-b border-gray-100"
+                onPress={() => {
+                    generateAIWord(word);
+                }}
+                disabled={moveLoading}
+            >
+                <Ionicons name="sparkles-outline" size={20} color="#4B5563" />
+                <Text className="ml-3 text-gray-700">Generate AI</Text>
+            </TouchableOpacity>
+
             <TouchableOpacity
                 className="flex-row items-center px-4 py-3 border-b border-gray-100"
                 onPress={() => {
-                    // Store the word directly in the ref
-                    // selectedWordRef.current = word;
-                    // setShowBulkModal(true);
-                    // onClose();
-                    console.log('Move button clicked for word:', word);
                     selectedWordRef.current = word;
-                    console.log('Ref set to:', selectedWordRef.current);
                     setShowBulkModal(true);
-                    console.log('Modal state set to true');
                     onClose();
                 }}
                 disabled={moveLoading}
@@ -199,7 +204,7 @@ export default function CategoryWordsScreen({ navigation, route }) {
             onPress={() => {
                 generateAIWord(item);
             }}
-            className="bg-red-400 p-4 rounded-lg mb-2 shadow-sm border border-gray-100 relative" style={{ zIndex: isMenuOpen ? 100 : 1 }}>
+            className="bg-white p-4 rounded-lg mb-2 shadow-sm border border-gray-100 relative" style={{ zIndex: isMenuOpen ? 100 : 1 }}>
                 <View className="flex-row justify-between items-start">
                     <View className="flex-1">
                         <Text className="text-gray-900 font-medium text-base">{item.original_text}</Text>
