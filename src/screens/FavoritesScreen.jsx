@@ -37,7 +37,7 @@ export default function FavoritesScreen({ navigation }) {
       setIsSearching(false);
     }
   }, [searchQuery, dispatch]);
-  
+
 
   const renderCategoryResult = useCallback(({ item }) => (
     <TouchableOpacity
@@ -71,10 +71,12 @@ export default function FavoritesScreen({ navigation }) {
   const renderSearchResult = useCallback(({ item }) => (
     <TouchableOpacity
       className="bg-white p-4 rounded-lg mb-2 shadow-sm border border-gray-100"
-      onPress={() => navigation.navigate('CategoryWords', {
-        categoryId: item.category_id,
-        categoryName: item.category_name
-      })}
+      onPress={() => {
+        navigation.navigate('CategoryWords', {
+          categoryId: item.category_id,
+          categoryName: item.category_name
+        });
+      }}
     >
       <Text className="text-gray-900 font-medium">{item.original_text}</Text>
       <Text className="text-gray-600 text-sm mt-1">{item.translated_text}</Text>
