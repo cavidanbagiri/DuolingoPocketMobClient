@@ -37,8 +37,7 @@ export default function FavoritesScreen({ navigation }) {
       setIsSearching(false);
     }
   }, [searchQuery, dispatch]);
-
-
+  
 
   const renderCategoryResult = useCallback(({ item }) => (
     <TouchableOpacity

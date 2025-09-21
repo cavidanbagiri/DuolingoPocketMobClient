@@ -76,6 +76,11 @@ export default function TranslateComponent({ onClose }) { // Receive close funct
 
 
     const handleSaveToFavorites = () => {
+
+        if (!translatedText.translation && !inputText) {
+            return;
+        }
+
         const payload = {
             from_lang: TRANSLATE_LANGUAGES_LIST[fromLang],
             to_lang: TRANSLATE_LANGUAGES_LIST[toLang],
