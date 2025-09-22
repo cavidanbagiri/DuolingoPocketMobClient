@@ -9,6 +9,9 @@ import AIScreen from '../../screens/AIScreen';
 import SearchScreen from '../../screens/SearchScreen';
 import FavoritesScreen from '../../screens/FavoritesScreen';
 import CategoryWords from '../../screens/CategoryWords';
+import AboutAppScreen from '../../screens/AboutApp';
+import NotificationsScreen from '../../screens/NotificationScreen';
+import PrivacySecurityScreen from '../../screens/PrivacySecurityScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -43,6 +46,21 @@ export default function MainStack() {
           title: route.params.categoryName,
           headerShown: false // We're using custom header
         })}
+      />
+      <Stack.Screen 
+        name="AboutApp" 
+        component={AboutAppScreen}
+        options={{ title: 'About App' }}
+      />
+      <Stack.Screen 
+        name="Notifications" 
+        component={NotificationsScreen}
+        options={{ title: 'Notifications' }}
+      />
+      <Stack.Screen 
+        name="PrivacySecurity" 
+        component={PrivacySecurityScreen}
+        options={{ title: 'Privacy & Security' }}
       />
     </Stack.Navigator>
   );

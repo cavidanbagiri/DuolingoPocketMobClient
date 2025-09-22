@@ -1,6 +1,7 @@
 
 Problems
 1 - Design profile Screen
+2 - After clicking each word, go to the AI screen for translating the words. The words can click in detail_card_screen, from sentences. That why need to set as clickable for each word
 
 Today Will Solve: 
 P-1
