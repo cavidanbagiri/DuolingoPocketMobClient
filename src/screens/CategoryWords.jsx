@@ -482,6 +482,15 @@ export default function CategoryWordsScreen({ navigation, route }) {
                 </View>
             </View>
 
+            {/* Category Main Action Menu */}
+            {showCategoryMenu && <CategoryActionMenu />}
+            {showCategoryMenu && (
+                <TouchableOpacity
+                    className="absolute inset-0 z-40"
+                    onPress={() => setShowCategoryMenu(false)}
+                />
+            )}
+
             {/* Content */}
             <FlatList
                 data={displayedWords}
