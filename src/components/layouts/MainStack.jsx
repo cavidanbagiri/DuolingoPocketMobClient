@@ -4,14 +4,14 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import TabNavigator from './TabNavigator';
-import CardDetailScreen from '../../screens/CardDetailScreen';
-import AIScreen from '../../screens/AIScreen';
-import SearchScreen from '../../screens/SearchScreen';
-import FavoritesScreen from '../../screens/FavoritesScreen';
-import CategoryWords from '../../screens/CategoryWords';
-import AboutAppScreen from '../../screens/AboutApp';
-import NotificationsScreen from '../../screens/NotificationScreen';
-import PrivacySecurityScreen from '../../screens/PrivacySecurityScreen';
+import CardDetailScreen from '../../screens/card_screen/CardDetailScreen';
+import AIScreen from '../../screens/tab_screen/AIScreen';
+import SearchScreen from '../../screens/card_screen/SearchScreen';
+import FavoritesScreen from '../../screens/translate_screen/FavoritesScreen';
+import CategoryWords from '../../screens/translate_screen/CategoryWords';
+import AboutAppScreen from '../../screens/profile_screen/AboutApp';
+import NotificationsScreen from '../../screens/profile_screen/NotificationScreen';
+import PrivacySecurityScreen from '../../screens/profile_screen/PrivacySecurityScreen';
 
 const Stack = createNativeStackNavigator();
 

@@ -4,18 +4,18 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getFromStorage } from '../utils/storage';
+import { getFromStorage } from '../../utils/storage';
 
-import MsgBox from '../components/layouts/MsgBox';
-import ChooseLangComponent from '../components/home/ChooseLangComponent';
+import MsgBox from '../../components/layouts/MsgBox';
+import ChooseLangComponent from '../../components/home/ChooseLangComponent';
 
 import Feather from '@expo/vector-icons/Feather';
 
-import { setNewTargetLanguageCondFalse } from '../store/auth_store';
-import LanguagesStatisticsComponents from '../components/home/LanguagesStatisticsComponents';
+import { setNewTargetLanguageCondFalse } from '../../store/auth_store';
+import LanguagesStatisticsComponents from '../../components/home/LanguagesStatisticsComponents';
 
-import HeaderComponent from '../components/home/HeaderComponent';
-import InitialPageComponent from '../components/home/InitialPageComponent';
+import HeaderComponent from '../../components/home/HeaderComponent';
+import InitialPageComponent from '../../components/home/InitialPageComponent';
 
 export default function HomeScreen() {
 

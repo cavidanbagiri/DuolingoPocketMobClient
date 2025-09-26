@@ -3,10 +3,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import FavoritesService from '../services/FavoritesService';
+import FavoritesService from '../../services/FavoritesService';
 import {useCallback} from 'react';
 
-import { clearError, clearSearchResults } from '../store/favorites_store';
+import { clearError, clearSearchResults } from '../../store/favorites_store';
 
 
 export default function FavoritesScreen({ navigation }) {

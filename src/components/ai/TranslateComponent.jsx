@@ -12,7 +12,7 @@ import LanguagePickerModal from './LanguagePickerModal';
 import debounce from 'lodash.debounce';
 import * as Clipboard from 'expo-clipboard';
 
-import VoiceButtonComponent from '../cards/VoiceButtonComponent';
+import VoiceButtonComponent from '../layouts/VoiceButtonComponent';
 import { setCurrentWord } from '../../store/ai_store';
 
 import * as SecureStore from 'expo-secure-store';

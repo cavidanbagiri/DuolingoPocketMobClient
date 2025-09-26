@@ -13,11 +13,11 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
-import WordService from '../services/WordService';
-import LANGUAGES from '../constants/Languages';
+import WordService from '../../services/WordService';
+import LANGUAGES from '../../constants/Languages';
 
 import * as SecureStore from 'expo-secure-store';
-import RenderWordComponent from '../components/searchscreen/RenderWordComponent';
+import RenderWordComponent from '../../components/search/RenderWordComponent';
 
 
 export default function SearchScreen({ navigation }) {

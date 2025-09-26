@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 
-import LoginComponent from '../components/login_register/LoginComponent';
-import RegisterComponent from '../components/login_register/RegisterComponent';
+import LoginComponent from '../../components/login_register/LoginComponent';
+import RegisterComponent from '../../components/login_register/RegisterComponent';
 
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -25,17 +25,11 @@ export default function LoginRegisterScreen({ onLogin }) {
           {
             mode === 'login' &&
             <Image
-            source={require('../../assets/login-register-image.jpg')}
+            source={require('../../../assets/login-register-image.jpg')}
             className='w-full h-1/3  mt-10'
             resizeMode="contain"
           />
           }
-
-          {/* <Text
-            style={{ fontFamily: 'IBMPlexSans-Regular' }}
-            className='text-[32px] font-bold text-center mb-4 '>
-            {mode === 'login' ? 'Sign In' : 'Register'}
-          </Text> */}
 
           {mode === 'login' ? (
             <LoginComponent onLogin={onLogin} />

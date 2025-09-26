@@ -1,7 +1,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
-import AIComponent from '../components/ai/AIComponent';
-import TranslateComponent from '../components/ai/TranslateComponent';
+import AIComponent from '../../components/ai/AIComponent';
+import TranslateComponent from '../../components/ai/TranslateComponent';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyboardAvoidingView, Platform, SafeAreaView } from 'react-native';

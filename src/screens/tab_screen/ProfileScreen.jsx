@@ -5,7 +5,7 @@ import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import AuthService from '../services/AuthService';
+import AuthService from '../../services/AuthService';
 import { useNavigation } from '@react-navigation/native';
 
 export default function ProfileScreen() {

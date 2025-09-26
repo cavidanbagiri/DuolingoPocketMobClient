@@ -8,11 +8,11 @@ import { Ionicons } from '@expo/vector-icons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Feather from '@expo/vector-icons/Feather';
 
-import HomeScreen from '../../screens/HomeScreen';
-import WordScreen from '../../screens/WordScreen';
-import LearnedScreen from '../../screens/LearnedScreen';
-import LoginRegisterScreen from '../../screens/LoginRegisterScreen';
-import ProfileScreen from '../../screens/ProfileScreen';
+import HomeScreen from '../../screens/tab_screen/HomeScreen';
+import WordScreen from '../../screens/tab_screen/WordScreen';
+import LearnedScreen from '../../screens/tab_screen/LearnedScreen';
+import LoginRegisterScreen from '../../screens/tab_screen/LoginRegisterScreen';
+import ProfileScreen from '../../screens/tab_screen/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 

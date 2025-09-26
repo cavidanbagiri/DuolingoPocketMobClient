@@ -3,17 +3,17 @@ import { Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
-import FavoritesService from '../services/FavoritesService';
+import FavoritesService from '../../services/FavoritesService';
 import { useEffect, useState, useRef } from 'react';
-import { clearCategoryWords } from '../store/category_words_store';
-import { updateCategoryCounts } from '../store/favorites_store';
-import { extractErrorMessage } from '../utils/errorHandler';
-import { setCurrentWord } from '../store/ai_store';
+import { clearCategoryWords } from '../../store/category_words_store';
+import { updateCategoryCounts } from '../../store/favorites_store';
+import { extractErrorMessage } from '../../utils/errorHandler';
+import { setCurrentWord } from '../../store/ai_store';
 import { useNavigation } from '@react-navigation/native';
-import Notification from '../components/ai/Notification';
-import TRANSLATE_LANGUAGES_LIST from '../constants/TranslateLanguagesList';
-import TranslateService from '../services/TranslateService';
-import { setPayload, clearPayload } from '../store/translate_store';
+import Notification from '../../components/ai/Notification';
+import TRANSLATE_LANGUAGES_LIST from '../../constants/TranslateLanguagesList';
+import TranslateService from '../../services/TranslateService';
+import { setPayload, clearPayload } from '../../store/translate_store';
 
 const BulkOperationsModal = ({ visible, onClose, selectedWord, categories, categoryId, moveLoading, handleMoveWord }) => {
 

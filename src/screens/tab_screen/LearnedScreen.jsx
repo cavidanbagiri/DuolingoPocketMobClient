@@ -1,32 +1,22 @@
-import { Text, View, ScrollView, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
+import { Text, View, ActivityIndicator } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import WordService from '../services/WordService.js'
-
-
-
-import { setSelectedLanguage } from '../store/word_store';
-
-import Feather from '@expo/vector-icons/Feather';
-
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
 
+import WordService from '../../services/WordService.js'
 
-import LanguageSelected from '../components/layouts/LanguageSelected.jsx';
+import LanguageSelected from '../../components/layouts/LanguageSelected.jsx';
 
-import VocabCard from '../components/cards/VocabCard';
-import FilterComponent from '../components/layouts/FilterComponent.jsx';
-import WordList from '../components/layouts/WordList.jsx';
-import EmptyWordsComponents from '../components/learnedscreen/EmptyWordsComponents.jsx';
+import FilterComponent from '../../components/layouts/FilterComponent.jsx';
+import WordList from '../../components/layouts/WordList.jsx';
+import EmptyWordsComponents from '../../components/learned/EmptyWordsComponents.jsx';
 
 export default function LearnedScreen() {
 
   const dispatch = useDispatch();
-
-  
 
   const { is_auth } = useSelector((state) => state.authSlice);
 

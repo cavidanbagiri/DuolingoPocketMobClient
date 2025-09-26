@@ -9,7 +9,7 @@ import { useDispatch } from 'react-redux';
 import WordService from '../../services/WordService';
 
 import { Feather } from '@expo/vector-icons';
-import VoiceButtonComponent from './VoiceButtonComponent';
+import VoiceButtonComponent from '../layouts/VoiceButtonComponent';
 
 
 export default function VocabCard({ word, language }) {

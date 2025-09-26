@@ -10,14 +10,14 @@ import {
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { clearDetail, setDetail } from '../store/word_store'; // <-- make sure setDetail exists
-import WordService from '../services/WordService';
+import { clearDetail, setDetail } from '../../store/word_store'; // <-- make sure setDetail exists
+import WordService from '../../services/WordService';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
-import { setCurrentWord } from '../store/ai_store';
+import { setCurrentWord } from '../../store/ai_store';
 
 
-import VoiceButtonComponent from '../components/cards/VoiceButtonComponent';
+import VoiceButtonComponent from '../../components/layouts/VoiceButtonComponent';
 
 export default function CardDetailScreen({ route }) {
 

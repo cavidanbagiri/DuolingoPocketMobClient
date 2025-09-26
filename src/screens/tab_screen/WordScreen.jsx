@@ -1,33 +1,30 @@
 
-import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, FlatList, Image } from 'react-native';
+import { Text, View } from 'react-native';
 
 import React, {  useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import LanguageSelector from '../components/wordscreen/LanguageSelector.jsx';
-
-import { setSelectedLanguage } from '../store/word_store';
+import { setSelectedLanguage } from '../../store/word_store.js';
 
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
 
-import WordService from '../services/WordService.js';
+import WordService from '../../services/WordService.js';
 
-import VocabCard from '../components/cards/VocabCard';
-import FilterComponent from '../components/layouts/FilterComponent.jsx';
+import FilterComponent from '../../components/layouts/FilterComponent.jsx';
 
 import Feather from '@expo/vector-icons/Feather';
-import LanguageSelected from '../components/layouts/LanguageSelected.jsx';
-import EmptyStarredComponent from '../components/home/EmptyStarredComponent.jsx';
-import WordList from '../components/layouts/WordList.jsx';
+import LanguageSelected from '../../components/layouts/LanguageSelected.jsx';
+import EmptyStarredComponent from '../../components/home/EmptyStarredComponent.jsx';
+import WordList from '../../components/layouts/WordList.jsx';
 
 // WordsScreen.jsx
 export default function WordScreen() {
     const dispatch = useDispatch();
 
-    const { words, loading, selectedLanguage, available_lang_toggle, statistics } = useSelector((state) => state.wordSlice);
+    const { words, selectedLanguage, available_lang_toggle, statistics } = useSelector((state) => state.wordSlice);
 
     const [filter, setFilter] = useState('all');
 
