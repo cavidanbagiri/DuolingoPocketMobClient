@@ -27,13 +27,12 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
     const { conversation } = useSelector((state) => state.aiSlice);
     const { messages, isChatLoading } = conversation;
 
-    // Example prompts
     const quickPrompts = [
-        `Can you use "${currentWord?.text}" in a formal sentence?`,
-        `What's the most common way to use "${currentWord?.text}"?`,
-        `Give me lots of information about "${currentWord?.text}".`,
-        `How do I pronounce "${currentWord?.text}" correctly?`,
-    ];
+    `Give me a detailed explanation of "${currentWord?.text}"`,
+    `What's the difference between "${currentWord?.text}" and similar words?`,
+    `Provide real-life scenarios using "${currentWord?.text}"`,
+    `How can I remember "${currentWord?.text}" more easily?`,
+];
 
     const handlePromptPress = (prompt) => {
         setMessage(prompt);
