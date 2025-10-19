@@ -1,4 +1,5 @@
 
+
 import React, { useEffect } from 'react';
 import {
   View,
@@ -7,28 +8,23 @@ import {
   ScrollView,
   ActivityIndicator,
   TouchableOpacity,
+  StatusBar,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { clearDetail, setDetail } from '../../store/word_store'; // <-- make sure setDetail exists
+import { clearDetail, setDetail } from '../../store/word_store';
 import WordService from '../../services/WordService';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { setCurrentWord } from '../../store/ai_store';
-
-
 import VoiceButtonComponent from '../../components/layouts/VoiceButtonComponent';
 
 export default function CardDetailScreen({ route }) {
-
   const navigation = useNavigation();
-
   const dispatch = useDispatch();
   const { word } = route.params;
 
-
   const { selectedLanguage } = useSelector((state) => state.wordSlice);
-
   const detail = useSelector((state) => state.wordSlice.detail);
   const loading = useSelector((state) => state.wordSlice.loading);
 
@@ -39,15 +35,10 @@ export default function CardDetailScreen({ route }) {
     };
   }, [word]);
 
-
   const toggleStatus = (actionKey) => {
     const actionType = actionKey === 'is_starred' ? 'star' : 'learned';
     const value = !detail[actionKey];
-
-    // 1. Optimistic update
     dispatch(setDetail({ actionType, value }));
-
-    // 2. Send request to backend
     dispatch(
       WordService.setStatus({
         word_id: detail?.id,
@@ -56,229 +47,244 @@ export default function CardDetailScreen({ route }) {
     );
   };
 
-
-
-
   if (loading || !detail || !Array.isArray(detail.meanings)) {
     return (
       <SafeAreaView style={styles.center}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color="#6366f1" />
       </SafeAreaView>
     );
   }
 
   return (
+    <SafeAreaView className="flex-1 bg-white">
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
 
-    <SafeAreaView className="flex-1 bg-gray-50">
+      {/* Header with Back Button */}
+      <View className="px-6 pt-4 pb-2 border-b border-gray-100">
+        <View className="flex-row items-center justify-between">
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            className="flex-row items-center p-2 -ml-2"
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons name="chevron-back" size={24} color="#374151" />
+            <Text className="ml-1 text-gray-600 font-medium" style={{ fontFamily: 'IBMPlexSans-SemiBold' }}>
+              Back
+            </Text>
+          </TouchableOpacity>
+
+          <View className="flex-row items-center">
+            <View className="bg-indigo-100 px-3 py-1 rounded-full">
+              <Text className="text-indigo-700 text-xs font-medium" style={{ fontFamily: 'IBMPlexSans-SemiBold' }}>
+                {detail?.level || 'A1'}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
+
       <ScrollView
-        contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 20 }}
+        contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 20 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Action Buttons - Sticky Feel (Top) */}
-        <View className="flex-row space-x-3 mb-5">
-          <TouchableOpacity
-            onPress={() => toggleStatus('is_starred')}
-            className={`flex-1 flex-row items-center justify-center p-4 rounded-2xl border-2 ${detail?.is_starred
-              ? 'border-yellow-400 bg-yellow-50'
-              : 'border-gray-200 bg-white'
-              }`}
-            style={{ elevation: 1 }}
-          >
-            <Ionicons
-              name={detail?.is_starred ? 'star' : 'star-outline'}
-              size={20}
-              color={detail?.is_starred ? '#facc15' : '#9ca3af'}
-            />
-            <Text
-              className={`ml-2 font-semibold ${detail?.is_starred ? 'text-yellow-700' : 'text-gray-700'
+
+         {/* Action Buttons - Floating Bar */}
+        <View className="bg-white rounded-2xl p-3 mb-8 shadow-lg border border-gray-100">
+          <View className="flex-row justify-around items-center">
+            <TouchableOpacity
+              onPress={() => toggleStatus('is_starred')}
+              className={`flex-col items-center justify-center p-3 rounded-xl ${detail?.is_starred ? 'bg-amber-50' : 'bg-transparent'
                 }`}
-              style={{ fontFamily: 'IBMPlexSans-SemiBold' }}
             >
-              {detail?.is_starred ? 'Unstar' : 'Star'}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => toggleStatus('is_learned')}
-            className={`flex-1 flex-row items-center justify-center p-4 rounded-2xl border-2 mx-1 ${detail?.is_learned
-              ? 'border-green-400 bg-green-50'
-              : 'border-gray-200 bg-white'
-              }`}
-            style={{ elevation: 1 }}
-          >
-            <Ionicons
-              name={detail?.is_learned ? 'checkmark-circle' : 'checkmark-circle-outline'}
-              size={20}
-              color={detail?.is_learned ? '#4ade80' : '#9ca3af'}
-            />
-            <Text
-              className={`ml-2 font-semibold ${detail?.is_learned ? 'text-green-700' : 'text-gray-700'
-                }`}
-              style={{ fontFamily: 'IBMPlexSans-SemiBold' }}
-            >
-              {detail?.is_learned ? 'Learned' : 'Learn'}
-
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => {
-              dispatch(setCurrentWord(word))
-              navigation.navigate('AIScreen')
-            }}
-            className="flex-1 flex-row items-center justify-center p-4 rounded-2xl border-2 border-blue-700 bg-white"
-            accessibilityLabel="Open AI Language Tutor"
-          >
-            <Ionicons
-              name={'sparkles'}
-              size={20}
-              color={'#1D4ED8'}
-            />
-            <Text className='ml-2 font-semibold text-blue-700'>
-              Click for ai
-            </Text>
-          </TouchableOpacity>
-
-        </View>
-
-        {/* Word Header */}
-        <View className="bg-white p-6 rounded-2xl mb-6 shadow-sm border border-gray-100">
-
-          <View className='flex-row items-center justify-between'>
-            <Text
-              className="text-4xl font-bold text-gray-800 mb-2 tracking-tight"
-              style={{ fontFamily: 'Poppins-Bold' }}
-            >
-              {detail?.text}
-            </Text>
-
-            <VoiceButtonComponent text={word?.text} language={selectedLanguage} />
-
-          </View>
-
-          <Text
-            className="text-2xl text-indigo-600 mb-3"
-            style={{ fontFamily: 'Poppins-Regular' }}
-          >
-            {detail?.translations[0]?.translated_text ?? 'No translation'}
-          </Text>
-
-          {/* Meta Info */}
-          <View className="flex-row flex-wrap gap-2 mb-3">
-            <View className="bg-blue-100 px-3 py-1 rounded-full">
+              <View className={`w-10 h-10 rounded-full items-center justify-center ${detail?.is_starred ? 'bg-amber-100' : 'bg-gray-100'
+                }`}>
+                <Ionicons
+                  name={detail?.is_starred ? 'star' : 'star-outline'}
+                  size={20}
+                  color={detail?.is_starred ? '#f59e0b' : '#6b7280'}
+                />
+              </View>
               <Text
-                className="text-sm font-medium text-blue-700"
+                className={`mt-2 text-xs font-medium ${detail?.is_starred ? 'text-amber-700' : 'text-gray-600'
+                  }`}
                 style={{ fontFamily: 'IBMPlexSans-SemiBold' }}
               >
-                CEFR {detail?.level || 'A1'}
+                {detail?.is_starred ? 'Starred' : 'Star'}
               </Text>
-            </View>
-            <View className="bg-purple-100 px-3 py-1 rounded-full">
+            </TouchableOpacity>
+
+            <View className="h-8 w-px bg-gray-200" />
+
+            <TouchableOpacity
+              onPress={() => toggleStatus('is_learned')}
+              className={`flex-col items-center justify-center p-3 rounded-xl ${detail?.is_learned ? 'bg-emerald-50' : 'bg-transparent'
+                }`}
+            >
+              <View className={`w-10 h-10 rounded-full items-center justify-center ${detail?.is_learned ? 'bg-emerald-100' : 'bg-gray-100'
+                }`}>
+                <Ionicons
+                  name={detail?.is_learned ? 'checkmark-circle' : 'checkmark-circle-outline'}
+                  size={20}
+                  color={detail?.is_learned ? '#10b981' : '#6b7280'}
+                />
+              </View>
               <Text
-                className="text-sm font-medium text-purple-700"
+                className={`mt-2 text-xs font-medium ${detail?.is_learned ? 'text-emerald-700' : 'text-gray-600'
+                  }`}
                 style={{ fontFamily: 'IBMPlexSans-SemiBold' }}
               >
-                # {detail?.frequency_rank || '–'}
+                {detail?.is_learned ? 'Learned' : 'Learn'}
               </Text>
-            </View>
-            {!detail?.is_learned && (
-              <View className="bg-orange-100 px-3 py-1 rounded-full">
-                <Text
-                  className="text-sm font-medium text-orange-700"
-                  style={{ fontFamily: 'IBMPlexSans-SemiBold' }}
-                >
-                  💪 Strength {detail?.strength || 0}/100
-                </Text>
-              </View>
-            )}
-          </View>
+            </TouchableOpacity>
 
-          {/* Status Badges */}
-          <View className="flex-row items-center space-x-3">
-            {detail?.is_starred && (
-              <View className="flex-row items-center bg-yellow-50 px-2.5 py-1 rounded-full border border-yellow-200">
-                <Ionicons name="star" size={14} color="#facc15" />
-                <Text
-                  className="ml-1 text-xs text-yellow-700 font-medium"
-                  style={{ fontFamily: 'IBMPlexSans-Regular' }}
-                >
-                  Starred
-                </Text>
+            <View className="h-8 w-px bg-gray-200" />
+
+            <TouchableOpacity
+              onPress={() => {
+                dispatch(setCurrentWord(word));
+                navigation.navigate('AIScreen');
+              }}
+              className="flex-col items-center justify-center p-3 rounded-xl"
+            >
+              <View className="w-10 h-10 rounded-full items-center justify-center bg-gradient-to-r from-blue-500 to-purple-500">
+                <Ionicons name="sparkles" size={20} color="#3b82f6" />
               </View>
-            )}
-            {detail?.is_learned && (
-              <View className="flex-row items-center bg-green-50 px-2.5 py-1 rounded-full border border-green-200">
-                <Ionicons name="checkmark-circle" size={14} color="#4ade80" />
-                <Text
-                  className="ml-1 text-xs text-green-700 font-medium"
-                  style={{ fontFamily: 'IBMPlexSans-Regular' }}
-                >
-                  Learned
-                </Text>
-              </View>
-            )}
+              <Text
+                className="mt-2 text-xs font-medium text-gray-600"
+                style={{ fontFamily: 'IBMPlexSans-SemiBold' }}
+              >
+                AI Tutor
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
 
-        {/* Meanings Section */}
-        <View className="mb-6">
-          <Text
-            className="text-xl font-bold text-gray-800 mb-4"
-            style={{ fontFamily: 'Poppins-SemiBold' }}
-          >
-            Meanings & Examples
-          </Text>
-
-          {detail?.meanings?.map((m) => (
-            <View
-              key={m.id}
-              className="bg-white p-4 rounded-xl mb-3 border border-gray-100 shadow-xs"
-            >
-              {/* POS */}
+        {/* Word Header Section */}
+        <View className="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-3xl mb-6 border border-indigo-100">
+          <View className="flex-row items-start justify-between mb-4">
+            <View className="flex-1">
               <Text
-                className="text-sm uppercase tracking-wide text-indigo-600 font-semibold mb-2"
-                style={{ fontFamily: 'IBMPlexSans-SemiBold' }}
+                className="text-4xl font-bold text-gray-900 mb-2"
+                style={{ fontFamily: 'Poppins-Bold' }}
               >
-                {m.pos}
+                {detail?.text}
               </Text>
-
-              {/* Example */}
               <Text
-                className="text-base text-gray-700 mb-3 leading-relaxed"
+                className="text-xl text-indigo-600 mb-4"
                 style={{ fontFamily: 'Poppins-Regular' }}
               >
-                💬 {m.example}
+                {detail?.translations[0]?.translated_text ?? 'No translation available'}
               </Text>
+            </View>
+            <VoiceButtonComponent
+              text={word?.text}
+              language={selectedLanguage}
+              size="large"
+            />
+          </View>
+
+          {/* Meta Info */}
+          <View className="flex-row flex-wrap gap-2">
+            <View className="bg-white px-3 py-2 rounded-2xl shadow-xs border border-gray-200">
+              <Text className="text-xs text-gray-500 font-medium" style={{ fontFamily: 'IBMPlexSans-SemiBold' }}>
+                Frequency
+              </Text>
+              <Text className="text-sm text-gray-900 font-bold" style={{ fontFamily: 'Poppins-SemiBold' }}>
+                #{detail?.frequency_rank || '–'}
+              </Text>
+            </View>
+
+            {!detail?.is_learned && (
+              <View className="bg-white px-3 py-2 rounded-2xl shadow-xs border border-gray-200">
+                <Text className="text-xs text-gray-500 font-medium" style={{ fontFamily: 'IBMPlexSans-SemiBold' }}>
+                  Strength
+                </Text>
+                <View className="flex-row items-center">
+                  <Text className="text-sm text-gray-900 font-bold mr-1" style={{ fontFamily: 'Poppins-SemiBold' }}>
+                    {detail?.strength || 0}%
+                  </Text>
+                  <View className="w-8 h-1 bg-gray-200 rounded-full overflow-hidden">
+                    <View
+                      className="h-full bg-orange-500 rounded-full"
+                      style={{ width: `${detail?.strength || 0}%` }}
+                    />
+                  </View>
+                </View>
+              </View>
+            )}
+          </View>
+        </View>
 
 
+        {/* Meanings Section */}
+        <View className="mb-8">
+          <View className="flex-row items-center mb-6">
+            <View className="w-1 h-6 bg-indigo-500 rounded-full mr-3" />
+            <Text
+              className="text-2xl font-bold text-gray-900"
+              style={{ fontFamily: 'Poppins-Bold' }}
+            >
+              Meanings & Examples
+            </Text>
+          </View>
+
+          {detail?.meanings?.map((m, index) => (
+            <View
+              key={m.id}
+              className="bg-gray-50 p-5 rounded-2xl mb-4 border border-gray-200"
+            >
+              {/* POS Badge */}
+              <View className="flex-row items-center justify-between mb-3">
+                <View className="bg-indigo-500 px-3 py-1 rounded-full">
+                  <Text
+                    className="text-xs uppercase tracking-wide text-white font-bold"
+                    style={{ fontFamily: 'IBMPlexSans-Bold' }}
+                  >
+                    {m.pos}
+                  </Text>
+                </View>
+                <View className="w-2 h-2 bg-indigo-300 rounded-full" />
+              </View>
+
+              {/* Example */}
+              <View className="mb-4">
+                <Text
+                  className="text-base text-gray-700 leading-7"
+                  style={{ fontFamily: 'Poppins-Regular' }}
+                >
+                  "{m.example}"
+                </Text>
+              </View>
 
               {/* Sentences */}
               {m.sentences.length > 0 && (
-                <View className="mt-2 border-l-2 border-gray-200 pl-3">
+                <View className="mt-4 pt-4 border-t border-gray-200">
                   <Text
-                    className="text-sm font-semibold text-gray-600 mb-2"
+                    className="text-sm font-semibold text-gray-600 mb-3"
                     style={{ fontFamily: 'IBMPlexSans-SemiBold' }}
                   >
-                    In context:
+                    Usage in context:
                   </Text>
                   {m.sentences.map((s) => (
-                    <View key={s.id} className="mb-2">
-                      <Text
-                        className="text-sm text-gray-800"
-                        style={{ fontFamily: 'Poppins-Regular' }}
-                      >
-                        {s.text}
-                      </Text>
-                      {s.translations.map((t, i) => (
-
+                    <View key={s.id} className="mb-4 last:mb-0">
+                      <View className="flex-row items-start mb-2">
+                        <View className="w-1.5 h-1.5 bg-indigo-400 rounded-full mt-2 mr-3" />
                         <Text
-                          key={i}
-                          className="text-sm text-gray-500 ml-1"
-                          style={{ fontFamily: 'IBMPlexSans-Regular' }}
+                          className="flex-1 text-sm text-gray-800 leading-6"
+                          style={{ fontFamily: 'Poppins-Regular' }}
                         >
-                          ↳ {t.language_code.toUpperCase()}: {t.translated_text}
+                          {s.text}
                         </Text>
-
+                      </View>
+                      {s.translations.map((t, i) => (
+                        <View key={i} className="ml-4 mb-1">
+                          <Text
+                            className="text-sm text-gray-500 italic"
+                            style={{ fontFamily: 'IBMPlexSans-Regular' }}
+                          >
+                            {t.language_code.toUpperCase()}: {t.translated_text}
+                          </Text>
+                        </View>
                       ))}
                     </View>
                   ))}
@@ -288,91 +294,67 @@ export default function CardDetailScreen({ route }) {
           ))}
         </View>
 
-        {/* Example Sentences (Standalone) */}
+        {/* Additional Example Sentences */}
         {detail?.example_sentences?.length > 0 && (
           <View className="mb-6">
-            <Text
-              className="text-xl font-bold text-gray-800 mb-4"
-              style={{ fontFamily: 'Poppins-SemiBold' }}
-            >
-              More Examples
-            </Text>
+            <View className="flex-row items-center mb-6">
+              <View className="w-1 h-6 bg-purple-500 rounded-full mr-3" />
+              <Text
+                className="text-2xl font-bold text-gray-900"
+                style={{ fontFamily: 'Poppins-Bold' }}
+              >
+                More Examples
+              </Text>
+            </View>
+
             {detail?.example_sentences?.map((s) => (
               <View
                 key={s.id}
-                className="bg-white p-4 rounded-xl mb-3 border border-gray-100 shadow-xs"
+                className="bg-white p-5 rounded-2xl mb-4 border border-gray-200 shadow-xs"
               >
                 <Text
-                  className="text-base text-gray-800 mb-2"
+                  className="text-base text-gray-800 mb-3 leading-7"
                   style={{ fontFamily: 'Poppins-Regular' }}
                 >
                   {s.text}
                 </Text>
-                {s.translations.map((t, i) => (
-
-                  <View
-                    key={i}
-                  >
-                    <Text
-                      className="text-sm text-gray-500 ml-1"
-                      style={{ fontFamily: 'IBMPlexSans-Regular' }}
-                    >
-                      ↳ {t.language_code.toUpperCase()}: {t.translated_text}
-                    </Text>
-
-
-                    <VoiceButtonComponent text={s.text} language={selectedLanguage} />
-
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-1">
+                    {s.translations.map((t, i) => (
+                      <Text
+                        key={i}
+                        className="text-sm text-gray-500 italic"
+                        style={{ fontFamily: 'IBMPlexSans-Regular' }}
+                      >
+                        {t.language_code.toUpperCase()}: {t.translated_text}
+                      </Text>
+                    ))}
                   </View>
-
-
-
-                ))}
+                  <VoiceButtonComponent
+                    text={s.text}
+                    language={selectedLanguage}
+                    size="small"
+                  />
+                </View>
               </View>
             ))}
           </View>
         )}
 
-        {/* Spacer at bottom */}
-        <View className="h-8" />
+        {/* Bottom Spacer */}
+        <View className="h-6" />
       </ScrollView>
     </SafeAreaView>
-
   );
 }
 
-// Your styles stay the same
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  scroll: { padding: 16 },
-  button: {
-    padding: 10,
-    marginVertical: 6,
-    backgroundColor: '#007acc',
-    borderRadius: 5,
+  center: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#ffffff'
   },
-  buttonText: { color: '#fff', fontSize: 16 },
-  header: { marginBottom: 20, alignItems: 'center' },
-  word: { fontSize: 30, fontWeight: 'bold' },
-  translation: { fontSize: 24, color: '#007acc' },
-  metaRow: { flexDirection: 'row', marginTop: 10 },
-  metaBadge: { marginHorizontal: 6, fontSize: 14, color: '#555' },
-  star: { color: '#FFD700', fontSize: 16, marginHorizontal: 5 },
-  learned: { color: 'green', fontSize: 16, marginHorizontal: 5 },
-  strength: { color: '#888', fontSize: 16, marginHorizontal: 5 },
-  section: { marginBottom: 20 },
-  sectionTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
-  card: {
-    backgroundColor: '#f5f5f5',
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 10,
-  },
-  pos: { fontWeight: 'bold' },
-  example: { fontStyle: 'italic', marginVertical: 5 },
-  subTitle: { fontWeight: 'bold', marginTop: 5 },
-  sentenceBox: { marginVertical: 4 },
-  translationText: { color: '#555', marginLeft: 10 },
 });
+
+

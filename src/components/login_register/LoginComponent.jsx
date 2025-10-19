@@ -24,8 +24,8 @@ export default function LoginComponent({ onLogin }) {
   // const [email, setEmail] = useState('');
   // const [password, setPassword] = useState('');
 
-   const [email, setEmail] = useState('cavidanbagiri@gmail.com');
-  const [password, setPassword] = useState('cavidan1');
+   const [email, setEmail] = useState('eng@gmail.com');
+  const [password, setPassword] = useState('11111111');
 
 
 
