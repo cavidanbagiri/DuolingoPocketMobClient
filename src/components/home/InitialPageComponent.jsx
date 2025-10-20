@@ -1,5 +1,4 @@
 import { Text, View, Image, TouchableOpacity } from 'react-native'
-import React, {  } from 'react'
 
 import { useNavigation } from '@react-navigation/native'; 
 
@@ -23,9 +22,9 @@ export default function InitialPageComponent() {
             {/* Logo Image */}
             <View className="items-center mb-8">
                 <Image
-                    source={require('../../../assets/logo.png')}
+                    source={require('../../../assets/logo.jpg')}
                     style={{
-                        width: '70%',
+                        width: '80%',
                         marginTop: 20,
                         marginBottom: 20,
                         height: 100,

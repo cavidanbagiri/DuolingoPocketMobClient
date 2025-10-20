@@ -1,5 +1,10 @@
 {
   "android": {
     "package": "com.cavidan.duolingopocketmobclient"
+  },
+  "extra": {
+    "eas": {
+      "projectId": "3a4d350d-acee-4430-99f9-0cd22e61ed1b"
+    }
   }
 }
