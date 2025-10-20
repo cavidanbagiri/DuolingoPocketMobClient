@@ -1,10 +1,35 @@
 {
-  "android": {
-    "package": "com.cavidan.duolingopocketmobclient"
-  },
-  "extra": {
-    "eas": {
-      "projectId": "3a4d350d-acee-4430-99f9-0cd22e61ed1b"
+  "expo": {
+    "name": "W9999",
+    "slug": "duolingopocket-mobclient",
+    "version": "1.0.0",
+    "userInterfaceStyle": "automatic",
+    "platforms": [
+      "android",
+      "ios"
+    ],
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "android": {
+      "package": "com.cavidan.duolingopocketmobclient",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      }
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.cavidan.duolingopocketmobclient"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "3bba7e8f-0748-4b8e-a87a-31a99ba6c9ca"
+      }
     }
   }
 }
