@@ -13,14 +13,14 @@ export default function AIScreen({route}) {
   const insets = useSafeAreaInsets();
 
   const [initialTab] = useState(route.params?.initialTab || 0);
-  console.log('initial tab is ', initialTab)
 
 
   return (
 
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+      // 🔥 Critical: increase offset for Android tab bar + status bar
+      keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top + 60 : 60}
       style={{ flex: 1 }}
     >
       <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }} edges={['top']}>
@@ -76,6 +76,7 @@ export default function AIScreen({route}) {
             }}
           />
         </Tab.Navigator>
+
       </SafeAreaView>
     </KeyboardAvoidingView>
 

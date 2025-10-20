@@ -53,19 +53,7 @@ export default function AIComponent() {
         return payload;
       }, [currentWord, nativeLang, dispatch]);
     
-      // Load native language
-      // useEffect(() => {
-      //   const getNativeLang = async () => {
-      //     try {
-      //       const native = await SecureStore.getItemAsync('native');
-      //       setNativeLang(native);
-      //     } catch (error) {
-      //       console.error('Failed to load native language', error);
-      //     }
-      //   };
-      //   getNativeLang();
-      // }, []);
-
+    
       useEffect(() => {
         const getNativeLang = async () => {
           try {
