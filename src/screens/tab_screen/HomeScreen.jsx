@@ -119,10 +119,10 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    // backgroundColor: '#FFFFFF',
+    backgroundColor: '#FFFFFF',
   },
   scroll: {
-    paddingHorizontal: 16,
+    // paddingHorizontal: 16,
     alignItems: 'flex-start', // text and image align to the left
   },
   title_text: {
