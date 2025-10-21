@@ -2,23 +2,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
-
 import { useDispatch, useSelector } from 'react-redux';
-
 import { ActivityIndicator } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import Feather from '@expo/vector-icons/Feather';
 
-
+import { setIsLoginErrorFalse, setIsLoginSuccessFalse } from '../../store/auth_store';
 
 import AuthService from '../../services/AuthService.js';
 
 import MsgBox from '../layouts/MsgBox';
 
-import { setIsLoginErrorFalse, setIsLoginSuccessFalse } from '../../store/auth_store';
-
-import DropdownNativeLangComponent from '../home/DropdownNativeLangComponent.jsx';
-
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import Feather from '@expo/vector-icons/Feather';
+import LanguageModalComponent from '../home/LanguageModalComponent.jsx';
 
 export default function RegisterComponent({ setMode, onRegister }) {
 
@@ -41,8 +36,8 @@ export default function RegisterComponent({ setMode, onRegister }) {
 
 
   const handleRegister = () => {
-    
-    
+
+
     if (nativeLanguage === '') {
       Alert.alert('Validation Error', 'Native Language is required');
       return;
@@ -101,12 +96,12 @@ export default function RegisterComponent({ setMode, onRegister }) {
       }
 
       <Text
-                  style={{ fontFamily: 'IBMPlexSans-Regular' }}
-                  className='text-[32px] font-bold text-center mb-4 '>
-                  Register
-                </Text>
+        style={{ fontFamily: 'IBMPlexSans-Regular' }}
+        className='text-[50px] font-bold text-center mb-4 '>
+        Register
+      </Text>
 
-      <DropdownNativeLangComponent
+      <LanguageModalComponent
         selectedLanguage={nativeLanguage}
         setSelectedLanguage={setNativeLanguage}
       />
@@ -162,7 +157,7 @@ export default function RegisterComponent({ setMode, onRegister }) {
           <ActivityIndicator size="small" color="#fff" />
         ) : (
           <Text style={{ fontFamily: 'IBMPlexSans-Regular' }}
-            className='text-white text-lg'>Register</Text>
+            className='text-white text-xl'>Register</Text>
         )}
       </TouchableOpacity>
 

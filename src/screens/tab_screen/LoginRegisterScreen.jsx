@@ -20,16 +20,16 @@ export default function LoginRegisterScreen({ onLogin }) {
         keyboardShouldPersistTaps="handled"
       >
 
-        <View className='flex flex-1 justify-start p-8 bg-white '>
+        <View className='flex flex-1 justify-center p-8 bg-white '>
 
-          {
+          {/* {
             mode === 'login' &&
             <Image
             source={require('../../../assets/login-register-image.jpg')}
             className='w-full h-1/3  mt-10'
             resizeMode="contain"
           />
-          }
+          } */}
 
           {mode === 'login' ? (
             <LoginComponent onLogin={onLogin} />

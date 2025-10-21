@@ -81,19 +81,9 @@ export default function LoginComponent({ onLogin }) {
         />
       }
 
-      {/* <TextInput 
-      style={{fontFamily: 'IBMPlexSans-Regular', flex:1}}
-      className='text-lg font-medium mt-5 w-full border border-gray-300 rounded-lg py-3 px-3'
-      placeholder="Email" onChangeText={setEmail} />
-      <TextInput 
-      style={{fontFamily: 'IBMPlexSans-Regular', flex:1}}
-      className='text-lg font-medium mt-4 w-full border border-gray-300 rounded-lg py-3 px-3'
-      placeholder="Password" onChangeText={setPassword} secureTextEntry /> */}
-
-
       <Text
             style={{ fontFamily: 'IBMPlexSans-Regular' }}
-            className='text-[32px] font-bold text-center mb-4 '>
+            className='text-[50px] font-bold text-center mb-4 '>
             Sign In
           </Text>
 
@@ -131,7 +121,7 @@ export default function LoginComponent({ onLogin }) {
           <ActivityIndicator size="small" color="#fff" />
         ) : (
           <Text style={{ fontFamily: 'IBMPlexSans-Regular' }}
-            className='text-white text-lg'>Login</Text>
+            className='text-white text-xl'>Login</Text>
         )}
       </TouchableOpacity>
 
