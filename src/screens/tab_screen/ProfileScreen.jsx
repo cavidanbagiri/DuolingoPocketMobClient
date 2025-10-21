@@ -55,7 +55,7 @@ export default function ProfileScreen() {
     {
       icon: 'help-buoy-outline',
       title: 'Help & Support',
-      onPress: () => console.log('Help'),
+      onPress: () => navigation.navigate('HelpSupport'),
       color: '#EF4444'
     },
     {
@@ -114,7 +114,7 @@ export default function ProfileScreen() {
         </View>
 
         {/* Menu Items */}
-        <View className="bg-white mx-4 rounded-2xl shadow-sm border border-gray-100 mb-6">
+        {/* <View className="bg-white mx-4 rounded-2xl shadow-sm border border-gray-100 mb-6">
           {menuItems.map((item, index) => (
             <React.Fragment key={index}>
               <TouchableOpacity
@@ -135,18 +135,13 @@ export default function ProfileScreen() {
               )}
             </React.Fragment>
           ))}
-        </View>
+        </View> */}
 
         {/* App Settings */}
         <View className="bg-white mx-4 rounded-2xl shadow-sm border border-gray-100 mb-6">
           <Text className="text-gray-500 text-sm font-medium px-6 py-3 border-b border-gray-100">
             APP SETTINGS
           </Text>
-          
-          {/* <View className="flex-row items-center justify-between px-6 py-4">
-            <Text className="text-gray-900">Dark Mode</Text>
-            <Ionicons name="moon" size={20} color="#6366F1" />
-          </View> */}
           
           <View className="h-px bg-gray-100 mx-6" />
           

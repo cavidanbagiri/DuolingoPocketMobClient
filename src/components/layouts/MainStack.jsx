@@ -12,6 +12,7 @@ import CategoryWords from '../../screens/translate_screen/CategoryWords';
 import AboutAppScreen from '../../screens/profile_screen/AboutApp';
 import NotificationsScreen from '../../screens/profile_screen/NotificationScreen';
 import PrivacySecurityScreen from '../../screens/profile_screen/PrivacySecurityScreen';
+import HelpSupportScreen from '../../screens/profile_screen/HelpAndSupport';
 
 const Stack = createNativeStackNavigator();
 
@@ -61,6 +62,11 @@ export default function MainStack() {
         name="PrivacySecurity" 
         component={PrivacySecurityScreen}
         options={{ title: 'Privacy & Security' }}
+      />
+      <Stack.Screen 
+        name="HelpSupport" 
+        component={HelpSupportScreen}
+        options={{ title: 'Help Support' }}
       />
     </Stack.Navigator>
   );
