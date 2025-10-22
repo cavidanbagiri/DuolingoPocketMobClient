@@ -35,7 +35,6 @@ class AIService {
         '/words/aichat',
         async (data, thunkAPI) => {
 
-            console.log('sending question is ', data);
             try {
                 const response = await $api.post('/words/aichat', data);
                 return response.data;

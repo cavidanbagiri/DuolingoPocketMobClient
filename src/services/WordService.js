@@ -27,7 +27,6 @@ class WordService {
                         only_learned: learned
                     }
                 });
-                console.log('coming response is ', response.data);
                 return response.data;
             } catch (error) {
                 // Extract error details
@@ -69,7 +68,6 @@ class WordService {
         async (word_id, thunkAPI) => {
             try {
                 const response = await $api.get(`/words/get_detail_word/${word_id}`);
-                console.log('word detail is ', response.data);
                 return response.data;
             } catch (error) {
                 // Extract error details
@@ -108,7 +106,6 @@ class WordService {
         async (data, thunkAPI) => {
             try {
                 const response = await $api.get(`/words/get_pos_statistics`);
-                console.log('coming statistics is ', response.data);
                 return response.data;
             } catch (error) {
                 // Extract error details
