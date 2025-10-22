@@ -175,7 +175,12 @@ export default function FavoritesScreen({ navigation }) {
       {/* Header with Search */}
       <View className="px-4 py-3 bg-white border-b border-gray-200">
         <View className="flex-row items-center justify-between mb-3">
-          <Text className="text-xl font-bold text-gray-900">Favorites</Text>
+          <View className="flex-row items-center">
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Ionicons name="arrow-back" style={{ fontSize: 24, paddingEnd: 4 }} />
+            </TouchableOpacity>
+            <Text className="text-xl font-bold text-gray-900">Favorites</Text>
+          </View>
           <TouchableOpacity onPress={() => setShowAddModal(true)}>
             <Ionicons name="add" size={24} color="#6366F1" />
           </TouchableOpacity>
