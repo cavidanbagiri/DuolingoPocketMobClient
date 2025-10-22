@@ -173,6 +173,24 @@ class WordService {
     );
 
 
+    static profile_fetch_statistics = createAsyncThunk(
+        '/words/profile/fetch_statistics',
+        async (data, thunkAPI) => {
+            try {
+                const response = await $api.get(`/words/profile/fetch_statistics`);
+                return response.data;
+            } catch (error) {
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
+                
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
+        }
+    );
+
 
 }
 

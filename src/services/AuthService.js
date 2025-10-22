@@ -82,7 +82,7 @@ class AuthService {
     )
 
     static userLogout = createAsyncThunk(
-        'http://10.0.2.2:8000/api/auth/logout',
+        '/auth/logout',
         async () => {
             try {
                 const response = await $api.post('/auth/logout');
