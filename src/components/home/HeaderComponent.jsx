@@ -1,10 +1,15 @@
 
+
 import React, { useState, useEffect, useRef } from 'react';
-import { Text, View, Image, Animated, Dimensions, StyleSheet } from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
+import { Text, View, Image, Animated, Dimensions, StyleSheet, TouchableOpacity } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import Feather from '@expo/vector-icons/Feather';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as SecureStore from 'expo-secure-store';
 import { LinearGradient } from 'expo-linear-gradient';
+
+import WordService from '../../services/WordService';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -23,11 +28,41 @@ const COLORS = {
   border: '#E2E8F0',
 };
 
+// Language code to flag mapping
+const LANGUAGE_FLAGS = {
+  'en': require('../../../assets/flags/england.png'),
+  'es': require('../../../assets/flags/spanish.png'),
+  'ru': require('../../../assets/flags/russian.png'),
+  'tr': require('../../../assets/flags/turkish.png'),
+  // Add more as needed
+};
+
+// Language code to full name mapping
+const LANGUAGE_NAMES = {
+  'en': 'English',
+  'es': 'Spanish', 
+  'ru': 'Russian',
+  'tr': 'Turkish',
+  'fr': 'French',
+  'de': 'German',
+  'it': 'Italian',
+  'ja': 'Japanese',
+  'ko': 'Korean',
+  'zh': 'Chinese',
+};
+
 export default function HeaderComponent({ username }) {
+
+  const dispatch = useDispatch();
+
   const [nativeLangCode, setNativeLangCode] = useState(null);
-  const [flagImage, setFlagImage] = useState(null);
-  const [streakCount, setStreakCount] = useState(7);
+  const [flagImage, setFlagImage] = useState(null); 
   const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  // Daily Streak State
+  const [dailyStreak, setDailyStreak] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const FLAG_IMAGES = {
     English: require('../../../assets/flags/england.png'),
@@ -66,6 +101,48 @@ export default function HeaderComponent({ username }) {
     return 'Good evening';
   };
 
+  const fetchDailyStreak = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const result = await dispatch(WordService.getDailyStreak());    
+      
+      if (result && result.payload) {
+        setDailyStreak(result.payload);
+      } else {
+        setError('Failed to load daily streak');
+      }
+    } catch (err) {
+      setError('Error fetching daily streak');
+      console.error('Daily streak error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchDailyStreak();
+
+      return () => {
+        console.log('Header unfocused');
+      };
+    }, [])
+  );
+
+  // Get flag for last learned language
+  const getLastLearnedFlag = () => {
+    if (!dailyStreak?.last_learned_language) return null;
+    return LANGUAGE_FLAGS[dailyStreak.last_learned_language] || null;
+  };
+
+  // Get display name for last learned language
+  const getLastLearnedLanguageName = () => {
+    if (!dailyStreak?.last_learned_language) return 'No words learned';
+    return LANGUAGE_NAMES[dailyStreak.last_learned_language] || dailyStreak.last_learned_language.toUpperCase();
+  };
+
   // Card width: full padding (32px total = 16 left + 16 right)
   const cardWidth = screenWidth - 32;
 
@@ -98,41 +175,62 @@ export default function HeaderComponent({ username }) {
             {/* Top Section: Greeting + Streak */}
             <View style={styles.topRow}>
               <View style={styles.greetingContainer}>
-                <Text style={styles.greetingText}>{getGreeting()}</Text>
+                <Text style={styles.greetingText}>{getGreeting()}</Text>   
                 <Text style={styles.usernameText}>
-                  {username ? `${username}!` : 'Language Explorer!`'}
+                  {username ? `${username}!` : 'Language Explorer!'}
                 </Text>
               </View>
 
-              <View style={styles.streakBadge}>
-                <View style={styles.streakInner}>
-                  <Feather name="zap" size={14} color="#FFFFFF" />
-                  <Text style={styles.streakCount}>{streakCount}</Text>
-                </View>
-                <Text style={styles.streakLabel}>Day streak</Text>
-              </View>
+              {/* Daily Streak Badge */}
+              <TouchableOpacity 
+                style={styles.streakBadge}
+                onPress={fetchDailyStreak}
+              >
+                {loading ? (
+                  <View style={styles.streakInner}>
+                    <Text style={styles.streakCount}>...</Text>
+                  </View>
+                ) : error ? (
+                  <View style={styles.streakInner}>
+                    <Feather name="refresh-cw" size={14} color="#FFFFFF" />
+                  </View>
+                ) : (
+                  <View style={styles.streakInner}>
+                    <Feather name="book" size={14} color="#FFFFFF" />
+                    <Text style={styles.streakCount}>
+                      {dailyStreak?.daily_learned_words || 0}
+                    </Text>
+                  </View>
+                )}
+                <Text style={styles.streakLabel}>Today's words</Text>
+              </TouchableOpacity>
             </View>
 
-            {/* Bottom Section: Language + Motivation */}
+            {/* Bottom Section: Last Learned Language + Native Language */}
             <View style={styles.bottomRow}>
+              {/* Last Learned Language */}
               <View style={styles.languageBadge}>
-                {flagImage ? (
-                  <Image source={flagImage} style={styles.flag} resizeMode="cover" />
+                {getLastLearnedFlag() ? (
+                  <Image source={getLastLearnedFlag()} style={styles.flag} resizeMode="cover" />
                 ) : (
-                  <View style={styles.flagPlaceholder} />
+                  <View style={styles.flagPlaceholder}>
+                    <Feather name="book-open" size={16} color="#FFFFFF" />
+                  </View>
                 )}
                 <View>
-                  <Text style={styles.nativeLabel}>Native</Text>
+                  <Text style={styles.nativeLabel}>Last Learned</Text>
                   <Text style={styles.nativeLang} numberOfLines={1} ellipsizeMode="tail">
-                    {nativeLangCode || 'Not set'}
+                    {getLastLearnedLanguageName()}
                   </Text>
                 </View>
               </View>
 
+              {/* Motivation Text */}
               <Text style={styles.motivationText} numberOfLines={1}>
-                {nativeLangCode
-                  ? `Master ${nativeLangCode} today! 🌟`
-                  : 'Set your native language! 🚀'}
+                {dailyStreak?.daily_learned_words > 0 
+                  ? `Great job! ${dailyStreak.daily_learned_words} words today! 🎉`
+                  : 'Start learning today! 🌟'
+                }
               </Text>
 
               <View style={styles.settingsIcon}>
@@ -141,19 +239,41 @@ export default function HeaderComponent({ username }) {
             </View>
           </View>
 
-          {/* Progress Bar */}
+          {/* Progress Bar - Show today's progress */}
           <View style={styles.progressBarBg}>
-            <View style={[styles.progressBarFill, { width: '65%' }]} />
+            <View style={[
+              styles.progressBarFill, 
+              { 
+                width: dailyStreak?.daily_learned_words 
+                  ? `${Math.min((dailyStreak.daily_learned_words / 20) * 100, 100)}%` 
+                  : '0%' 
+              }
+            ]} />
           </View>
         </LinearGradient>
       </View>
 
-      {/* Stats Row */}
+      {/* Stats Row - Updated with Daily Streak Data */}
       <View style={[styles.statsRow, { width: cardWidth }]}>
         {[
-          { icon: '📚', label: 'Words', value: '1.2K', color: COLORS.primary },
-          { icon: '⏱️', label: 'Time', value: '45m', color: COLORS.success },
-          { icon: '🎯', label: 'Goal', value: '85%', color: COLORS.warning },
+          { 
+            icon: '📚', 
+            label: 'Today', 
+            value: dailyStreak ? `${dailyStreak.daily_learned_words}` : '0', 
+            color: COLORS.primary 
+          },
+          { 
+            icon: '🌎', 
+            label: 'Language', 
+            value: dailyStreak?.last_learned_language ? dailyStreak.last_learned_language.toUpperCase() : '--', 
+            color: COLORS.success 
+          },
+          { 
+            icon: '⏰', 
+            label: 'Updated', 
+            value: dailyStreak ? 'Now' : '--', 
+            color: COLORS.warning 
+          },
         ].map((stat, index) => (
           <View key={index} style={styles.statCard}>
             <View style={styles.statHeader}>
@@ -165,6 +285,16 @@ export default function HeaderComponent({ username }) {
           </View>
         ))}
       </View>
+
+      {/* Error Message */}
+      {error && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+          <TouchableOpacity onPress={fetchDailyStreak}>
+            <Text style={styles.retryText}>Tap to retry</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </Animated.View>
   );
 }
@@ -172,22 +302,23 @@ export default function HeaderComponent({ username }) {
 const styles = StyleSheet.create({
   animatedContainer: {
     paddingHorizontal: 16,
-    marginTop: 32,
-    marginBottom: 16,
+    paddingTop: 8,
+    paddingBottom: 16,
   },
   card: {
-    borderRadius: 24,
-    overflow: 'hidden',
+    borderRadius: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
-    shadowRadius: 16,
-    elevation: 8,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 5,
+    overflow: 'hidden',
   },
   gradient: {
-    paddingTop: 24,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
+    padding: 20,
   },
   cardContent: {
     gap: 16,
@@ -199,142 +330,132 @@ const styles = StyleSheet.create({
   },
   greetingContainer: {
     flex: 1,
-    marginRight: 12,
   },
   greetingText: {
-    fontFamily: 'IBMPlexSans-Regular',
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.9)',
-    marginBottom: 4,
+    fontSize: 16,
+    color: '#FFFFFF',
+    opacity: 0.9,
+    marginBottom: 2,
   },
   usernameText: {
-    fontFamily: 'Poppins-Bold',
     fontSize: 20,
+    fontWeight: '700',
     color: '#FFFFFF',
     lineHeight: 24,
   },
   streakBadge: {
     alignItems: 'center',
-    minWidth: 72,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    minWidth: 60,
   },
   streakInner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F59E0B',
-    paddingHorizontal: 8,
-    paddingVertical: 6,
-    borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    gap: 4,
   },
   streakCount: {
-    fontFamily: 'Poppins-SemiBold',
-    fontSize: 12,
+    fontSize: 16,
+    fontWeight: '700',
     color: '#FFFFFF',
-    marginLeft: 4,
   },
   streakLabel: {
-    fontFamily: 'IBMPlexSans-Regular',
-    fontSize: 11,
-    color: 'rgba(255, 255, 255, 0.8)',
-    marginTop: 4,
+    fontSize: 10,
+    color: '#FFFFFF',
+    opacity: 0.8,
+    marginTop: 2,
   },
   bottomRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: 12,
+    justifyContent: 'space-between',
   },
   languageBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
     borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    backdropFilter: 'blur(10px)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    gap: 8,
+    flex: 0,
   },
   flag: {
-    width: 20,
-    height: 15,
-    borderRadius: 2,
-    marginRight: 6,
+    width: 24,
+    height: 18,
+    borderRadius: 3,
   },
   flagPlaceholder: {
-    width: 20,
-    height: 15,
-    marginRight: 6,
-  },
-  nativeLabel: {
-    fontFamily: 'IBMPlexSans-Regular',
-    fontSize: 11,
-    color: 'rgba(255, 255, 255, 0.9)',
-  },
-  nativeLang: {
-    fontFamily: 'Poppins-SemiBold',
-    fontSize: 12,
-    color: '#FFFFFF',
-    maxWidth: 100,
-  },
-  motivationText: {
-    fontFamily: 'IBMPlexSans-Regular',
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.9)',
-    flex: 1,
-    minWidth: 120,
-  },
-  settingsIcon: {
+    width: 24,
+    height: 18,
+    borderRadius: 3,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    width: 32,
-    height: 32,
-    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  nativeLabel: {
+    fontSize: 10,
+    color: '#FFFFFF',
+    opacity: 0.8,
+  },
+  nativeLang: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    maxWidth: 80,
+  },
+  motivationText: {
+    flex: 1,
+    fontSize: 12,
+    color: '#FFFFFF',
+    opacity: 0.9,
+    textAlign: 'center',
+    marginHorizontal: 12,
+  },
+  settingsIcon: {
+    padding: 6,
   },
   progressBarBg: {
     height: 4,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
+    borderRadius: 2,
     marginTop: 12,
+    overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
-    backgroundColor: 'rgba(255, 255, 255, 0.4)',
-    borderRadius: 24,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 2,
   },
   statsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    gap: 12,
     marginTop: 16,
   },
   statCard: {
-    backgroundColor: '#FFFFFF',
+    flex: 1,
+    backgroundColor: COLORS.surface,
     borderRadius: 16,
-    padding: 12,
-    width: (screenWidth - 32 - 16) / 3, // 3 cards + 16px gap
-    alignItems: 'center',
+    padding: 16,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
     shadowOpacity: 0.05,
-    shadowRadius: 6,
+    shadowRadius: 8,
     elevation: 2,
   },
   statHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '100%',
-    marginBottom: 6,
+    alignItems: 'center',
+    marginBottom: 8,
   },
   statIcon: {
-    fontSize: 18,
+    fontSize: 16,
   },
   statDot: {
     width: 6,
@@ -342,27 +463,56 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   statValue: {
-    fontFamily: 'Poppins-SemiBold',
-    fontSize: 14,
+    fontSize: 18,
+    fontWeight: '700',
     color: COLORS.textPrimary,
     marginBottom: 2,
   },
   statLabel: {
-    fontFamily: 'IBMPlexSans-Regular',
-    fontSize: 11,
+    fontSize: 12,
     color: COLORS.textSecondary,
+  },
+  errorContainer: {
+    backgroundColor: '#FEF2F2',
+    borderColor: '#FECACA',
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 12,
+    marginTop: 12,
+    alignItems: 'center',
+  },
+  errorText: {
+    color: '#DC2626',
+    fontSize: 12,
+    textAlign: 'center',
+  },
+  retryText: {
+    color: '#DC2626',
+    fontSize: 11,
+    fontWeight: '600',
+    marginTop: 4,
   },
 });
 
 
 
 
-// import React, { useState, useEffect } from 'react';
-// import { Text, View, Image, Animated, Dimensions } from 'react-native';
+
+
+
+
+
+
+// import React, { useState, useEffect, useRef } from 'react';
+// import {useDispatch, useSelector} from 'react-redux';
+// import { Text, View, Image, Animated, Dimensions, StyleSheet } from 'react-native';
+// import { useFocusEffect } from '@react-navigation/native';
 // import Feather from '@expo/vector-icons/Feather';
 // import Ionicons from '@expo/vector-icons/Ionicons';
 // import * as SecureStore from 'expo-secure-store';
 // import { LinearGradient } from 'expo-linear-gradient';
+
+// import WordService from '../../services/WordService';
 
 // const { width: screenWidth } = Dimensions.get('window');
 
@@ -382,16 +532,19 @@ const styles = StyleSheet.create({
 // };
 
 // export default function HeaderComponent({ username }) {
+
+//   const dispatch = useDispatch();
+
 //   const [nativeLangCode, setNativeLangCode] = useState(null);
-//   const [flagImage, setFlagImage] = useState(null);
+//   const [flagImage, setFlagImage] = useState(null); 
 //   const [streakCount, setStreakCount] = useState(7);
-//   const fadeAnim = useState(new Animated.Value(0))[0];
+//   const fadeAnim = useRef(new Animated.Value(0)).current;
 
 //   const FLAG_IMAGES = {
-//     'English': require('../../../assets/flags/england.png'),
-//     'Spanish': require('../../../assets/flags/spanish.png'),
-//     'Russian': require('../../../assets/flags/russian.png'),
-//     'Turkish': require('../../../assets/flags/turkish.png'),
+//     English: require('../../../assets/flags/england.png'),
+//     Spanish: require('../../../assets/flags/spanish.png'),
+//     Russian: require('../../../assets/flags/russian.png'),
+//     Turkish: require('../../../assets/flags/turkish.png'),
 //   };
 
 //   useEffect(() => {
@@ -409,203 +562,160 @@ const styles = StyleSheet.create({
 //     };
 
 //     getNativeLang();
-    
+
 //     Animated.timing(fadeAnim, {
 //       toValue: 1,
-//       duration: 800,
+//       duration: 600,
 //       useNativeDriver: true,
 //     }).start();
 //   }, []);
 
 //   const getGreeting = () => {
 //     const hour = new Date().getHours();
-//     if (hour < 12) return 'Good Morning';
-//     if (hour < 18) return 'Good Afternoon';
-//     return 'Good Evening';
+//     if (hour < 12) return 'Good morning';
+//     if (hour < 18) return 'Good afternoon';
+//     return 'Good evening';
 //   };
 
+//   // Card width: full padding (32px total = 16 left + 16 right)
+//   const cardWidth = screenWidth - 32;
+
+
+
+
+
+//   // Daily Streak Card
+//   const [dailyStreak, setDailyStreak] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+
+//   const fetchDailyStreak = async () => {
+//     try {
+//       setLoading(true);
+//       setError(null);
+      
+//       // Assuming your WordService has a method to fetch profile statistics
+//       // You might need to adjust this based on your actual service implementation
+//       const result = await dispatch(WordService.getDailyStreak());    
+      
+//       if (result && result.payload) {
+//         setDailyStreak(result.payload);
+//       } else {
+//         setError('Failed to load statistics');
+//       }
+//     } catch (err) {
+//       setError('Error fetching statistics');
+//       console.error('Profile statistics error:', err);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useFocusEffect(
+//     React.useCallback(() => {
+//       console.log('Daily Streak screen focused, fetching statistics...'); 
+//       fetchDailyStreak();
+
+//       // Optional: Cleanup function
+//       return () => {
+//         console.log('Daily Streak screen unfocused');
+//       };
+//     }, []) // Add dependencies if needed
+//   );
+
 //   return (
-//     <Animated.View 
-//       style={{ 
-//         opacity: fadeAnim,
-//         transform: [{
-//           translateY: fadeAnim.interpolate({
-//             inputRange: [0, 1],
-//             outputRange: [20, 0],
-//           }),
-//         }],
-//       }}
-//       className="mx-5 mt-8 mb-2 "
+//     <Animated.View
+//       style={[
+//         styles.animatedContainer,
+//         {
+//           opacity: fadeAnim,
+//           transform: [
+//             {
+//               translateY: fadeAnim.interpolate({
+//                 inputRange: [0, 1],
+//                 outputRange: [16, 0],
+//               }),
+//             },
+//           ],
+//         },
+//       ]}
 //     >
-//       {/* Main Header Card - Fixed Width Container */}
-//       <View className="w-full" style={{ width: screenWidth - 60 }}>
+//       {/* Hero Card */}
+//       <View style={[styles.card, { width: cardWidth }]}>
 //         <LinearGradient
 //           colors={[COLORS.primary, COLORS.primaryDark]}
 //           start={{ x: 0, y: 0 }}
 //           end={{ x: 1, y: 1 }}
-//           className="rounded-3xl shadow-2xl"
+//           style={styles.gradient}
 //         >
-//           <View className="p-6">
-//             {/* Top Row - Profile & Greeting - FIXED LAYOUT */}
-//             <View className="flex-row items-start justify-between mb-4">
-//               {/* Left Side - Profile & Text */}
-//               <View className="flex-row items-center flex-1" style={{ maxWidth: '70%' }}>
-//                 {/* Profile Avatar */}
-//                 <View className="relative mr-4">
-//                   <View className="absolute -inset-1 bg-white/30 rounded-full blur-sm" />
-//                   <Image
-//                     source={require('../../../assets/avatar.webp')}
-//                     style={{ 
-//                       width: 60, 
-//                       height: 60, 
-//                       borderRadius: 30,
-//                       borderWidth: 3,
-//                       borderColor: 'rgba(255,255,255,0.3)',
-//                     }}
-//                     resizeMode="cover"
-//                   />
-//                   <View className="absolute bottom-1 right-1 w-3 h-3 bg-green-400 border-2 border-white rounded-full" />
-//                 </View>
-
-//                 {/* Greeting Text - Fixed Width */}
-//                 <View style={{ flex: 1 }}>
-//                   <Text
-//                     className="text-white/90 text-xs font-medium mb-1"
-//                     style={{ fontFamily: 'IBMPlexSans-Regular' }}
-//                   >
-//                     {getGreeting()}
-//                   </Text>
-//                   <Text
-//                     className="text-white text-xl font-bold leading-tight"
-//                     style={{ fontFamily: 'Poppins-Bold' }}
-//                     numberOfLines={1}
-//                     ellipsizeMode="tail"
-//                   >
-//                     {username ? `${username}!` : 'Language Explorer!'}
-//                   </Text>
-//                 </View>
+//           <View style={styles.cardContent}>
+//             {/* Top Section: Greeting + Streak */}
+//             <View style={styles.topRow}>
+//               <View style={styles.greetingContainer}>
+//                 <Text style={styles.greetingText}>{getGreeting()}</Text>   
+//                 <Text style={styles.usernameText}>
+//                   {username ? `${username}!` : 'Language Explorer!`'}
+//                 </Text>
 //               </View>
 
-//               {/* Right Side - Streak Badge */}
-//               <View className="items-center" style={{ minWidth: 60 }}>
-//                 <View className="bg-amber-500 rounded-2xl px-3 py-2 flex-row items-center shadow-lg">
+//               <View style={styles.streakBadge}>
+//                 <View style={styles.streakInner}>
 //                   <Feather name="zap" size={14} color="#FFFFFF" />
-//                   <Text
-//                     className="text-white font-bold ml-1 text-xs"
-//                     style={{ fontFamily: 'Poppins-SemiBold' }}
-//                   >
-//                     {streakCount}
-//                   </Text>
+//                   <Text style={styles.streakCount}>{streakCount}</Text>
 //                 </View>
-//                 <Text
-//                   className="text-white/80 text-xs mt-1"
-//                   style={{ fontFamily: 'IBMPlexSans-Regular' }}
-//                 >
-//                   Day Streak
-//                 </Text>
+//                 <Text style={styles.streakLabel}>Day streak</Text>
 //               </View>
 //             </View>
 
-//             {/* Bottom Row - Language Info - HORIZONTAL LAYOUT */}
-//             <View className="flex-row items-center justify-between">
-//               {/* Language Badge & Text Container */}
-//               <View className="flex-row items-center flex-1" style={{ maxWidth: '80%' }}>
-//                 {/* Language Badge */}
-//                 <View className="bg-white/20 rounded-xl px-3 py-2 flex-row items-center backdrop-blur-sm border border-white/30 mr-3">
-//                   {flagImage && (
-//                     <Image
-//                       source={flagImage}
-//                       style={{ 
-//                         width: 20, 
-//                         height: 15, 
-//                         borderRadius: 2,
-//                         marginRight: 6,
-//                       }}
-//                       resizeMode="cover"
-//                     />
-//                   )}
-//                   <View>
-//                     <Text
-//                       className="text-white/90 text-xs"
-//                       style={{ fontFamily: 'IBMPlexSans-Regular' }}
-//                     >
-//                       Native
-//                     </Text>
-//                     <Text
-//                       className="text-white font-semibold text-xs"
-//                       style={{ fontFamily: 'Poppins-SemiBold' }}
-//                       numberOfLines={1}
-//                     >
-//                       {nativeLangCode || 'Not set'}
-//                     </Text>
-//                   </View>
-//                 </View>
-
-//                 {/* Motivational Text - Fixed Width */}
-//                 <View style={{ flex: 1 }}>
-//                   <Text
-//                     className="text-white/90 text-xs leading-tight"
-//                     style={{ fontFamily: 'IBMPlexSans-Regular' }}
-//                     numberOfLines={2}
-//                   >
-//                     {nativeLangCode 
-//                       ? `Master ${nativeLangCode} today! 🌟` 
-//                       : 'Set native language! 🚀'
-//                     }
+//             {/* Bottom Section: Language + Motivation */}
+//             <View style={styles.bottomRow}>
+//               <View style={styles.languageBadge}>
+//                 {flagImage ? (
+//                   <Image source={flagImage} style={styles.flag} resizeMode="cover" />
+//                 ) : (
+//                   <View style={styles.flagPlaceholder} />
+//                 )}
+//                 <View>
+//                   <Text style={styles.nativeLabel}>Native</Text>
+//                   <Text style={styles.nativeLang} numberOfLines={1} ellipsizeMode="tail">
+//                     {nativeLangCode || 'Not set'}
 //                   </Text>
 //                 </View>
 //               </View>
 
-//               {/* Settings Icon */}
-//               <View className="ml-2">
-//                 <View className="bg-white/20 w-8 h-8 rounded-lg items-center justify-center backdrop-blur-sm border border-white/30">
-//                   <Ionicons name="settings-outline" size={16} color="white" />
-//                 </View>
+//               <Text style={styles.motivationText} numberOfLines={1}>
+//                 {nativeLangCode
+//                   ? `Master ${nativeLangCode} today! 🌟`
+//                   : 'Set your native language! 🚀'}
+//               </Text>
+
+//               <View style={styles.settingsIcon}>
+//                 <Ionicons name="settings-outline" size={16} color="white" />
 //               </View>
 //             </View>
 //           </View>
 
-//           {/* Progress Indicator Bar */}
-//           <View className="h-1 bg-white/20 rounded-b-3xl">
-//             <View 
-//               className="h-full bg-white/40 rounded-b-3xl" 
-//               style={{ width: '65%' }}
-//             />
+//           {/* Progress Bar */}
+//           <View style={styles.progressBarBg}>
+//             <View style={[styles.progressBarFill, { width: '65%' }]} />
 //           </View>
 //         </LinearGradient>
 //       </View>
 
-//       {/* Daily Stats Mini Cards - PROPER HORIZONTAL LAYOUT */}
-//       <View className="flex-row justify-between mt-4 w-full">
+//       {/* Stats Row */}
+//       <View style={[styles.statsRow, { width: cardWidth }]}>
 //         {[
 //           { icon: '📚', label: 'Words', value: '1.2K', color: COLORS.primary },
 //           { icon: '⏱️', label: 'Time', value: '45m', color: COLORS.success },
 //           { icon: '🎯', label: 'Goal', value: '85%', color: COLORS.warning },
 //         ].map((stat, index) => (
-//           <View 
-//             key={index}
-//             className="bg-white rounded-xl p-3 shadow-sm border border-gray-100 mx-1"
-//             style={{ 
-//               width: (screenWidth - 80) / 3, // Calculate equal width considering margins
-//               minHeight: 70,
-//             }}
-//           >
-//             <View className="flex-row items-center justify-between mb-1">
-//               <Text className="text-base">{stat.icon}</Text>
-//               <View className="w-2 h-2 rounded-full" style={{ backgroundColor: stat.color }} />
+//           <View key={index} style={styles.statCard}>
+//             <View style={styles.statHeader}>
+//               <Text style={styles.statIcon}>{stat.icon}</Text>
+//               <View style={[styles.statDot, { backgroundColor: stat.color }]} />
 //             </View>
-//             <Text
-//               className="text-gray-800 font-bold text-sm"
-//               style={{ fontFamily: 'Poppins-SemiBold' }}
-//             >
-//               {stat.value}
-//             </Text>
-//             <Text
-//               className="text-gray-500 text-xs mt-1"
-//               style={{ fontFamily: 'IBMPlexSans-Regular' }}
-//             >
-//               {stat.label}
-//             </Text>
+//             <Text style={styles.statValue}>{stat.value}</Text>
+//             <Text style={styles.statLabel}>{stat.label}</Text>
 //           </View>
 //         ))}
 //       </View>
@@ -613,112 +723,189 @@ const styles = StyleSheet.create({
 //   );
 // }
 
-
-
-// Old Code
-// import React, { useState, useEffect } from 'react';
-
-// import { Text, View, Image } from 'react-native'
-
-// import Feather from '@expo/vector-icons/Feather';
-
-// import * as SecureStore from 'expo-secure-store';
-
-
-// export default function HeaderComponent({ username }) {
-
-
-//   const [nativeLangCode, setNativeLangCode] = useState(null);
-//   const [flagImage, setFlagImage] = useState(null);
-
-
-//   const FLAG_IMAGES = {
-//     'English': require('../../../assets/flags/england.png'),
-//     'Spanish': require('../../../assets/flags/spanish.png'),
-//     'Russian': require('../../../assets/flags/russian.png'),
-//     'Turkish': require('../../../assets/flags/turkish.png'),
-//     };
-  
-
-//     useEffect(() => {
-//     const getNativeLang = async () => {
-//       try {
-//         const native = await SecureStore.getItemAsync('native');
-//         setNativeLangCode(native);
-
-//         // ✅ 2. Map code to image
-//         if (native && FLAG_IMAGES[native]) {
-//           setFlagImage(FLAG_IMAGES[native]);
-//         } 
-//       } catch (error) {
-//         console.error('Failed to load native language', error);
-//       } finally {
-//         setIsLoading(false);
-//       }
-//     };
-
-//     getNativeLang();
-//   }, []);
-
-//   return (
-
-
-//     <View className='flex flex-row items-center mt-5 w-full border border-gray-100 rounded-2xl bg-white/90 px-4 py-5 shadow-sm'>
-//       {/* Profile Image (Left) */}
-//       <View className='relative'>
-//         <Image
-//           source={require('../../../assets/avatar.webp')}
-//           style={{ width: 60, height: 60, borderRadius: 9999 }}
-//           resizeMode='cover'
-//         />
-//         {/* Online indicator */}
-//         <View className='absolute bottom-0 right-0 w-4 h-4 bg-green-500 border-2 border-white rounded-full' />
-//       </View>
-
-//       {/* Text Content */}
-//       <View className='flex-1 ml-4'>
-//         <Text
-//           className='text-2xl font-semibold text-gray-800'
-//           style={{ fontFamily: 'Poppins-Bold' }}
-//         >
-//           {username ? `Hi, ${username}!` : 'Hi, Language Explorer!'}
-//         </Text>
-
-//         <Text
-//           className='text-lg  text-blue-700 mt-1'
-//           style={{ fontFamily: 'Poppins-Regular' }}
-//         >
-//           Ready to learn words?
-//         </Text>
-
-//         <View className='flex flex-row items-center mt-0.5'>
-//           {/* UK Flag Badge */}
-
-
-//           <Image
-//             source={flagImage}
-//             style={{ width: 30, height: 24, borderRadius: 4, marginRight: 6 }}
-//             resizeMode='cover'
-//           />
-          
-//           <Text
-//             className='text-sm text-gray-600'
-//             style={{ fontFamily: 'IBMPlexSans-Regular' }}
-//           >
-//             Native: {nativeLangCode}
-//           </Text>
-//         </View>
-//       </View>
-
-//       {/* Right-side icon (streak or menu) */}
-//       <View className='mr-1'>
-//         <Feather name="zap" size={20} color="#f59e0b" />
-//       </View>
-//     </View>
-
-    
-//   )
-
-// }
+// const styles = StyleSheet.create({
+//   animatedContainer: {
+//     paddingHorizontal: 16,
+//     marginTop: 32,
+//     marginBottom: 16,
+//   },
+//   card: {
+//     borderRadius: 24,
+//     overflow: 'hidden',
+//     shadowColor: '#000',
+//     shadowOffset: { width: 0, height: 8 },
+//     shadowOpacity: 0.12,
+//     shadowRadius: 16,
+//     elevation: 8,
+//   },
+//   gradient: {
+//     paddingTop: 24,
+//     paddingBottom: 20,
+//     paddingHorizontal: 20,
+//   },
+//   cardContent: {
+//     gap: 16,
+//   },
+//   topRow: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     alignItems: 'flex-start',
+//   },
+//   greetingContainer: {
+//     flex: 1,
+//     marginRight: 12,
+//   },
+//   greetingText: {
+//     fontFamily: 'IBMPlexSans-Regular',
+//     fontSize: 14,
+//     color: 'rgba(255, 255, 255, 0.9)',
+//     marginBottom: 4,
+//   },
+//   usernameText: {
+//     fontFamily: 'Poppins-Bold',
+//     fontSize: 20,
+//     color: '#FFFFFF',
+//     lineHeight: 24,
+//   },
+//   streakBadge: {
+//     alignItems: 'center',
+//     minWidth: 72,
+//   },
+//   streakInner: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     backgroundColor: '#F59E0B',
+//     paddingHorizontal: 8,
+//     paddingVertical: 6,
+//     borderRadius: 16,
+//     shadowColor: '#000',
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.2,
+//     shadowRadius: 4,
+//     elevation: 3,
+//   },
+//   streakCount: {
+//     fontFamily: 'Poppins-SemiBold',
+//     fontSize: 12,
+//     color: '#FFFFFF',
+//     marginLeft: 4,
+//   },
+//   streakLabel: {
+//     fontFamily: 'IBMPlexSans-Regular',
+//     fontSize: 11,
+//     color: 'rgba(255, 255, 255, 0.8)',
+//     marginTop: 4,
+//   },
+//   bottomRow: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     flexWrap: 'wrap',
+//     gap: 12,
+//   },
+//   languageBadge: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     backgroundColor: 'rgba(255, 255, 255, 0.2)',
+//     borderRadius: 12,
+//     paddingHorizontal: 10,
+//     paddingVertical: 6,
+//     backdropFilter: 'blur(10px)',
+//     borderWidth: 1,
+//     borderColor: 'rgba(255, 255, 255, 0.3)',
+//   },
+//   flag: {
+//     width: 20,
+//     height: 15,
+//     borderRadius: 2,
+//     marginRight: 6,
+//   },
+//   flagPlaceholder: {
+//     width: 20,
+//     height: 15,
+//     marginRight: 6,
+//   },
+//   nativeLabel: {
+//     fontFamily: 'IBMPlexSans-Regular',
+//     fontSize: 11,
+//     color: 'rgba(255, 255, 255, 0.9)',
+//   },
+//   nativeLang: {
+//     fontFamily: 'Poppins-SemiBold',
+//     fontSize: 12,
+//     color: '#FFFFFF',
+//     maxWidth: 100,
+//   },
+//   motivationText: {
+//     fontFamily: 'IBMPlexSans-Regular',
+//     fontSize: 12,
+//     color: 'rgba(255, 255, 255, 0.9)',
+//     flex: 1,
+//     minWidth: 120,
+//   },
+//   settingsIcon: {
+//     backgroundColor: 'rgba(255, 255, 255, 0.2)',
+//     width: 32,
+//     height: 32,
+//     borderRadius: 10,
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//     borderWidth: 1,
+//     borderColor: 'rgba(255, 255, 255, 0.3)',
+//   },
+//   progressBarBg: {
+//     height: 4,
+//     backgroundColor: 'rgba(255, 255, 255, 0.2)',
+//     borderBottomLeftRadius: 24,
+//     borderBottomRightRadius: 24,
+//     marginTop: 12,
+//   },
+//   progressBarFill: {
+//     height: '100%',
+//     backgroundColor: 'rgba(255, 255, 255, 0.4)',
+//     borderRadius: 24,
+//   },
+//   statsRow: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     marginTop: 16,
+//   },
+//   statCard: {
+//     backgroundColor: '#FFFFFF',
+//     borderRadius: 16,
+//     padding: 12,
+//     width: (screenWidth - 32 - 16) / 3, // 3 cards + 16px gap
+//     alignItems: 'center',
+//     shadowColor: '#000',
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.05,
+//     shadowRadius: 6,
+//     elevation: 2,
+//   },
+//   statHeader: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     width: '100%',
+//     marginBottom: 6,
+//   },
+//   statIcon: {
+//     fontSize: 18,
+//   },
+//   statDot: {
+//     width: 6,
+//     height: 6,
+//     borderRadius: 3,
+//   },
+//   statValue: {
+//     fontFamily: 'Poppins-SemiBold',
+//     fontSize: 14,
+//     color: COLORS.textPrimary,
+//     marginBottom: 2,
+//   },
+//   statLabel: {
+//     fontFamily: 'IBMPlexSans-Regular',
+//     fontSize: 11,
+//     color: COLORS.textSecondary,
+//   },
+// });
 
 
