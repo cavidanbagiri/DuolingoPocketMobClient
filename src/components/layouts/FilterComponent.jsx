@@ -113,7 +113,7 @@ const FilterComponent = ({ filter, setFilter, screen }) => {
               }`}
             style={{ fontFamily: 'IBMPlexSans-SemiBold' }}
           >
-            {available_lang_toggle ? 'Available' : 'All'}
+            {available_lang_toggle ? 'Show Langs' : 'Hide'}
           </Text>
         </TouchableOpacity>
 

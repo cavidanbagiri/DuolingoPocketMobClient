@@ -2,28 +2,29 @@
 # Database Situation
 
     # English Words [1, 9909]
-        # Generate Sentences [1001, ...] # now 101-1000
+        # Generate Sentences [1001, ...] # now 1011, 1111
         # Sentences [32849, 42987]
         # Translate Sentences [32849, 42987]
 
     # Russian Words [9910, 19106]
-        # Generate Sentences [10775, ...]
+        # Generate Sentences [10775, ...] # now 10786, 10886
         # Sentencees [33410, 45139]
         # Translate Sentences [33609, 45139]
 
 
     # Spanish Words [19107, 29106]
-        # Generate Sentences [20112, ...] # now 19111-20111
+        # Generate Sentences [20112, ...] # now 20123, 20223
         # Sentencees [33609, 44470]
         # Translate Sentences [33609, 44470]
 
 
 
 # Problems
-# 1 - Selected Turkish language doesnt show the words which translated from russian or eng or spanish
+# 1 - Solve Choose lang problems in learned screen
+# 2 - Solve select language for learning message
 
 # Today Will Solve:  
-# 1, 
+# 1
 
 
 # Next Ideas:
