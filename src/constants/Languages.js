@@ -2,6 +2,7 @@ const LANGUAGES = [
     { name: 'Spanish', image: require('../../assets/flags/spanish.png'), code: 'es' },
     { name: 'Russian', image: require('../../assets/flags/russian.png'), code: 'ru' },
     { name: 'English', image: require('../../assets/flags/england.png'), code: 'en' },
+    { name: 'Turkish', image: require('../../assets/flags/turkish.png'), code: 'tr' },
     // {code:'af', name:'Afrikaans',},
     // {code:'am', name:'Amharic',},
     // {code:'ar', name:'Arabic',},

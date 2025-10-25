@@ -27,7 +27,7 @@ export default function LearnedScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      if (is_auth && statistics.length === 0) {
+      if (is_auth && statistics?.length === 0) {
         dispatch(WordService.getStatisticsForDashboard());
       }
     }, [is_auth])
@@ -69,7 +69,7 @@ export default function LearnedScreen() {
         </View>
       )}
       {/* No Words State */}
-      {selectedLanguage && !words_pending && words?.length === 0 && (
+      {selectedLanguage && !words_pending && words?.length === 0 && ( 
         <EmptyWordsComponents />
       )}
       {/* Words List */}
