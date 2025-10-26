@@ -1,3 +1,7 @@
+
+
+
+
 // SearchScreen.jsx
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
@@ -9,21 +13,25 @@ import {
     StyleSheet,
     ActivityIndicator,
     ScrollView,
+    Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
 import WordService from '../../services/WordService';
-import LANGUAGES from '../../constants/Languages';
+import VoiceButtonComponent from '../../components/layouts/VoiceButtonComponent';
 
 import * as SecureStore from 'expo-secure-store';
-import RenderWordComponent from '../../components/search/RenderWordComponent';
 
+const AVAILABLE_LANGUAGES = [
+    { name: 'Spanish', image: require('../../../assets/flags/spanish.png'), code: 'es' },
+    { name: 'Russian', image: require('../../../assets/flags/russian.png'), code: 'ru' },
+    { name: 'English', image: require('../../../assets/flags/england.png'), code: 'en' },
+    { name: 'Turkish', image: require('../../../assets/flags/turkish.png'), code: 'tr' },
+]
 
 export default function SearchScreen({ navigation }) {
-
-    const insets = useSafeAreaInsets(); // ← Get safe area values
-
+    const insets = useSafeAreaInsets();
     const dispatch = useDispatch();
 
     const { searchResults, isLoading, error } = useSelector((state) => state.wordSlice);
@@ -34,24 +42,21 @@ export default function SearchScreen({ navigation }) {
     const [query, setQuery] = useState('');
     const [debouncedQuery, setDebouncedQuery] = useState('');
 
-
     // Debounce search to avoid too many API calls
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedQuery(query);
-        }, 300); // 300ms delay
+        }, 300);
 
         return () => clearTimeout(timer);
     }, [query]);
 
     const handleSearch = useCallback(() => {
-
-        
-         const controller = new AbortController();
+        const controller = new AbortController();
 
         if (debouncedQuery.trim().length > 0) {
             const data = {
-                native_language: LANGUAGES.find(lang => lang.name === nativeLang)?.code,
+                native_language: AVAILABLE_LANGUAGES.find(lang => lang.name === nativeLang)?.code,
                 target_language: targetLanguage,
                 query: debouncedQuery,
             };
@@ -60,7 +65,6 @@ export default function SearchScreen({ navigation }) {
         return () => controller.abort();
     }, [debouncedQuery, nativeLang, targetLanguage, dispatch]);
 
-    // Use in useEffect
     useEffect(() => {
         handleSearch();
     }, [handleSearch]);
@@ -74,37 +78,86 @@ export default function SearchScreen({ navigation }) {
             console.error('Failed to load native language', error);
           } 
         };
-    
         getNativeLang();
-      }, []);
+    }, []);
 
-      useEffect(() => {
+    useEffect(() => {
         if (selectedLanguage) {
           setTargetLanguage(selectedLanguage);
         }
-      }, [selectedLanguage]);
-    
+    }, [selectedLanguage]);
+
+    const getFlagImage = (languageCode) => {
+        const language = AVAILABLE_LANGUAGES.find(lang => lang.code === languageCode);
+        return language ? language.image : null;
+    };
 
     const renderWordItem = useCallback(({ item }) => (
-        <RenderWordComponent item={item} />
+      <TouchableOpacity
+      onPress={() => navigation.navigate('CardDetail', { word: item })}
+      >
+        <View style={styles.wordCard}>
+            {/* Header with Flag and Status */}
+            <View style={styles.cardHeader}>
+                <View style={styles.flagContainer}>
+                    <Image 
+                        source={getFlagImage(item.language_code)} 
+                        style={styles.flag}
+                        resizeMode="cover"
+                    />
+                    <Text style={styles.languageCode}>{item.language_code.toUpperCase()}</Text>
+                </View>
+                
+                <View style={styles.statusContainer}>
+                    {item.is_learned && (
+                        <View style={[styles.statusBadge, styles.learnedBadge]}>
+                            <Ionicons name="checkmark-circle" size={14} color="#10b981" />
+                            <Text style={styles.statusText}>Learned</Text>
+                        </View>
+                    )}
+                    {item.is_starred && (
+                        <View style={[styles.statusBadge, styles.starredBadge]}>
+                            <Ionicons name="star" size={14} color="#f59e0b" />
+                            <Text style={styles.statusText}>Starred</Text>
+                        </View>
+                    )}
+                </View>
+            </View>
+
+            {/* Main Content */}
+            <View style={styles.cardContent}>
+                <View style={styles.wordSection}>
+                    <Text style={styles.wordText}>{item.text}</Text>
+                    <Text style={styles.translationText}>{item.translation_to_native}</Text>
+                </View>
+                
+                {/* Action Buttons */}
+                <View style={styles.actionButtons}>
+                    {/* <TouchableOpacity style={styles.iconButton}>
+                        <Ionicons name="volume-medium-outline" size={20} color="#6366f1" />
+                    </TouchableOpacity> */}
+                    <VoiceButtonComponent
+                                        text={item.text}
+                                        language={selectedLanguage}
+                                        size={20}
+                                      />
+                    <TouchableOpacity style={styles.iconButton}>
+                        <Ionicons name={item.is_starred ? "star" : "star-outline"} size={20} color="#f59e0b" />
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </View>
+        </TouchableOpacity>
     ), []);
 
-    // Add keyExtractor optimization
     const keyExtractor = useCallback((item) => item.id.toString(), []);
 
-
     return (
-
-         <View style={styles.container}>
-
-            {/* 🔝 Header with Search + Cancel */}
-            <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
-                
-                {/* Search Input */}
-                <View className='bg-blue-400 '
-                style={styles.searchContainer}>
+        <View style={[styles.container, { paddingTop: insets.top }]}>
+            {/* Header with Search */}
+            <View style={styles.header}>
+                <View style={styles.searchContainer}>
                     <Ionicons name="search" size={20} color="#6b7280" />
-                    
                     <TextInput
                         value={query}
                         onChangeText={setQuery}
@@ -113,323 +166,339 @@ export default function SearchScreen({ navigation }) {
                         style={styles.searchInput}
                         autoFocus
                         returnKeyType="search"
-                        clearButtonMode="while-editing" // iOS only
                     />
-
                     {query.length > 0 && (
                         <TouchableOpacity
                             onPress={() => setQuery('')}
                             style={styles.clearButton}
-                            accessibilityLabel="Clear search"
-                            >
+                        >
                             <Ionicons name="close-circle" size={20} color="#9ca3af" />
                         </TouchableOpacity>
                     )}
                 </View>
 
-                {/* Cancel Button */}
                 <TouchableOpacity
                     onPress={() => navigation.goBack()}
                     style={styles.cancelButton}
-                    accessibilityLabel="Cancel search"
-                    >
+                >
                     <Text style={styles.cancelText}>Cancel</Text>
                 </TouchableOpacity>
             </View>
 
-            {/* 🌐 Language Filter Section */}
+            {/* Language Filter Section */}
             <View style={styles.filterContainer}>
-
-                {/* Label */}
-                <Text style={styles.filterLabel}>Filter by language:</Text>
-
-                {/* Horizontal Scrollable Pills */}
+                <Text style={styles.filterLabel}>Filter by language</Text>
                 <ScrollView 
                     horizontal 
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={styles.pillScrollContent}
-                    keyboardDismissMode="on-drag"
                 >
-                    
-                    {/* 'All Languages' Pill */}
                     <TouchableOpacity
-                    style={[
-                        styles.pill,
-                        targetLanguage === 'all' && styles.pillActive
-                    ]}
-                    onPress={() => {
-                        setTargetLanguage('all')
-                        const data = {
-                            native_language: LANGUAGES.find(lang => lang.name === nativeLang)?.code,
-                            target_language: 'all',
-                            query: debouncedQuery,
-                        }
-                        dispatch(WordService.getSearchResults(data));
-                    }}
-                    activeOpacity={0.7}
-                    accessibilityLabel="Show all languages"
-                    accessibilityState={{ selected: targetLanguage === 'all' }}
-                    >
-                    <Text style={[
-                        styles.pillText,
-                        targetLanguage === 'all' && styles.pillTextActive
-                    ]}>
-                        All Languages
-                    </Text>
-                    </TouchableOpacity>
-
-                    {/* Individual Language Pills */}
-                    {LANGUAGES.filter(lang => lang.name !== nativeLang).map((language) => (
-                    <TouchableOpacity
-                        key={language.code}
                         style={[
-                        styles.pill,
-                        targetLanguage === language.code && styles.pillActive
+                            styles.pill,
+                            targetLanguage === 'all' && styles.pillActive
                         ]}
                         onPress={() => {
-                            setTargetLanguage(language.code);
+                            setTargetLanguage('all')
                             const data = {
-                                native_language: LANGUAGES.find(lang => lang.name === nativeLang)?.code,
-                                target_language: language.code,
+                                native_language: AVAILABLE_LANGUAGES.find(lang => lang.name === nativeLang)?.code,
+                                target_language: 'all',
                                 query: debouncedQuery,
                             }
                             dispatch(WordService.getSearchResults(data));
                         }}
-                        activeOpacity={0.7}
-                        accessibilityLabel={`Show words in ${language.name}`}
-                        accessibilityState={{ selected: targetLanguage === language.code }}
                     >
                         <Text style={[
-                        styles.pillText,
-                        targetLanguage === language.code && styles.pillTextActive
+                            styles.pillText,
+                            targetLanguage === 'all' && styles.pillTextActive
                         ]}>
-                        {language.flag} {language.name}
+                            All Languages
                         </Text>
                     </TouchableOpacity>
+
+                    {AVAILABLE_LANGUAGES.filter(lang => lang.name !== nativeLang).map((language) => (
+                        <TouchableOpacity
+                            key={language.code}
+                            style={[
+                                styles.pill,
+                                targetLanguage === language.code && styles.pillActive
+                            ]}
+                            onPress={() => {
+                                setTargetLanguage(language.code);
+                                const data = {
+                                    native_language: AVAILABLE_LANGUAGES.find(lang => lang.name === nativeLang)?.code,
+                                    target_language: language.code,
+                                    query: debouncedQuery,
+                                }
+                                dispatch(WordService.getSearchResults(data));
+                            }}
+                        >
+                            <Image source={language.image} style={styles.pillFlag} />
+                            <Text style={[
+                                styles.pillText,
+                                targetLanguage === language.code && styles.pillTextActive
+                            ]}>
+                                {language.name}
+                            </Text>
+                        </TouchableOpacity>
                     ))}
                 </ScrollView>
             </View>
 
-            {/* 🔍 Results */}
+            {/* Results Section */}
             {isLoading ? (
                 <View style={styles.centered}>
                     <ActivityIndicator size="large" color="#6366F1" />
-                    <Text style={styles.loadingText}>Searching...</Text>
+                    <Text style={styles.loadingText}>Searching vocabulary...</Text>
                 </View>
             ) : error ? (
                 <View style={styles.centered}>
-                    <Ionicons name="alert-circle" size={28} color="#ef4444" />
-                    <Text style={styles.errorText}>{error.message}</Text>
+                    <Ionicons name="alert-circle" size={48} color="#ef4444" />
+                    <Text style={styles.errorText}>Something went wrong</Text>
+                    <Text style={styles.errorSubtext}>{error.message}</Text>
                 </View>
             ) : (
                 <FlatList
-                data={searchResults?.results || []}
-                keyExtractor={keyExtractor}
-                renderItem={renderWordItem}
-                ListEmptyComponent={
-                    <View style={styles.centered}>
-                    <Ionicons name="search-outline" size={32} color="#d1d5db" />
-                    <Text style={styles.emptyText}>
-                        {debouncedQuery 
-                        ? 'No matching words found' 
-                        : 'Start typing to discover vocabulary'
-                        }
-                    </Text>
-                    {!debouncedQuery && (
-                        <Text style={styles.tipText}>
-                        Try: “hello”, “привет”, or “learned”
-                        </Text>
-                    )}
-                    </View>
-                }
-                showsVerticalScrollIndicator={false}
-                keyboardDismissMode="on-drag"
-                contentContainerStyle={styles.listContent}
+                    data={searchResults?.results || []}
+                    keyExtractor={keyExtractor}
+                    renderItem={renderWordItem}
+                    ListEmptyComponent={
+                        <View style={styles.centered}>
+                            <Ionicons name="search-outline" size={64} color="#d1d5db" />
+                            <Text style={styles.emptyText}>
+                                {debouncedQuery 
+                                    ? 'No matching words found' 
+                                    : 'Search for vocabulary'
+                                }
+                            </Text>
+                            {!debouncedQuery && (
+                                <Text style={styles.tipText}>
+                                    Try searching for: "hello", "gracias", or "learned"
+                                </Text>
+                            )}
+                        </View>
+                    }
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={styles.listContent}
                 />
             )}
-    </View>
+        </View>
     );
 }
 
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    gap: 8,
-  },
-
-searchContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',        // This centers children vertically
-    backgroundColor: '#F3F4F6',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    height: 40,                  // ≈ 20px text + 10px top/bottom space
-    gap: 8,
-  },
-
-searchInput: {
-    flex: 1,
-    fontSize: 16,
-    color: '#111827',
-    fontFamily: 'IBMPlexSans-Regular',
-
-    // 🔽 Critical for vertical centering
-    textAlignVertical: 'center',   // Forces text & placeholder to center
-    includeFontPadding: false,     // Removes extra top/bottom space (Android)
-    
-    // 🔽 Prevent any internal spacing
-    paddingVertical: 0,            // Remove built-in padding
-    paddingHorizontal: 0,          // Optional: let parent handle side padding
-    margin: 0,                     // Reset margin
-
-    // 🔽 Line height = font size → tight fit
-    lineHeight: 20,
-
-    // 🔽 Prevent wrapping or growth
-    numberOfLines: 1,
-    maxHeight: 20,
-    overflow: 'hidden',
-    // backgroundColor: 'rgba(255,0,0,0.1)', // Light red tint
-  },
-  clearButton: {
-    padding: 6, // Make sure icon has tap space
-  },
-  cancelButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-  },
-  cancelText: {
-    fontSize: 16,
-    color: '#6366F1',
-    fontFamily: 'IBMPlexSans-SemiBold',
-  },
-  listContent: {
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 32,
-  },
-  wordItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    marginBottom: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 1,
-    borderColor: '#F3F4F6',
-    borderWidth: 1,
-  },
-  wordText: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: '#111827',
-    flex: 1,
-  },
-  translation: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginTop: 2,
-  },
-  statusIcons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginLeft: 8,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 40,
-    paddingTop: 60,
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 16,
-    color: '#4B5563',
-    fontFamily: 'IBMPlexSans-Medium',
-  },
-  errorText: {
-    marginTop: 12,
-    fontSize: 16,
-    color: '#EF4444',
-    textAlign: 'center',
-  },
-  emptyText: {
-    marginTop: 12,
-    fontSize: 16,
-    color: '#6B7280',
-    textAlign: 'center',
-    lineHeight: 22,
-    fontFamily: 'IBMPlexSans-Regular',
-  },
-  tipText: {
-    marginTop: 8,
-    fontSize: 14,
-    color: '#9CA3AF',
-    textAlign: 'center',
-    fontStyle: 'italic',
-    fontFamily: 'IBMPlexSans-Italic',
-  },
-  filterContainer: {
-    marginTop: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  filterLabel: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#374151',
-    marginBottom: 12,
-    fontFamily: 'IBMPlexSans-Medium',
-    marginLeft: 4,
-  },
-  pillScrollContent: {
-    paddingHorizontal: 4,
-    gap: 12, // Consistent spacing between pills
-  },
-  pill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F9FAFB',
-    borderColor: '#E5E7EB',
-    borderWidth: 1,
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    minWidth: 100,
-    justifyContent: 'center',
-  },
-  pillActive: {
-    backgroundColor: '#6366F1',
-    borderColor: '#6366F1',
-    shadowColor: '#6366F1',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  pillText: {
-    fontSize: 14,
-    color: '#4B5563',
-    fontFamily: 'IBMPlexSans-Regular',
-  },
-  pillTextActive: {
-    color: '#FFFFFF',
-    fontFamily: 'IBMPlexSans-SemiBold',
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#f8fafc',
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: '#ffffff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#e2e8f0',
+    },
+    searchContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#f1f5f9',
+        borderRadius: 12,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        marginRight: 12,
+    },
+    searchInput: {
+        flex: 1,
+        fontSize: 16,
+        color: '#1e293b',
+        marginLeft: 8,
+        paddingVertical: 4,
+    },
+    clearButton: {
+        padding: 4,
+    },
+    cancelButton: {
+        paddingVertical: 6,
+        paddingHorizontal: 8,
+    },
+    cancelText: {
+        fontSize: 16,
+        color: '#6366f1',
+        fontWeight: '500',
+    },
+    filterContainer: {
+        backgroundColor: '#ffffff',
+        paddingVertical: 16,
+        paddingHorizontal: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: '#e2e8f0',
+    },
+    filterLabel: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#475569',
+        marginBottom: 12,
+    },
+    pillScrollContent: {
+        gap: 8,
+    },
+    pill: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#f8fafc',
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: '#e2e8f0',
+        marginRight: 8,
+    },
+    pillActive: {
+        backgroundColor: '#6366f1',
+        borderColor: '#6366f1',
+    },
+    pillText: {
+        fontSize: 14,
+        fontWeight: '500',
+        color: '#64748b',
+    },
+    pillTextActive: {
+        color: '#ffffff',
+    },
+    pillFlag: {
+        width: 16,
+        height: 12,
+        borderRadius: 2,
+        marginRight: 6,
+    },
+    listContent: {
+        padding: 16,
+    },
+    wordCard: {
+        backgroundColor: '#ffffff',
+        borderRadius: 16,
+        padding: 16,
+        marginBottom: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 8,
+        elevation: 2,
+        borderWidth: 1,
+        borderColor: '#f1f5f9',
+    },
+    cardHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    flagContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    flag: {
+        width: 24,
+        height: 18,
+        borderRadius: 4,
+        marginRight: 8,
+    },
+    languageCode: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#64748b',
+        textTransform: 'uppercase',
+    },
+    statusContainer: {
+        flexDirection: 'row',
+        gap: 6,
+    },
+    statusBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 12,
+        gap: 4,
+    },
+    learnedBadge: {
+        backgroundColor: '#ecfdf5',
+        borderWidth: 1,
+        borderColor: '#d1fae5',
+    },
+    starredBadge: {
+        backgroundColor: '#fffbeb',
+        borderWidth: 1,
+        borderColor: '#fef3c7',
+    },
+    statusText: {
+        fontSize: 10,
+        fontWeight: '500',
+    },
+    cardContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    wordSection: {
+        flex: 1,
+    },
+    wordText: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#1e293b',
+        marginBottom: 4,
+    },
+    translationText: {
+        fontSize: 14,
+        color: '#64748b',
+        fontStyle: 'italic',
+    },
+    actionButtons: {
+        flexDirection: 'row',
+        gap: 12,
+    },
+    iconButton: {
+        padding: 8,
+    },
+    centered: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 32,
+    },
+    loadingText: {
+        marginTop: 16,
+        fontSize: 16,
+        color: '#64748b',
+    },
+    errorText: {
+        marginTop: 16,
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#1e293b',
+    },
+    errorSubtext: {
+        marginTop: 8,
+        fontSize: 14,
+        color: '#64748b',
+        textAlign: 'center',
+    },
+    emptyText: {
+        marginTop: 16,
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#475569',
+        textAlign: 'center',
+    },
+    tipText: {
+        marginTop: 8,
+        fontSize: 14,
+        color: '#94a3b8',
+        textAlign: 'center',
+    },
 });
+

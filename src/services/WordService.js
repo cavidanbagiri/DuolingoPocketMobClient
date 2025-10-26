@@ -145,12 +145,6 @@ class WordService {
         '/words/search-test',  // This should match your backend route
         async (data, thunkAPI) => {
             try {
-                // Get current language from Redux state or elsewhere
-                // const state = thunkAPI.getState();
-                // const currentLanguage = state.language.current; // Adjust this path based on your state structure
-                // const currentLanguage = 'all'; // Adjust this path based on your state structure
-                console.log('native alng is {}', data.native_language)
-                console.log('target alng is {}', data.target_language)
                 const response = await $api.get(`/words/search-test`, {
                     params: {
                         native_language: data.native_language, // Add language parameter

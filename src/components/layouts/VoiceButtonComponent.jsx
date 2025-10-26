@@ -96,7 +96,7 @@ export default function VoiceButtonComponent({ text, language }) {
             <Ionicons
                 name={'volume-medium-outline'}
                 size={22}
-                color={isPlaying ? '#d1d5db' : '#4B5563'} // Change color when playing
+                color={isPlaying ? '#d1d5db' : '#6366f1'} // Change color when playing
             />
         </TouchableOpacity>
 
