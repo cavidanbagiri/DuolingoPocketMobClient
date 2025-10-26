@@ -2,26 +2,26 @@
 # Database Situation
 
     # English Words [1, 9909]
-        # Generate Sentences [1001, ...] # now 1011, 1111
+        # Generate Sentences [2036, ...] # now 
         # Sentences [32849, 42987]
-        # Translate Sentences [32849, 42987]
+        # Translate Sentences [42988, ...]
 
     # Russian Words [9910, 19106]
-        # Generate Sentences [10775, ...] # now 10786, 10886
+        # Generate Sentences [11622, ...] # now 
         # Sentencees [33410, 45139]
-        # Translate Sentences [33609, 45139]
+        # Translate Sentences [45140, ...]
 
 
     # Spanish Words [19107, 29106]
-        # Generate Sentences [20112, ...] # now 20123, 20223
+        # Generate Sentences [21077, ...] # now 
         # Sentencees [33609, 44470]
-        # Translate Sentences [33609, 44470]
+        # Translate Sentences [44471, ...]
 
 
 
 # Problems
-# 1 - Solve Choose lang problems in learned screen
-# 2 - Solve select language for learning message
+# 1 - Solve select language for learning message
+# 2 - Set Search word again, turkish is not native, but can search from as translations
 
 # Today Will Solve:  
 # 1

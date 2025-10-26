@@ -9,8 +9,6 @@ import { getFromStorage } from '../../utils/storage';
 import MsgBox from '../../components/layouts/MsgBox';
 import ChooseLangComponent from '../../components/home/ChooseLangComponent';
 
-import Feather from '@expo/vector-icons/Feather';
-
 import { setNewTargetLanguageCondFalse } from '../../store/auth_store';
 import LanguagesStatisticsComponents from '../../components/home/LanguagesStatisticsComponents';
 
@@ -34,13 +32,13 @@ export default function HomeScreen() {
   useEffect(() => {
     setTimeout(() => {
       dispatch(setNewTargetLanguageCondFalse());
-    }, 1000);
+    }, 2000);
   }, [new_target_lang_cond]);
 
 
   useEffect(() => {
     const loadUsername = async () => {
-      let storedUsername = await getFromStorage('username');
+      let storedUsername = await getFromStorage('username'); 
       if (is_auth === false) {
         setUsername('');
         storedUsername = '';
@@ -67,20 +65,16 @@ export default function HomeScreen() {
   return (
 
     <SafeAreaView style={styles.safeArea} className='bg-slate-100'>
-
+      <MsgBox
+                message={new_target_lang_cond.msg}
+                visible={new_target_lang_cond.is_cond}
+                type="success" 
+              />
       {
         is_auth ?
           <ScrollView contentContainerStyle={styles.scroll}>
 
-
-            {
-              new_target_lang_cond.is_cond &&
-              <MsgBox
-                message={new_target_lang_cond.msg}
-                visible={new_target_lang_cond.is_cond}
-                type="error"
-              />
-            }
+            
 
             <HeaderComponent username={username} />
 
@@ -90,6 +84,9 @@ export default function HomeScreen() {
               className='rounded-2xl'
               style={styles.dropdownMainWrapper}>
 
+                <View >
+                  <LanguagesStatisticsComponents />
+                </View>
 
                 <View>
                   <ChooseLangComponent 
@@ -99,9 +96,7 @@ export default function HomeScreen() {
                   />
                 </View>
 
-                <View >
-                  <LanguagesStatisticsComponents />
-                </View>
+                
 
             </View>
 
@@ -120,6 +115,7 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#FFFFFF',
+    position: 'relative',
   },
   scroll: {
     // paddingHorizontal: 16,

@@ -49,7 +49,7 @@ export const authSlice = createSlice({
         setIsLoginSuccessFalse: (state) => {
             state.login_success = false;
         },
-        setNewTargetLanguageCondFalse: (state, action) => { 
+        setNewTargetLanguageCondFalse: (state, action) => {
             state.new_target_lang_cond.is_cond = false;
             state.new_target_lang_cond.msg = '';
         },
@@ -154,7 +154,7 @@ export const authSlice = createSlice({
 
         });
         builder.addCase(AuthService.setNativeLanguage.rejected, (state, action) => {
-            console.log('refresh second', action.payload);
+            // console.log('refresh second', action.payload);
         });
 
         
@@ -162,7 +162,7 @@ export const authSlice = createSlice({
         builder.addCase(AuthService.setTargetLanguage.fulfilled, (state, action) => {
             state.choosen_lang = action.payload?.payload?.target_language_code
             state.new_target_lang_cond.is_cond = true;
-            state.new_target_lang_cond.msg = action.payload?.payload?.msg;
+            state.new_target_lang_cond.msg = action.payload?.payload?.msg; 
             
             
             
