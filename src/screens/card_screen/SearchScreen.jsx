@@ -20,6 +20,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
 import WordService from '../../services/WordService';
 import VoiceButtonComponent from '../../components/layouts/VoiceButtonComponent';
+import RenderWordComponent from '../../components/search/RenderWordComponent';
 
 import * as SecureStore from 'expo-secure-store';
 
@@ -36,17 +37,55 @@ export default function SearchScreen({ navigation }) {
 
     const { searchResults, isLoading, error } = useSelector((state) => state.wordSlice);
     const { selectedLanguage } = useSelector((state) => state.wordSlice);
-    
+
     const [nativeLang, setNativeLang] = useState(null);
     const [targetLanguage, setTargetLanguage] = useState(selectedLanguage);
     const [query, setQuery] = useState('');
     const [debouncedQuery, setDebouncedQuery] = useState('');
 
+    // const [isStarred, setIsStarred] = useState(false);
+    // const [isLearned, setIsLearned] = useState(false);
+
+    // const handleToggle = async (actionType) => {
+    //     try {
+    //         const res = await dispatch(WordService.setStatus({
+    //             word_id: word.id,
+    //             action: actionType,
+    //         })).unwrap();
+
+    //         setIsStarred(res.is_starred);
+    //         setIsLearned(res.is_learned);
+
+    //     } catch (error) {
+    //         console.error('Failed to update status:', error);
+    //     }
+    // };
+
+    // Fix the handleToggle function to work with the component
+    // const handleToggle = useCallback(async (actionType, wordId) => {
+    //     try {
+    //         const res = await dispatch(WordService.setStatus({
+    //             word_id: wordId,
+    //             action: actionType,
+    //         })).unwrap();
+
+    //         // You might want to update the local state or refetch search results
+    //         // Since the item data comes from Redux, it should update automatically
+    //         console.log('Status updated:', res);
+    //         setIsStarred(res.is_starred);
+
+    //     } catch (error) {
+    //         console.error('Failed to update status:', error);
+    //     }
+    // }, [dispatch]);
+
+
+
     // Debounce search to avoid too many API calls
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedQuery(query);
-        }, 300);
+        }, 800);
 
         return () => clearTimeout(timer);
     }, [query]);
@@ -71,19 +110,19 @@ export default function SearchScreen({ navigation }) {
 
     useEffect(() => {
         const getNativeLang = async () => {
-          try {
-            const native = await SecureStore.getItemAsync('native');
-            setNativeLang(native);
-          } catch (error) {
-            console.error('Failed to load native language', error);
-          } 
+            try {
+                const native = await SecureStore.getItemAsync('native');
+                setNativeLang(native);
+            } catch (error) {
+                console.error('Failed to load native language', error);
+            }
         };
         getNativeLang();
     }, []);
 
     useEffect(() => {
         if (selectedLanguage) {
-          setTargetLanguage(selectedLanguage);
+            setTargetLanguage(selectedLanguage);
         }
     }, [selectedLanguage]);
 
@@ -93,62 +132,85 @@ export default function SearchScreen({ navigation }) {
     };
 
     const renderWordItem = useCallback(({ item }) => (
-      <TouchableOpacity
-      onPress={() => navigation.navigate('CardDetail', { word: item })}
-      >
-        <View style={styles.wordCard}>
-            {/* Header with Flag and Status */}
-            <View style={styles.cardHeader}>
-                <View style={styles.flagContainer}>
-                    <Image 
-                        source={getFlagImage(item.language_code)} 
-                        style={styles.flag}
-                        resizeMode="cover"
-                    />
-                    <Text style={styles.languageCode}>{item.language_code.toUpperCase()}</Text>
-                </View>
-                
-                <View style={styles.statusContainer}>
-                    {item.is_learned && (
-                        <View style={[styles.statusBadge, styles.learnedBadge]}>
-                            <Ionicons name="checkmark-circle" size={14} color="#10b981" />
-                            <Text style={styles.statusText}>Learned</Text>
-                        </View>
-                    )}
-                    {item.is_starred && (
-                        <View style={[styles.statusBadge, styles.starredBadge]}>
-                            <Ionicons name="star" size={14} color="#f59e0b" />
-                            <Text style={styles.statusText}>Starred</Text>
-                        </View>
-                    )}
-                </View>
-            </View>
+        <RenderWordComponent 
+            item={item}
+            // handleToggle={handleToggle}
+            selectedLanguage={selectedLanguage}
+            getFlagImage={getFlagImage}
+        />
+    ), [selectedLanguage, getFlagImage]);
 
-            {/* Main Content */}
-            <View style={styles.cardContent}>
-                <View style={styles.wordSection}>
-                    <Text style={styles.wordText}>{item.text}</Text>
-                    <Text style={styles.translationText}>{item.translation_to_native}</Text>
-                </View>
-                
-                {/* Action Buttons */}
-                <View style={styles.actionButtons}>
-                    {/* <TouchableOpacity style={styles.iconButton}>
-                        <Ionicons name="volume-medium-outline" size={20} color="#6366f1" />
-                    </TouchableOpacity> */}
-                    <VoiceButtonComponent
-                                        text={item.text}
-                                        language={selectedLanguage}
-                                        size={20}
-                                      />
-                    <TouchableOpacity style={styles.iconButton}>
-                        <Ionicons name={item.is_starred ? "star" : "star-outline"} size={20} color="#f59e0b" />
-                    </TouchableOpacity>
-                </View>
-            </View>
-        </View>
-        </TouchableOpacity>
-    ), []);
+    // const renderWordItem = useCallback(({ item }) => (
+    //     <TouchableOpacity
+    //         onPress={() => navigation.navigate('CardDetail', { word: item })}
+    //     >
+    //         <View style={styles.wordCard}>
+    //             {/* Header with Flag and Status */}
+    //             <View style={styles.cardHeader}>
+    //                 <View style={styles.flagContainer}>
+    //                     <Image
+    //                         source={getFlagImage(item.language_code)}
+    //                         style={styles.flag}
+    //                         resizeMode="cover"
+    //                     />
+    //                     <Text style={styles.languageCode}>{item.language_code.toUpperCase()}</Text>
+    //                 </View>
+
+    //                 <View style={styles.statusContainer}>
+    //                     {item.is_learned && (
+    //                         <View style={[styles.statusBadge, styles.learnedBadge]}>
+    //                             <Ionicons name="checkmark-circle" size={14} color="#10b981" />
+    //                             <Text style={styles.statusText}>Learned</Text>
+    //                         </View>
+    //                     )}
+    //                     {item.is_starred && (
+    //                         <View style={[styles.statusBadge, styles.starredBadge]}>
+    //                             <Ionicons name="star" size={14} color="#f59e0b" />
+    //                             <Text style={styles.statusText}>Starred</Text>
+    //                         </View>
+    //                     )}
+    //                 </View>
+    //             </View>
+
+    //             {/* Main Content */}
+    //             <View style={styles.cardContent}>
+    //                 <View style={styles.wordSection}>
+    //                     <Text style={styles.wordText}>{item.text}</Text>
+    //                     <Text style={styles.translationText}>{item.translation_to_native}</Text>
+    //                 </View>
+
+    //                 {/* Action Buttons */}
+    //                 <View style={styles.actionButtons}>
+    //                     <VoiceButtonComponent
+    //                         text={item.text}
+    //                         language={selectedLanguage}
+    //                         size={20}
+    //                     />
+    //                     {/* <TouchableOpacity style={styles.iconButton}>
+    //                     <Ionicons name={item.is_starred ? "star" : "star-outline"} size={20} color="#f59e0b" />
+    //                 </TouchableOpacity> */}
+    //                     <TouchableOpacity
+    //                         onPress={(e) => {
+    //                             e.stopPropagation(); // Prevent card navigation
+    //                             handleToggle('star');
+    //                         }}
+    //                         className="p-2"
+    //                         accessibilityLabel={isStarred ? "Remove from favorites" : "Add to favorites"}
+    //                     >
+    //                         <Ionicons
+    //                             name={isStarred ? 'star' : 'star-outline'}
+    //                             size={20}
+    //                             color={isStarred ? '#facc15' : '#4B5563'}
+    //                         />
+    //                     </TouchableOpacity>
+
+    //                 </View>
+    //                 {/* Star Toggle */}
+
+    //             </View>
+    //         </View>
+    //     </TouchableOpacity>
+    // ), []);
 
     const keyExtractor = useCallback((item) => item.id.toString(), []);
 
@@ -188,8 +250,8 @@ export default function SearchScreen({ navigation }) {
             {/* Language Filter Section */}
             <View style={styles.filterContainer}>
                 <Text style={styles.filterLabel}>Filter by language</Text>
-                <ScrollView 
-                    horizontal 
+                <ScrollView
+                    horizontal
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={styles.pillScrollContent}
                 >
@@ -266,8 +328,8 @@ export default function SearchScreen({ navigation }) {
                         <View style={styles.centered}>
                             <Ionicons name="search-outline" size={64} color="#d1d5db" />
                             <Text style={styles.emptyText}>
-                                {debouncedQuery 
-                                    ? 'No matching words found' 
+                                {debouncedQuery
+                                    ? 'No matching words found'
                                     : 'Search for vocabulary'
                                 }
                             </Text>

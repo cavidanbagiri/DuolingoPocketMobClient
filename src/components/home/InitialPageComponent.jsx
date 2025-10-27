@@ -4,8 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function InitialPageComponent() {
 
-    
-  const navigation = useNavigation(); // 👈 Get navigation object
+  const navigation = useNavigation(); 
 
     return (
         <View className="flex-1 bg-white p-6">
