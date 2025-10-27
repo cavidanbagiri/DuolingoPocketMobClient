@@ -22,12 +22,12 @@ export default function InitialPageComponent() {
             {/* Logo Image */}
             <View className="items-center mb-8">
                 <Image
-                    source={require('../../../assets/logo.jpg')}
+                    source={require('../../../assets/logo.png')}
                     style={{
-                        width: '80%',
-                        marginTop: 20,
-                        marginBottom: 20,
-                        height: 100,
+                        width: 120,
+                        // marginTop: 20,
+                        // marginBottom: 20,
+                        height: 120,
                         resizeMode: 'cover',
                     }}
                 />

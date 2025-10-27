@@ -8,7 +8,7 @@
       "android",
       "ios"
     ],
-    "icon": "./assets/logo_main.png",
+    "icon": "./assets/logo.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
