@@ -1,4 +1,4 @@
-package com.cavidan.duolingopocketmobclient
+package com.cavidan.w9999
 
 import android.os.Build
 import android.os.Bundle

@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { StatusBar } from 'expo-status-bar'; // New Added
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -52,6 +53,10 @@ export default function App() {
   return (
     <Provider store={store}>
       <SafeAreaProvider>
+        <StatusBar 
+          style="dark" // or "light" depending on your app background
+          backgroundColor="#ffffff"
+        />
         <NavigationContainer>
           <MainStack />
         </NavigationContainer>

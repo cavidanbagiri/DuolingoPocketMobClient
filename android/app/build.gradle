@@ -87,9 +87,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.cavidan.duolingopocketmobclient'
+    namespace 'com.cavidan.w9999'
     defaultConfig {
-        applicationId 'com.cavidan.duolingopocketmobclient'
+        applicationId 'com.cavidan.w9999'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

@@ -1,4 +1,4 @@
-package com.cavidan.duolingopocketmobclient
+package com.cavidan.w9999
 
 import android.app.Application
 import android.content.res.Configuration

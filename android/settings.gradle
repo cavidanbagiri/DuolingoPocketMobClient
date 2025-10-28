@@ -31,7 +31,7 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
 }
 expoAutolinking.useExpoModules()
 
-rootProject.name = 'duolingopocket-mobclient'
+rootProject.name = 'W9999'
 
 expoAutolinking.useExpoVersionCatalog()
 

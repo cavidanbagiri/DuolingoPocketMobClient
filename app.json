@@ -20,15 +20,22 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "softwareKeyboardLayoutMode": "resize",
+      "userInterfaceStyle": "automatic"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.cavidan.w9999"
+      "bundleIdentifier": "com.cavidan.w9999",
+      "userInterfaceStyle": "automatic"
+    },
+    "androidNavigationBar": {
+      "barStyle": "dark-content",
+      "backgroundColor": "#ffffff"
     },
     "extra": {
       "eas": {
-        "projectId": "dd0eb380-ada6-44de-b929-2ff9774d1fe0"
+        "projectId": "d77c7103-d3c4-4d7d-aeb4-6ec65c6bbf3e"
       }
     },
     "owner": "cavidan"
