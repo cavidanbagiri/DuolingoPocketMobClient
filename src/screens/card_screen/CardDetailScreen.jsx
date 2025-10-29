@@ -67,7 +67,7 @@ export default function CardDetailScreen({ route }) {
             className="flex-row items-center p-2 -ml-2"
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Ionicons name="chevron-back" size={24} color="#374151" />
+            <Ionicons name="arrow-back" size={24} color="#374151" />
             <Text className="ml-1 text-gray-600 font-medium" style={{ fontFamily: 'IBMPlexSans-SemiBold' }}>
               Back
             </Text>

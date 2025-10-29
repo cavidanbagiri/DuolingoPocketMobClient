@@ -167,7 +167,7 @@ export default function CategoryWordsScreen({ navigation, route }) {
                 <Text className="ml-3 text-gray-700">Generate AI</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
+            {/* <TouchableOpacity
                 className="flex-row items-center px-4 py-3 border-b border-gray-100"
                 onPress={() => {
                     TranslateWord(word);
@@ -177,7 +177,7 @@ export default function CategoryWordsScreen({ navigation, route }) {
             >
                 <Ionicons name="language-outline" size={20} color="#4B5563" />
                 <Text className="ml-3 text-gray-700">Go To Translate</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             <TouchableOpacity
                 className="flex-row items-center px-4 py-3 border-b border-gray-100"
@@ -416,10 +416,9 @@ export default function CategoryWordsScreen({ navigation, route }) {
             to_lang: to_language,
         }
         dispatch(setPayload(payload))
-        // dispatch(TranslateService.translateText(payload));
+        dispatch(TranslateService.translateText(payload));
         navigate.navigate('AIScreen', {
             initialQuery: item.translated_text,
-            initialTab: 1
         });
     }
 

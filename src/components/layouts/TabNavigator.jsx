@@ -11,6 +11,7 @@ import Feather from '@expo/vector-icons/Feather';
 import HomeScreen from '../../screens/tab_screen/HomeScreen';
 import WordScreen from '../../screens/tab_screen/WordScreen';
 import LearnedScreen from '../../screens/tab_screen/LearnedScreen';
+import TranslateScreen from '../../screens/tab_screen/TranslateScreen'
 import LoginRegisterScreen from '../../screens/tab_screen/LoginRegisterScreen';
 import ProfileScreen from '../../screens/tab_screen/ProfileScreen';
 
@@ -32,8 +33,8 @@ export default function TabNavigator() {
                     else if (route.name === 'Word') {
                         return <Ionicons name="book-outline" size={30} color="black" />
                     }
-                    else if (route.name === 'Learned') {
-                       return <Ionicons name="checkmark-done-outline" size={30} color="black" />
+                    else if (route.name === 'Translate') {
+                       return <Ionicons name="language" size={30} color="black" />
                     }
                     else if (route.name === 'Login/Register') iconName = 'log-in'
                     else if (route.name === 'Profile') {
@@ -49,7 +50,8 @@ export default function TabNavigator() {
             {/* ... your existing Tab.Screen components ... */}
             <Tab.Screen name="Home" component={HomeScreen} />
             <Tab.Screen name="Word" component={WordScreen} />
-            <Tab.Screen name="Learned" component={LearnedScreen} />
+            {/* <Tab.Screen name="Translate" component={LearnedScreen} /> */}
+            <Tab.Screen name="Translate" component={TranslateScreen} />
             {!is_auth ? (
                 <Tab.Screen name="Login/Register">
                     {() => <LoginRegisterScreen onLogin={() => {}} />}
@@ -60,3 +62,5 @@ export default function TabNavigator() {
         </Tab.Navigator>
     )
 }
+
+

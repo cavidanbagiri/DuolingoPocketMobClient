@@ -21,7 +21,8 @@
 
 # Problems
 # 1 - Solve after ai request, maybe save in the backend in different table
-# 2 - 
+# 4 - before production, need to restart everthing is project, because icon is 412px but again doesnt work. can check the entire deepseek 'Fix Bug' session
+# 5 - After entering the word, to login textarea, the error messaghhe doesnt show
 
 # Today Will Solve:  
 # 1
@@ -29,3 +30,4 @@
 
 # Next Ideas:
 
+# Deepseek

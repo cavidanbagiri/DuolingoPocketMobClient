@@ -11,9 +11,13 @@ import LANGUAGES from '../../constants/Languages';
 import AIScreenChat from '../../components/ai/ChatScreen';
 import { clearAIResponse, setAIResponse, clearConversation } from '../../store/ai_store';
 import TRANSLATE_LANGUAGES_LIST from '../../constants/TranslateLanguagesList';
+// import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export default function AIComponent() {
+export default function AIComponent({bottomInset=0}) {
 
+      // const insets = useSafeAreaInsets(); 
+
+      const buttonBottom = 24 + bottomInset; 
     
       const dispatch = useDispatch();
       const { currentWord, aiResponse, isLoading, error, cache } = useSelector((state) => state.aiSlice);
@@ -262,10 +266,11 @@ export default function AIComponent() {
 
 
   return (
-    <SafeAreaView style={styles.container}  edges={['top', 'bottom', 'left', 'right']}>
+    <View style={styles.container} >
     
           {!isChatOpen ?
             <ScrollView
+            // contentContainerStyle={{ paddingTop: insets.top }} 
               refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
               }
@@ -306,6 +311,11 @@ export default function AIComponent() {
           }
           {!isChatOpen && (
             <TouchableOpacity
+              style={{
+            position: 'absolute',
+            bottom: buttonBottom,
+            right: 24,
+          }}
               onPress={() => setIsChatOpen(true)}
               className="absolute bottom-6 right-6 w-16 h-16 bg-indigo-500 rounded-full items-center justify-center shadow-lg"
             >
@@ -313,7 +323,7 @@ export default function AIComponent() {
             </TouchableOpacity>
           )}
     
-        </SafeAreaView>
+        </View>
   )
 }
 
