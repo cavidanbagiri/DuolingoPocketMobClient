@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { ActivityIndicator } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+// import Icon from 'react-native-vector-icons/MaterialIcons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import Feather from '@expo/vector-icons/Feather';
 
 import { setIsLoginErrorFalse, setIsLoginSuccessFalse } from '../../store/auth_store';
@@ -21,12 +22,15 @@ export default function RegisterComponent({ setMode, onRegister }) {
 
   const { login_message, login_success, is_login_error, login_pending } = useSelector((state) => state.authSlice);
 
-  const [email, setEmail] = useState('temp2@gmail.com');
-  const [password, setPassword] = useState('11111111');
-  const [username, setUsername] = useState('temp2');
-  const [confirm, setConfirm] = useState('11111111');
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
+  const [confirm, setConfirm] = useState();
 
   const [nativeLanguage, setNativeLanguage] = useState('');
+
+  const [msg_error, setMsgError] = useState(false);
+  const [msg_text, setMsgText] = useState('');
 
   const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -39,31 +43,50 @@ export default function RegisterComponent({ setMode, onRegister }) {
 
 
     if (nativeLanguage === '') {
-      Alert.alert('Validation Error', 'Native Language is required');
+      // Alert.alert('Validation Error', 'Native Language is required');
+      setMsgError(true);
+      setMsgText('Native Language is required');
       return;
     }
-    if (!username.trim()) {
-      Alert.alert('Validation Error', 'Username is required');
+    if (username && username.trim() === '') {
+      // Alert.alert('Validation Error', 'Username is required');
+      setMsgError(true);
+      setMsgText('Username is required');
       return;
     }
 
     if (!validateEmail(email)) {
-      Alert.alert('Validation Error', 'Please enter a valid email address');
+      // Alert.alert('Validation Error', 'Please enter a valid email address');
+      setMsgError(true);
+      setMsgText('Please enter a valid email address'); 
       return;
     }
 
-    if (password.length < 8) {
-      Alert.alert('Validation Error', 'Password must be at least 8 characters');
+    if (password && password.length < 8) {
+      // Alert.alert('Validation Error', 'Password must be at least 8 characters');
+      setMsgError(true);
+      setMsgText('Password must be at least 8 characters');
       return;
     }
     if (password !== confirm) {
-      Alert.alert('Validation Error', 'Passwords do not match');
+      // Alert.alert('Validation Error', 'Passwords do not match');
+      setMsgError(true);
+      setMsgText('Passwords do not match');
       return;
     }
 
 
     dispatch(AuthService.register({ email, password, username, native: nativeLanguage }));
   };
+
+
+  useEffect(() => {
+    if (msg_error) {
+      setTimeout(() => {
+        setMsgError(false);
+      }, 1000);
+    }
+  },)
 
   useEffect(() => {
     if (is_login_error) {
@@ -95,6 +118,8 @@ export default function RegisterComponent({ setMode, onRegister }) {
         />
       }
 
+      {msg_error && <MsgBox message={msg_text} visible={msg_error} type="error" />}
+
       <Text
         style={{ fontFamily: 'IBMPlexSans-Regular' }}
         className='text-[50px] font-bold text-center mb-4 '>
@@ -117,7 +142,7 @@ export default function RegisterComponent({ setMode, onRegister }) {
       </View>
 
       <View className='flex flex-row items-center mt-5 w-full border border-gray-300 rounded-lg px-3'>
-        <Icon name="mail-outline" size={20} color="#666" style={{ marginRight: 10 }} />
+        <Ionicons name="mail-outline" size={20} color="#666" style={{ marginRight: 10 }} />
         <TextInput
           style={{ fontFamily: 'IBMPlexSans-Regular', flex: 1 }}
           className='text-lg font-medium'

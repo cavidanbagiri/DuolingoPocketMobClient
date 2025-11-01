@@ -35,9 +35,12 @@
     },
     "extra": {
       "eas": {
-        "projectId": "d77c7103-d3c4-4d7d-aeb4-6ec65c6bbf3e"
+        "projectId": "368ac8a3-8136-461c-bf81-0b5c47dd89af"
       }
     },
-    "owner": "cavidan"
+    "owner": "cavidan",
+    "plugins": [
+      "expo-web-browser"
+    ]
   }
 }

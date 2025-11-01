@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, Image } from 'react-native';
-
 import { useDispatch, useSelector } from 'react-redux';
 
 import { ActivityIndicator } from 'react-native';
+import Feather from '@expo/vector-icons/Feather';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 import AuthService from '../../services/AuthService.js';
 
@@ -12,23 +13,17 @@ import MsgBox from '../layouts/MsgBox';
 import { setIsLoginErrorFalse, setIsLoginSuccessFalse } from '../../store/auth_store';
 
 
-import Icon from 'react-native-vector-icons/MaterialIcons';
-
-
 export default function LoginComponent({ onLogin }) {
 
   const dispatch = useDispatch();
 
   const { login_message, login_success, is_login_error, login_pending } = useSelector((state) => state.authSlice);
 
-  // const [email, setEmail] = useState('');
-  // const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-   const [email, setEmail] = useState('eng@gmail.com');
-  const [password, setPassword] = useState('11111111');
-
-
-
+  const [msg_error, setMsgError] = useState(false);
+  const [msg_text, setMsgText] = useState('');
 
   const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -39,17 +34,29 @@ export default function LoginComponent({ onLogin }) {
 
 
     if (!validateEmail(email)) {
-      Alert.alert('Validation Error', 'Please enter a valid email address');
+      // Alert.alert('Validation Error', 'Please enter a valid email address');
+      setMsgError(true);
+      setMsgText('Please enter a valid email address');
       return;
     }
 
     if (password.length < 8) {
-      Alert.alert('Validation Error', 'Password must be at least 8 characters');
+      // Alert.alert('Validation Error', 'Password must be at least 8 characters');
+      setMsgError(true);
+      setMsgText('Password must be at least 8 characters');
       return;
     }
 
     dispatch(AuthService.login({ email, password }));
   };
+
+  useEffect(() => {
+    if (msg_error) {
+      setTimeout(() => {
+        setMsgError(false);
+      }, 1000);
+    }
+  }, [msg_error]);
 
 
   useEffect(() => {
@@ -81,6 +88,8 @@ export default function LoginComponent({ onLogin }) {
         />
       }
 
+      {msg_error && <MsgBox message={msg_text} visible={msg_error} type="error" />}
+
       <Text
             style={{ fontFamily: 'IBMPlexSans-Regular' }}
             className='text-[50px] font-bold text-center mb-4 '>
@@ -89,7 +98,7 @@ export default function LoginComponent({ onLogin }) {
 
       {/* Email Input with Icon */}
       <View className='flex flex-row items-center mt-5 w-full border border-gray-300 rounded-lg py-1 px-3'>
-        <Icon name="mail-outline" size={20} color="#666" style={{ marginRight: 10 }} />
+        <Ionicons name="mail-outline" size={20} color="#666" style={{ marginRight: 10 }} />
         <TextInput
           style={{ fontFamily: 'IBMPlexSans-Regular', flex: 1 }}
           className='text-lg font-medium'
@@ -100,7 +109,7 @@ export default function LoginComponent({ onLogin }) {
 
       {/* Password Input with Icon */}
       <View className='flex flex-row items-center mt-4 w-full border border-gray-300 rounded-lg py-1 px-3'>
-        <Icon name="lock-outline" size={20} color="#666" style={{ marginRight: 10 }} />
+        <Feather name="lock" size={20} color="#666" style={{ marginRight: 10 }} />
         <TextInput
           style={{ fontFamily: 'IBMPlexSans-Regular', flex: 1 }}
           className='text-lg font-medium'
