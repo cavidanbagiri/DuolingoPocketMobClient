@@ -21,18 +21,12 @@
 
 # Problems
 # 1 - Solve after ai request, maybe save in the backend in different table
-# 2 - before production, need to restart everthing is project, because icon is 412px but again doesnt work. can check the entire deepseek 'Fix Bug' session
-# 3 - After entering the word, to login textarea, the error messaghhe doesnt show
-# 4 - Set the flags as pdf again. Look like very bad
 # 5 - Need to set icon as 350x350 again
-# 6 - Set login password error   
 # 7 - Native lang doesnt select in translate page
-# 8 - Small screen doesnt show the words
-# 9 - Translate Screen, after opening keyboard, doesnt close
 # 10 - Try to integrate the google translate to project
 # 11 - Add different languages for interface
 # 12 - Think, need to create an instruction for learning
-# 13 - Change entire word in backend. Ynadex Translate is working badly
+# 13 - Change entire word translations in backend. Ynadex Translate is working badly
 
 
 # Today Will Solve:  
