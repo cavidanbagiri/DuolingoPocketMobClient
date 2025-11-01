@@ -1,0 +1,38 @@
+{
+    "en": {
+        "home": {
+            "learn": "Learned",
+            "star": "Starred",
+            "total_words": "Total Words",
+            "word": "Word",
+            "words": "Words",
+            "header": {
+                "greeting": [
+                    "Good morning",
+                    "Good afternoon",
+                    "Good evening"
+                ],
+                "last_learned": "Last Learned",
+                "message": "Message",
+                "daily": "Today Words",
+                "day": "Today",
+                "langauge": "Language",
+                "conditions": "Updated"
+            },
+            "language_progress": {
+                "title": "Language Progress",
+                "message": "Track your learning journey",
+                "each_message": "Great Start! Every word counts!",
+                "each_bottom_progress": "Learning Progress"
+            },
+            "choose_language": {
+                "title": "Choose Language",
+                "title_message": "Start your journey with just one tap",
+                "message": "languages available to learn"
+            }
+        },
+        "word":{
+            
+        }
+    }
+}
