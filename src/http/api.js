@@ -3,7 +3,6 @@
 import axios from 'axios';
 import { getFromStorage } from '../utils/storage';
 
-// export const API_URL = 'http://10.0.2.2:8000/api';
 // export const API_URL = 'http://192.168.1.101:8000/api';
 export const API_URL = 'https://duolingopocketserver.onrender.com/api';
 
@@ -15,7 +14,6 @@ const $api = axios.create({
 // Async token injection
 $api.interceptors.request.use(
   async (config) => {
-    // const token = await SecureStore.getItemAsync('token');
     const token = await getFromStorage('token');
     
     if (token) {
